@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PMO Compliance Dashboard</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0ede6;color:#1a1a18;font-size:13px;line-height:1.5}
+
+/* ── LOADING & ERROR STATES ── */
+#loader{position:fixed;inset:0;background:#0f2518;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:20px}
+#loader.hidden{display:none}
+.loader-logo{font-size:13px;font-weight:700;letter-spacing:3px;color:#fff;opacity:.6}
+.loader-title{font-size:22px;font-weight:600;color:#fff}
+.loader-bar-wrap{width:260px;height:3px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden}
+.loader-bar{height:100%;background:#c8390a;border-radius:2px;animation:loadpulse 1.4s ease-in-out infinite}
+@keyframes loadpulse{0%{width:0%;opacity:1}70%{width:85%}100%{width:100%;opacity:.4}}
+.loader-msg{font-size:11px;color:rgba(255,255,255,.5);letter-spacing:.5px}
+
+#error-state{display:none;position:fixed;inset:0;background:#0f2518;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:16px;padding:32px;text-align:center}
+#error-state.visible{display:flex}
+.err-icon{font-size:40px}
+.err-title{font-size:20px;font-weight:600;color:#fff}
+.err-msg{font-size:13px;color:rgba(255,255,255,.6);max-width:480px;line-height:1.6}
+.err-hint{font-size:11px;color:rgba(255,255,255,.35);font-family:monospace;background:rgba(255,255,255,.05);padding:10px 16px;border-radius:4px;max-width:480px;word-break:break-all}
+.err-retry{margin-top:8px;background:#c8390a;color:#fff;border:none;padding:8px 20px;border-radius:4px;font-size:12px;cursor:pointer;font-family:inherit}
+.err-retry:hover{background:#a82e08}
+
+/* ── LAYOUT ── */
+#app{display:none}
+#app.visible{display:block}
+
+/* ── HEADER ── */
+.hdr{background:#0f2518;border-bottom:2px solid #c8390a;padding:0 20px;height:50px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
+.hdr-l{display:flex;align-items:center;gap:12px}
+.brand{font-size:11px;font-weight:700;letter-spacing:2px;color:#fff}
+.hdr-sep{width:1px;height:18px;background:#c8390a;opacity:.6}
+.hdr-title{font-size:11px;color:#e8d9c0;letter-spacing:.5px}
+.hdr-r{display:flex;align-items:center;gap:10px}
+.hdr-snap{font-size:10px;color:#b0c4b1;font-family:monospace}
+.hdr-badge{background:#c8390a;color:#fff;padding:2px 8px;border-radius:3px;font-size:9px;font-weight:700;letter-spacing:1px}
+.hdr-refresh{background:transparent;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.6);padding:3px 10px;border-radius:3px;font-size:10px;cursor:pointer;font-family:inherit;transition:all .15s}
+.hdr-refresh:hover{border-color:#c8390a;color:#fff}
+.hdr-refresh.spinning{opacity:.5;pointer-events:none}
+
+/* ── SCORECARD ── */
+.scorecard{display:grid;grid-template-columns:repeat(8,1fr);gap:1px;background:#d4c9b8}
+.sc-cell{background:#fff;padding:12px 14px;text-align:center}
+.sc-val{font-size:22px;font-weight:700;line-height:1}
+.sc-lbl{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-top:4px}
+.v-red{color:#d64000}.v-amber{color:#c07020}.v-green{color:#1a5c1e}.v-blue{color:#1060c8}
+
+/* ── TABS ── */
+.tabs{background:#fff;border-bottom:1px solid #e5e1d8;padding:0 20px;display:flex;position:sticky;top:50px;z-index:100}
+.tab-btn{background:transparent;border:none;border-bottom:2px solid transparent;color:#6b7280;padding:10px 14px;cursor:pointer;font-size:11px;font-family:inherit;white-space:nowrap;transition:all .15s}
+.tab-btn:hover{color:#1a1a18}
+.tab-btn.on{color:#c8390a;border-bottom-color:#c8390a;font-weight:600}
+.tc{background:#e5e1d8;color:#6b7280;border-radius:10px;padding:1px 6px;font-size:9px;margin-left:4px}
+.tc.red{background:#fde8e0;color:#c8390a}
+
+/* ── TOOLBAR ── */
+.toolbar{background:#fff;border-bottom:1px solid #e5e1d8;padding:8px 20px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tb-lbl{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#9ca3af}
+.btn-f{background:transparent;border:1px solid #d4c9b8;color:#6b7280;padding:3px 10px;border-radius:3px;cursor:pointer;font-size:10px;font-family:inherit;transition:all .12s}
+.btn-f:hover{border-color:#c8390a;color:#c8390a}
+.btn-f.on{background:#fde8e0;border-color:#c8390a;color:#c8390a}
+.btn-f.on-a{background:#fef0e0;border-color:#c07020;color:#c07020}
+.btn-f.on-g{background:#e0f4e2;border-color:#1a5c1e;color:#1a5c1e}
+.tb-search{margin-left:auto;background:#f5f5f0;border:1px solid #d4c9b8;color:#1a1a18;padding:4px 10px;border-radius:3px;font-size:11px;font-family:inherit;width:190px}
+.tb-search:focus{outline:none;border-color:#c8390a}
+.tb-search::placeholder{color:#9ca3af}
+.tb-select{background:#f5f5f0;border:1px solid #d4c9b8;color:#1a1a18;padding:3px 8px;border-radius:3px;font-size:11px;font-family:inherit;cursor:pointer;max-width:190px}
+.tb-select:focus{outline:none;border-color:#c8390a}
+
+/* ── MAIN ── */
+.main{padding:16px 20px}
+
+/* ── TABLE ── */
+.tbl-wrap{background:#fff;border:1px solid #e5e1d8;border-radius:5px;overflow:auto;max-height:calc(100vh - 260px)}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+.tbl-wrap table{min-width:900px}
+thead th{background:#f5f5f0;color:#6b7280;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:8px 10px;text-align:left;border-bottom:2px solid #e5e1d8;white-space:nowrap;position:sticky;top:0;z-index:5}
+tbody tr{border-bottom:1px solid #f0ede6;transition:background .1s;cursor:pointer}
+tbody tr:hover{background:#fef9f0}
+tbody tr:last-child{border-bottom:none}
+td{padding:7px 10px;vertical-align:middle}
+.td-num{color:#9ca3af;font-family:monospace;font-size:9px}
+.td-name{font-weight:500;color:#1a1a18;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.td-pm{color:#6b7280;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px}
+
+/* ── SCORE BAR ── */
+.sb-wrap{display:flex;align-items:center;gap:6px;min-width:100px}
+.sb-track{flex:1;height:5px;background:#e5e1d8;border-radius:3px;overflow:hidden}
+.sb-fill{height:100%;border-radius:3px}
+.fill-r{background:#d64000}.fill-a{background:#c07020}.fill-g{background:#1a5c1e}
+.pct{font-size:10px;font-family:monospace;min-width:28px;text-align:right}
+.pct-r{color:#d64000}.pct-a{color:#c07020}.pct-g{color:#1a5c1e}
+
+/* ── RULE CELLS ── */
+.r-pass{color:#22c55e;font-size:12px;text-align:center}
+.r-fail{color:#ef4444;font-size:12px;text-align:center}
+
+/* ── BADGES ── */
+.badge-proj{background:#dbeafe;color:#1e40af;border:none;border-radius:3px;padding:1px 6px;font-size:9px;font-weight:700}
+.badge-prog{background:#fef3c7;color:#92400e;border:none;border-radius:3px;padding:1px 6px;font-size:9px;font-weight:700}
+.rag-dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+.rag-r{background:#d64000}.rag-a{background:#c07020}.rag-g{background:#1a5c1e}.rag-b{background:#1060c8}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:40px;color:#9ca3af;font-size:12px}
+
+/* ── MODAL ── */
+.modal-bg{position:fixed;inset:0;background:rgba(15,37,24,.55);z-index:500;display:flex;align-items:center;justify-content:center}
+.modal-box{background:#fff;border-radius:6px;width:660px;max-width:94vw;max-height:88vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(15,37,24,.3)}
+.modal-hdr{background:#0f2518;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-hdr-l{display:flex;align-items:center;gap:8px}
+.modal-ttl{font-size:13px;font-weight:600;color:#fff;max-width:420px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.modal-pct{font-family:monospace;font-size:11px;font-weight:700;padding:2px 7px;border-radius:3px}
+.mpct-g{background:#e0f4e2;color:#1a5c1e}.mpct-a{background:#fef0e0;color:#c07020}.mpct-r{background:#fde8e0;color:#d64000}
+.modal-cls{background:transparent;border:none;color:rgba(255,255,255,.55);cursor:pointer;font-size:18px;padding:0 4px;line-height:1}
+.modal-cls:hover{color:#fff}
+.modal-meta{padding:10px 18px;background:#f5f5f0;border-bottom:1px solid #e5e1d8;font-size:11px;color:#6b7280;flex-shrink:0}
+.modal-meta strong{color:#1a1a18}
+.modal-body{padding:16px 18px;overflow-y:auto}
+.modal-rules{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mrule{padding:10px 12px;border-radius:4px;display:flex;align-items:flex-start;gap:8px}
+.mrule.pass{background:#e0f4e2;border:1px solid #6fbf75}
+.mrule.fail{background:#fde8e0;border:1px solid #e08060}
+.mrule-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+.mrule.pass .mrule-icon{color:#1a5c1e}
+.mrule.fail .mrule-icon{color:#d64000}
+.mrule-lbl{font-size:11px;font-weight:600}
+.mrule.pass .mrule-lbl{color:#1a5c1e}
+.mrule.fail .mrule-lbl{color:#d64000}
+.mrule-id{font-family:monospace;font-size:9px;opacity:.65;margin-right:3px}
+.mrule-desc{font-size:10px;color:#6b7280;margin-top:2px;line-height:1.4}
+
+/* ── VIOLATIONS TAB ── */
+.vi-group{margin-bottom:16px}
+.vi-hd{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:#6b7280;padding:6px 0;border-bottom:1px solid #e5e1d8;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.vi-row{display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:1px solid #f5f2ec}
+.vi-row:last-child{border-bottom:none}
+.vi-num{font-size:9px;color:#9ca3af;font-family:monospace;min-width:22px;padding-top:2px}
+.vi-name{font-weight:600;font-size:11px;color:#1a1a18}
+.vi-pm{font-size:10px;color:#6b7280}
+.vi-badges{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px}
+.vi-badge{padding:1px 6px;border-radius:3px;font-size:9px;font-weight:600;background:#fde8e0;color:#c8390a;border:1px solid #c8390a}
+
+/* ── ANALYTICS ── */
+.analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.an-card{background:#fff;border:1px solid #e5e1d8;border-radius:4px;padding:12px 14px}
+.an-title{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:10px;font-weight:700}
+.an-bars{display:grid;row-gap:6px}
+.an-bar-row{display:flex;align-items:center;gap:8px}
+.an-bar-lbl{font-size:9px;color:#6b7280;font-family:monospace;font-weight:700;min-width:22px}
+.an-bar-lbl-long{font-size:9px;color:#6b7280;min-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.an-track{flex:1;height:8px;background:#e5e1d8;border-radius:3px;overflow:hidden}
+.an-fill{height:100%;border-radius:3px}
+.dist-wrap{display:flex;gap:16px;align-items:flex-end;height:130px;padding-bottom:22px}
+.dist-col{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
+.dist-bar{width:100%;border-radius:3px 3px 0 0;min-height:4px}
+.dist-lbl{font-size:9px;color:#6b7280;text-align:center;white-space:pre-line;line-height:1.3}
+.bottom10-row{display:flex;align-items:center;gap:6px;cursor:pointer;padding:2px 0}
+.bottom10-row:hover .td-name{text-decoration:underline}
+
+/* ── LEGEND ── */
+.legend{margin:0 0 16px;background:#fff;border:1px solid #e5e1d8;border-radius:4px;padding:14px 16px}
+.legend-title{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:#6b7280;margin-bottom:10px;font-weight:700}
+.legend-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+.legend-item{display:flex;align-items:flex-start;gap:8px;padding:6px 8px;background:#f5f5f0;border-radius:3px;border:1px solid #e5e1d8}
+.legend-num{background:#0f2518;color:#fff;border-radius:3px;padding:1px 6px;font-size:10px;font-weight:700;font-family:monospace;white-space:nowrap;align-self:flex-start;margin-top:1px}
+.legend-label{font-size:10px;font-weight:600;color:#1a1a18}
+.legend-desc{font-size:9px;color:#6b7280;margin-top:2px;line-height:1.4}
+.legend-thr{display:flex;align-items:center;gap:14px;padding-top:10px;border-top:1px solid #e5e1d8;font-size:10px}
+.thr-lbl{color:#9ca3af;font-size:9px;text-transform:uppercase;letter-spacing:.5px}
+
+/* ── FOOTER ── */
+footer{text-align:center;padding:12px 20px;color:#9ca3af;font-size:9px;font-family:monospace;border-top:1px solid #e5e1d8;background:#fff}
+
+/* ── MILESTONES ── */
+.mile-tbl td{font-size:11px}
+</style>
+</head>
+<body>
+
+<!-- ── LOADING OVERLAY ── -->
+<div id="loader">
+  <div class="loader-logo">CIO PMO</div>
+  <div class="loader-title">Compliance Dashboard</div>
+  <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+  <div class="loader-msg" id="loader-msg">Loading data…</div>
+</div>
+
+<!-- ── ERROR OVERLAY ── -->
+<div id="error-state">
+  <div class="err-icon">⚠</div>
+  <div class="err-title">Could not load dashboard data</div>
+  <div class="err-msg" id="err-msg">The dashboard couldn't fetch the data file. Make sure you're serving this file via a web server and that <code>pmo_data.json</code> exists in the <code>../data/</code> folder.</div>
+  <div class="err-hint" id="err-hint"></div>
+  <button class="err-retry" onclick="init()">Try again</button>
+</div>
+
+<!-- ── MAIN APP ── -->
+<div id="app">
+
+  <header class="hdr">
+    <div class="hdr-l">
+      <span class="brand">PMO</span>
+      <div class="hdr-sep"></div>
+      <span class="hdr-title">Compliance Dashboard</span>
+    </div>
+    <div class="hdr-r">
+      <span class="hdr-snap" id="hdr-snap">—</span>
+      <button class="hdr-refresh" id="refresh-btn" onclick="init()">↻ Refresh</button>
+      <span class="hdr-badge">LIVE DATA</span>
+    </div>
+  </header>
+
+  <div class="scorecard" id="scorecard"></div>
+
+  <div class="tabs">
+    <button class="tab-btn on" onclick="setTab('all',this)">All Records <span class="tc" id="cnt-all">0</span></button>
+    <button class="tab-btn" onclick="setTab('nc',this)">Non-Compliant <span class="tc red" id="cnt-nc">0</span></button>
+    <button class="tab-btn" onclick="setTab('violations',this)">Violations by Rule</button>
+    <button class="tab-btn" onclick="setTab('milestones',this)">At-Risk Milestones <span class="tc red" id="cnt-miles">0</span></button>
+    <button class="tab-btn" onclick="setTab('analytics',this)">Analytics</button>
+  </div>
+
+  <div class="toolbar">
+    <span class="tb-lbl">Type:</span>
+    <button class="btn-f on"    onclick="setF('type','all',this)">All</button>
+    <button class="btn-f"       onclick="setF('type','project',this)">Projects</button>
+    <button class="btn-f"       onclick="setF('type','program',this)">Programs</button>
+    <span style="width:8px"></span>
+    <span class="tb-lbl">Compliance:</span>
+    <button class="btn-f on"    onclick="setF('status','all',this)">All</button>
+    <button class="btn-f"       onclick="setF('status','nc',this)">Non-Compliant</button>
+    <button class="btn-f"       onclick="setF('status','partial',this)">Partial</button>
+    <button class="btn-f"       onclick="setF('status','ok',this)">Compliant</button>
+    <span style="width:8px"></span>
+    <select class="tb-select" id="pillar-select" onchange="setF('pillar',this.value)">
+      <option value="all">All Pillars</option>
+    </select>
+    <input class="tb-search" type="text" id="search-box" placeholder="Search name or PM…" oninput="renderCurrent()">
+  </div>
+
+  <div class="main">
+    <div id="tab-all">
+      <div class="tbl-wrap">
+        <table>
+          <colgroup>
+            <col style="width:32px"><col style="width:56px"><col style="width:210px">
+            <col style="width:145px"><col style="width:105px">
+            <col style="width:28px"><col style="width:28px"><col style="width:28px">
+            <col style="width:28px"><col style="width:28px"><col style="width:28px">
+            <col style="width:28px"><col style="width:28px"><col style="width:28px"><col style="width:28px">
+          </colgroup>
+          <thead><tr>
+            <th>#</th><th>Type</th><th>Name</th><th>PM / Owner</th><th>Score</th>
+            <th title="Risks have owners">R1</th>
+            <th title="Risks have mitigation plans">R2</th>
+            <th title="Status report up to date">R3</th>
+            <th title="Issues have owners">R4</th>
+            <th title="Issues have resolution plans">R5</th>
+            <th title="Has milestones">R6</th>
+            <th title="No overdue milestones">R7</th>
+            <th title="Actions have due dates">R8</th>
+            <th title="OKR populated">R9</th>
+            <th title="Service Maturity populated">R10</th>
+          </tr></thead>
+          <tbody id="tbody-all"></tbody>
+        </table>
+      </div>
+      <div id="count-all" style="margin-top:8px;font-size:10px;color:#9ca3af;text-align:right"></div>
+    </div>
+
+    <div id="tab-nc" style="display:none">
+      <div class="tbl-wrap">
+        <table>
+          <colgroup>
+            <col style="width:32px"><col style="width:56px"><col style="width:210px">
+            <col style="width:145px"><col style="width:105px">
+            <col style="width:28px"><col style="width:28px"><col style="width:28px">
+            <col style="width:28px"><col style="width:28px"><col style="width:28px">
+            <col style="width:28px"><col style="width:28px"><col style="width:28px"><col style="width:28px">
+          </colgroup>
+          <thead><tr>
+            <th>#</th><th>Type</th><th>Name</th><th>PM / Owner</th><th>Score</th>
+            <th title="Risks have owners">R1</th><th title="Risks have mitigation plans">R2</th>
+            <th title="Status report up to date">R3</th><th title="Issues have owners">R4</th>
+            <th title="Issues have resolution plans">R5</th><th title="Has milestones">R6</th>
+            <th title="No overdue milestones">R7</th><th title="Actions have due dates">R8</th>
+            <th title="OKR populated">R9</th><th title="Service Maturity populated">R10</th>
+          </tr></thead>
+          <tbody id="tbody-nc"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="tab-violations" style="display:none">
+      <div id="violations-body"></div>
+    </div>
+
+    <div id="tab-milestones" style="display:none">
+      <div class="tbl-wrap">
+        <table class="mile-tbl">
+          <colgroup>
+            <col style="width:32px"><col style="width:170px"><col style="width:250px">
+            <col style="width:90px"><col style="width:90px"><col style="width:80px">
+          </colgroup>
+          <thead><tr>
+            <th>#</th><th>Project / Program</th><th>Milestone</th>
+            <th>End Date</th><th>Status</th><th>Overdue</th>
+          </tr></thead>
+          <tbody id="tbody-miles"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="tab-analytics" style="display:none"></div>
+  </div>
+
+  <div class="legend" id="legend-block"></div>
+  <footer id="footer-stamp">—</footer>
+</div>
+
+<!-- ── MODAL ── -->
+<div id="modal-overlay" style="display:none" onclick="closeModal(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-hdr">
+      <div class="modal-hdr-l">
+        <span id="modal-type-badge"></span>
+        <span class="modal-ttl" id="modal-title"></span>
+        <span class="modal-pct" id="modal-pct"></span>
+      </div>
+      <button class="modal-cls" onclick="closeDetailModal()">✕</button>
+    </div>
+    <div class="modal-meta" id="modal-meta"></div>
+    <div class="modal-body">
+      <div class="modal-rules" id="modal-rules"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ── CONFIG ──────────────────────────────────────────────────────────────────
+// DATA_URL: path to pmo_data.json, resolved for each environment.
+//
+// Environment detection:
+//   1. GitHub Pages  → https://your-org.github.io/pmo-dashboard/dashboard/index.html
+//                      fetches ../data/pmo_data.json  ✓
+//   2. Local server  → http://localhost:3000/dashboard/index.html
+//                      fetches ../data/pmo_data.json  ✓
+//   3. Direct file   → file:///...  or  about:srcdoc  (Claude preview)
+//                      relative fetch not possible → shows upload prompt instead
+//
+const DATA_URL = (function() {
+  const proto = window.location.protocol;
+  // file:// or about:srcdoc (opened directly or Claude preview) — use upload fallback
+  if (proto !== 'http:' && proto !== 'https:') return null;
+  // Running via HTTP server — use a simple relative path.
+  // This file lives at  .../dashboard/index.html
+  // The data file lives at  .../data/pmo_data.json
+  // So from here, ../data/pmo_data.json always works.
+  return '../data/pmo_data.json';
+})();
+
+// ── CONSTANTS ────────────────────────────────────────────────────────────────
+const RULES = [
+  { id:'R1',  label:'Risks have owners',           desc:'All logged risks must have a named owner assigned' },
+  { id:'R2',  label:'Risks have mitigation plans',  desc:'Every risk must have a documented mitigation or response plan' },
+  { id:'R3',  label:'Status report up to date',     desc:'Status report updated within the last 7 days' },
+  { id:'R4',  label:'Issues have owners',           desc:'All open issues must have a named owner assigned' },
+  { id:'R5',  label:'Issues have resolution plans', desc:'All open issues must have a resolution plan documented' },
+  { id:'R6',  label:'Has milestones',               desc:'At least one milestone must be defined' },
+  { id:'R7',  label:'No overdue milestones',        desc:'No milestones should be past their LE end date' },
+  { id:'R8',  label:'Actions have due dates',       desc:'All open actions must have a due date assigned' },
+  { id:'R9',  label:'OKR populated',                desc:'OKR field must be populated' },
+  { id:'R10', label:'Service Maturity populated',   desc:'Service Maturity field must be populated' },
+];
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+let RECORDS = [], MILESTONES = [];
+let activeTab = 'all';
+let fType = 'all', fStatus = 'all', fPillar = 'all';
+
+// ── DATA TRANSFORMER (mirrors the Python generate_data.py logic) ─────────────
+function transformData(raw) {
+  const today = new Date(raw.generated_at
+    ? raw.generated_at.substring(0,10)
+    : new Date().toISOString().substring(0,10));
+
+  function personStr(p) {
+    if (!p) return '';
+    if (typeof p === 'object') return (p.name || '').trim();
+    return String(p).trim();
+  }
+  function parseDate(val) {
+    if (!val || val === '' || val === 'null') return null;
+    try { return new Date(String(val).substring(0,10)); } catch(e) { return null; }
+  }
+  function daysSince(dateStr) {
+    const d = parseDate(dateStr);
+    if (!d) return 999;
+    return Math.floor((today - d) / 86400000);
+  }
+
+  const records = [], milestones = [];
+
+  for (const e of (raw.entities || [])) {
+    const rec = {
+      id:               e.id || '',
+      type:             e.type || 'project',
+      name:             (e.name || '').trim(),
+      rag:              (e.rag_status || '').trim(),
+      status:           (e.status || '').trim(),
+      pm:               personStr(e.manager) || '(No PM)',
+      pillar:           (e.pillar || '').trim(),
+      tiering:          (e.tiering || '').trim(),
+      report_date:      e.latest_report ? (e.latest_report.date || '') : '',
+      days_since_report: e.latest_report ? daysSince(e.latest_report.date) : 999,
+      okr:              (e.okrs || '').trim(),
+      service_maturity: (e.service_maturity || '').trim(),
+      risks_total:0, risks_no_owner:0, risks_no_mit:0, risks_no_date:0,
+      actions_total:0, actions_incomplete:0, actions_no_date:0,
+      issues_total:0, issues_no_res:0, issues_no_owner:0, issues_no_date:0, issues_no_plan:0,
+      miles_total:0, miles_overdue:0,
+    };
+
+    const own = (arr) => (arr || []).filter(i =>
+      (i.friendly_id || '').startsWith(e.id + '/'));
+
+    for (const r of own(e.risks)) {
+      if ((r.status || '').toLowerCase() === 'closed') continue;
+      rec.risks_total++;
+      if (!personStr(r.risk_owner))            rec.risks_no_owner++;
+      if (!(r.mitigation || '').trim())         rec.risks_no_mit++;
+      if (!r.target_closure_date)               rec.risks_no_date++;
+    }
+    for (const a of own(e.actions)) {
+      rec.actions_total++;
+      const done = ['complete','completed','closed','done']
+        .includes((a.status||'').toLowerCase());
+      if (!done) {
+        rec.actions_incomplete++;
+        if (!a.target_date) rec.actions_no_date++;
+      }
+    }
+    for (const i of own(e.issues)) {
+      rec.issues_total++;
+      const resolved = ['resolved','closed','complete','completed']
+        .includes((i.status||'').toLowerCase());
+      if (!resolved) {
+        rec.issues_no_res++;
+        if (!personStr(i.owner))              rec.issues_no_owner++;
+        if (!i.target_closure_date)           rec.issues_no_date++;
+        if (!(i.resolution || '').trim())     rec.issues_no_plan++;
+      }
+    }
+    for (const m of own(e.milestones)) {
+      rec.miles_total++;
+      const mstatus = (m.status || '').toLowerCase();
+      const leEnd   = parseDate(m.le_end_date);
+      const planEnd = parseDate(m.planned_end_date);
+      const endDate = leEnd || planEnd;
+      const done    = ['complete','completed','closed','done'].includes(mstatus);
+      const overdue = endDate && endDate < today && !done;
+      if (overdue) rec.miles_overdue++;
+      const rag = (m.rag_status || '').trim();
+      if (overdue || ['red','amber'].includes(rag.toLowerCase())) {
+        milestones.push({
+          project:  rec.name,
+          rid:      rec.id,
+          type:     rec.type,
+          name:     (m.name || '').trim(),
+          status:   m.status || '',
+          rag:      rag,
+          end:      endDate ? endDate.toISOString().substring(0,10) : '',
+          variance: (overdue && endDate) ? Math.floor((today - endDate) / 86400000) : 0,
+        });
+      }
+    }
+    records.push(rec);
+  }
+  return { records, milestones, generated_at: raw.generated_at || '' };
+}
+
+// ── SCORING ──────────────────────────────────────────────────────────────────
+function scoreRecord(r) {
+  const passes = [
+    r.risks_total===0   || r.risks_no_owner===0,
+    r.risks_total===0   || r.risks_no_mit===0,
+    r.days_since_report <= 7,
+    r.issues_total===0  || r.issues_no_owner===0,
+    r.issues_total===0  || r.issues_no_plan===0,
+    r.miles_total > 0,
+    r.miles_overdue===0,
+    r.actions_total===0 || r.actions_no_date===0,
+    !!(r.okr && r.okr.trim()),
+    !!(r.service_maturity && r.service_maturity.trim()),
+  ];
+  return { passes, pct: Math.round(passes.filter(Boolean).length / 10 * 100) };
+}
+function scClass(p) { return p>=80?'g':p>=60?'a':'r'; }
+function scLabel(p) { return p>=80?'Compliant':p>=60?'Partial':'Non-Compliant'; }
+function ragDotClass(rag) {
+  const r = (rag||'').toLowerCase();
+  if (r.includes('red'))   return 'rag-r';
+  if (r.includes('amber')) return 'rag-a';
+  if (r.includes('blue'))  return 'rag-b';
+  return 'rag-g';
+}
+function ruleDetail(r, i) {
+  return [
+    r.risks_no_owner>0   ? `${r.risks_no_owner} risk(s) missing owner` : '',
+    r.risks_no_mit>0     ? `${r.risks_no_mit} risk(s) missing mitigation plan` : '',
+    r.days_since_report>=999 ? 'No status report filed'
+      : `Last report ${r.days_since_report} day(s) ago (>7d threshold)`,
+    r.issues_no_owner>0  ? `${r.issues_no_owner} issue(s) missing owner` : '',
+    r.issues_no_plan>0   ? `${r.issues_no_plan} issue(s) missing resolution plan` : '',
+    r.miles_total===0    ? 'No milestones defined' : '',
+    r.miles_overdue>0    ? `${r.miles_overdue} milestone(s) past their LE date` : '',
+    r.actions_no_date>0  ? `${r.actions_no_date} action(s) missing a due date` : '',
+    (!r.okr||!r.okr.trim()) ? 'OKR field not populated' : '',
+    (!r.service_maturity||!r.service_maturity.trim()) ? 'Service Maturity not populated' : '',
+  ][i] || '';
+}
+
+// ── FETCH & INIT ─────────────────────────────────────────────────────────────
+async function init() {
+  document.getElementById('loader').classList.remove('hidden');
+  document.getElementById('error-state').classList.remove('visible');
+  document.getElementById('app').classList.remove('visible');
+
+  const btn = document.getElementById('refresh-btn');
+  btn.classList.add('spinning');
+
+  // Not running via HTTP — show file-upload fallback
+  if (!DATA_URL) {
+    document.getElementById('loader').classList.add('hidden');
+    showFilePrompt();
+    btn.classList.remove('spinning');
+    return;
+  }
+
+  document.getElementById('loader-msg').textContent =
+    'Fetching ' + DATA_URL.split('/').pop() + '...';
+
+  try {
+    const res = await fetch(DATA_URL + '?t=' + Date.now());
+    if (!res.ok) throw new Error('HTTP ' + res.status + ' - ' + res.statusText);
+
+    document.getElementById('loader-msg').textContent = 'Transforming records...';
+    const raw = await res.json();
+
+    document.getElementById('loader-msg').textContent = 'Scoring compliance rules...';
+    await new Promise(r => setTimeout(r, 60));
+
+    loadFromRaw(raw);
+
+  } catch (err) {
+    document.getElementById('loader').classList.add('hidden');
+    const es = document.getElementById('error-state');
+    es.classList.add('visible');
+    document.getElementById('err-msg').innerHTML =
+      'Could not fetch <code>' + DATA_URL + '</code>.<br><br>' +
+      'Check that:<br>' +
+      '1. You started the server from the <strong>repo root</strong> with <code>npx serve .</code><br>' +
+      '2. The file <code>data/pmo_data.json</code> exists in your repo<br>' +
+      '3. You are visiting <code>http://localhost:3000/dashboard/</code> (not opening the HTML directly)';
+    document.getElementById('err-hint').textContent = 'Error: ' + err.message;
+    console.error('[PMO Dashboard] Load error:', err);
+  }
+  btn.classList.remove('spinning');
+}
+
+// Shared: process raw JSON and render
+function loadFromRaw(raw) {
+  const result = transformData(raw);
+  RECORDS    = result.records;
+  MILESTONES = result.milestones;
+  buildUI(result.generated_at);
+  document.getElementById('loader').classList.add('hidden');
+  document.getElementById('error-state').classList.remove('visible');
+  document.getElementById('app').classList.add('visible');
+  const fp = document.getElementById('file-prompt');
+  if (fp) fp.style.display = 'none';
+}
+
+// File-upload fallback (for file:// or direct open)
+function showFilePrompt() {
+  if (!document.getElementById('file-prompt')) {
+    const div = document.createElement('div');
+    div.id = 'file-prompt';
+    div.style.cssText =
+      'position:fixed;inset:0;background:#0f2518;display:flex;flex-direction:column;' +
+      'align-items:center;justify-content:center;gap:20px;z-index:998;padding:32px;text-align:center';
+    div.innerHTML =
+      '<div style="font-size:13px;font-weight:700;letter-spacing:3px;color:#fff;opacity:.5">CIO PMO</div>' +
+      '<div style="font-size:22px;font-weight:600;color:#fff">Compliance Dashboard</div>' +
+      '<div style="font-size:13px;color:rgba(255,255,255,.6);max-width:460px;line-height:1.7">' +
+        'This dashboard is designed to run via a local web server.<br>' +
+        'To use it now, select your <code style="background:rgba(255,255,255,.1);padding:1px 6px;border-radius:3px">pmo_data.json</code> file directly:' +
+      '</div>' +
+      '<label style="background:#c8390a;color:#fff;padding:10px 24px;border-radius:4px;cursor:pointer;font-size:13px;font-family:inherit">' +
+        'Open pmo_data.json' +
+        '<input type="file" accept=".json" style="display:none" onchange="handleFileUpload(event)">' +
+      '</label>' +
+      '<div style="font-size:11px;color:rgba(255,255,255,.3);max-width:460px;line-height:1.6">' +
+        'For the full live-data experience, run:<br>' +
+        '<code style="background:rgba(255,255,255,.08);padding:4px 10px;border-radius:3px;display:inline-block;margin-top:6px">npx serve .</code>' +
+        ' from the repo root, then open ' +
+        '<code style="background:rgba(255,255,255,.08);padding:4px 10px;border-radius:3px;display:inline-block;margin-top:4px">http://localhost:3000/dashboard/</code>' +
+      '</div>';
+    document.body.appendChild(div);
+  } else {
+    document.getElementById('file-prompt').style.display = 'flex';
+  }
+}
+
+function handleFileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  document.getElementById('loader').classList.remove('hidden');
+  document.getElementById('loader-msg').textContent = 'Reading ' + file.name + '...';
+  const fp = document.getElementById('file-prompt');
+  if (fp) fp.style.display = 'none';
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const raw = JSON.parse(e.target.result);
+      loadFromRaw(raw);
+    } catch(err) {
+      document.getElementById('loader').classList.add('hidden');
+      if (fp) fp.style.display = 'flex';
+      alert('Could not parse JSON: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ── BUILD UI (runs after data loaded) ────────────────────────────────────────
+function buildUI(generated_at) {
+  const all    = RECORDS.map(r => ({ r, s: scoreRecord(r) }));
+  const nc     = all.filter(x => x.s.pct < 60).length;
+  const partial= all.filter(x => x.s.pct >= 60 && x.s.pct < 80).length;
+  const ok     = all.filter(x => x.s.pct >= 80).length;
+  const avg    = Math.round(all.reduce((a,x) => a + x.s.pct, 0) / all.length);
+  const projs  = RECORDS.filter(r => r.type === 'project').length;
+  const progs  = RECORDS.filter(r => r.type === 'program').length;
+  const projPct= Math.round(all.filter(x=>x.r.type==='project'&&x.s.pct>=80).length/Math.max(1,projs)*100);
+  const progPct= Math.round(all.filter(x=>x.r.type==='program'&&x.s.pct>=80).length/Math.max(1,progs)*100);
+
+  // Scorecard
+  document.getElementById('scorecard').innerHTML = `
+    <div class="sc-cell"><div class="sc-val">${RECORDS.length}</div><div class="sc-lbl">Total Records</div></div>
+    <div class="sc-cell"><div class="sc-val v-blue">${projs}/${progs}</div><div class="sc-lbl">Projects/Programs</div></div>
+    <div class="sc-cell"><div class="sc-val v-red">${nc}</div><div class="sc-lbl">Non-Compliant</div></div>
+    <div class="sc-cell"><div class="sc-val v-amber">${partial}</div><div class="sc-lbl">Partial</div></div>
+    <div class="sc-cell"><div class="sc-val v-green">${ok}</div><div class="sc-lbl">Compliant</div></div>
+    <div class="sc-cell"><div class="sc-val v-${scClass(avg)}">${avg}%</div><div class="sc-lbl">Avg Score</div></div>
+    <div class="sc-cell"><div class="sc-val v-green">${projPct}%</div><div class="sc-lbl">Projects ≥80%</div></div>
+    <div class="sc-cell"><div class="sc-val v-green">${progPct}%</div><div class="sc-lbl">Programs ≥80%</div></div>`;
+
+  // Tab counts
+  document.getElementById('cnt-all').textContent   = RECORDS.length;
+  document.getElementById('cnt-nc').textContent    = nc;
+  document.getElementById('cnt-miles').textContent = MILESTONES.length;
+
+  // Header snapshot
+  let snapText = 'Critical tier only';
+  if (generated_at) {
+    const d = new Date(generated_at.substring(0,10));
+    snapText = d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) + ' snapshot';
+  }
+  document.getElementById('hdr-snap').textContent = snapText;
+
+  // Pillar dropdown
+  const pillars = [...new Set(RECORDS.map(r=>r.pillar).filter(p=>p&&p.trim()))].sort();
+  const sel = document.getElementById('pillar-select');
+  sel.innerHTML = '<option value="all">All Pillars</option>' +
+    pillars.map(p => `<option value="${p}">${p.replace('CIO \u2013 ','')}</option>`).join('');
+  sel.value = fPillar;
+
+  // Legend
+  document.getElementById('legend-block').innerHTML = `
+    <div class="legend-title">Compliance Rules</div>
+    <div class="legend-grid">
+      ${RULES.map(r=>`<div class="legend-item"><span class="legend-num">${r.id}</span>
+        <div><span class="legend-label">${r.label}</span><span class="legend-desc">${r.desc}</span></div>
+      </div>`).join('')}
+    </div>
+    <div class="legend-thr">
+      <span class="thr-lbl">Thresholds:</span>
+      <span style="color:#1a5c1e;font-weight:600">■ Compliant ≥80%</span>
+      <span style="color:#c07020;font-weight:600">■ Partial 60–79%</span>
+      <span style="color:#d64000;font-weight:600">■ Non-Compliant &lt;60%</span>
+    </div>`;
+
+  // Footer
+  document.getElementById('footer-stamp').textContent =
+    `${snapText} · ${RECORDS.length} records (${projs} projects, ${progs} programs) · 10 compliance rules · Critical tier`;
+
+  renderAll();
+}
+
+// ── FILTERING ────────────────────────────────────────────────────────────────
+function getFiltered() {
+  const q = (document.getElementById('search-box').value || '').toLowerCase();
+  return RECORDS.map(r => ({ r, s: scoreRecord(r) })).filter(({ r, s }) => {
+    if (fType === 'project' && r.type !== 'project') return false;
+    if (fType === 'program' && r.type !== 'program') return false;
+    if (fStatus === 'nc'      && s.pct >= 60)              return false;
+    if (fStatus === 'partial' && (s.pct<60||s.pct>=80))    return false;
+    if (fStatus === 'ok'      && s.pct < 80)               return false;
+    if (fPillar !== 'all'     && r.pillar !== fPillar)      return false;
+    if (q && !r.name.toLowerCase().includes(q) && !r.pm.toLowerCase().includes(q)) return false;
+    return true;
+  });
+}
+
+// ── RENDER ───────────────────────────────────────────────────────────────────
+function renderAll() {
+  renderCurrent();
+  renderViolations();
+  renderMilestones();
+  renderAnalytics();
+}
+
+function renderCurrent() {
+  const filtered = getFiltered();
+  if (activeTab === 'all') renderTable('tbody-all', filtered, 'count-all', RECORDS.length);
+  else if (activeTab === 'nc') renderTable('tbody-nc', filtered.filter(x=>x.s.pct<60), null, null);
+}
+
+function renderTable(tbodyId, rows, countId, total) {
+  const tb = document.getElementById(tbodyId);
+  if (!rows.length) {
+    tb.innerHTML = `<tr><td colspan="15"><div class="empty">No records match the current filters.</div></td></tr>`;
+  } else {
+    tb.innerHTML = rows.map(({r, s}, i) => {
+      const scc = scClass(s.pct);
+      const fillCls = scc==='g'?'fill-g':scc==='a'?'fill-a':'fill-r';
+      const pctCls  = scc==='g'?'pct-g':scc==='a'?'pct-a':'pct-r';
+      return `<tr onclick="showModal('${r.id}')">
+        <td class="td-num">${i+1}</td>
+        <td>${r.type==='program'?'<span class="badge-prog">PROG</span>':'<span class="badge-proj">PROJ</span>'}</td>
+        <td><div style="display:flex;align-items:center;gap:6px">
+          <span class="rag-dot ${ragDotClass(r.rag)}"></span>
+          <span class="td-name" title="${r.name}">${r.name}</span>
+        </div></td>
+        <td class="td-pm" title="${r.pm}">${r.pm}</td>
+        <td><div class="sb-wrap">
+          <div class="sb-track"><div class="sb-fill ${fillCls}" style="width:${s.pct}%"></div></div>
+          <span class="pct ${pctCls}">${s.pct}%</span>
+        </div></td>
+        ${s.passes.map(p=>`<td class="${p?'r-pass':'r-fail'}">${p?'✓':'✗'}</td>`).join('')}
+      </tr>`;
+    }).join('');
+  }
+  if (countId) {
+    document.getElementById(countId).textContent =
+      `${rows.length} of ${total} records shown`;
+  }
+}
+
+function renderViolations() {
+  const scored = RECORDS.map(r => ({ r, s: scoreRecord(r) }));
+  let html = '';
+  RULES.forEach((rule, ri) => {
+    const failing = scored.filter(x => !x.s.passes[ri]).map(x => x.r);
+    html += `<div class="vi-group">
+      <div class="vi-hd">
+        <span style="background:#0f2518;color:#fff;border-radius:3px;padding:1px 6px;font-family:monospace;font-size:9px;font-weight:700">${rule.id}</span>
+        <span style="font-size:11px;font-weight:600;color:#1a1a18">${rule.label}</span>
+        ${failing.length===0
+          ? '<span style="color:#22c55e;font-size:11px">✓ All compliant</span>'
+          : `<span style="color:#ef4444;font-size:11px">${failing.length} failing</span>`}
+      </div>`;
+    failing.forEach((r, i) => {
+      const det = ruleDetail(r, ri);
+      html += `<div class="vi-row">
+        <span class="vi-num">${i+1}</span>
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:6px">
+            ${r.type==='program'?'<span class="badge-prog" style="font-size:8px">PROG</span>':'<span class="badge-proj" style="font-size:8px">PROJ</span>'}
+            <span class="vi-name">${r.name}</span>
+          </div>
+          <div class="vi-pm">${r.pm}</div>
+          ${det?`<div class="vi-badges"><span class="vi-badge">${det}</span></div>`:''}
+        </div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+  document.getElementById('violations-body').innerHTML = html;
+}
+
+function renderMilestones() {
+  const sorted = [...MILESTONES].sort((a,b) => b.variance - a.variance);
+  document.getElementById('tbody-miles').innerHTML = sorted.map((m, i) => {
+    const vc = m.variance>60?'pct-r':m.variance>30?'pct-a':'pct-g';
+    const sc = m.status==='Delayed'?'#ef4444':m.status==='In Progress'?'#f59e0b':'#9ca3af';
+    return `<tr>
+      <td class="td-num">${i+1}</td>
+      <td><div style="display:flex;align-items:center;gap:5px">
+        <span class="rag-dot ${ragDotClass(m.rag)}"></span>
+        <span style="font-weight:500">${m.project}</span>
+      </div></td>
+      <td style="color:#6b7280">${m.name}</td>
+      <td style="font-family:monospace;font-size:10px;color:#6b7280">${m.end}</td>
+      <td><span style="color:${sc};font-weight:600">${m.status}</span></td>
+      <td><span class="pct ${vc}" style="font-weight:700">+${m.variance}d</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderAnalytics() {
+  const scored = RECORDS.map(r => ({ r, s: scoreRecord(r) }));
+  const rulePass = RULES.map((rule, ri) => ({
+    id: rule.id,
+    pct: Math.round(scored.filter(x => x.s.passes[ri]).length / scored.length * 100)
+  }));
+  const pillars = [...new Set(RECORDS.map(r=>r.pillar).filter(p=>p&&p.trim()))].sort();
+  const pillarData = pillars.map(p => {
+    const recs = scored.filter(x => x.r.pillar === p);
+    if (!recs.length) return null;
+    return {
+      p: p.replace('CIO \u2013 ',''),
+      full: p,
+      avg: Math.round(recs.reduce((a,x)=>a+x.s.pct,0)/recs.length),
+      n: recs.length
+    };
+  }).filter(Boolean).sort((a,b)=>a.avg-b.avg);
+
+  const nc      = scored.filter(x=>x.s.pct<60).length;
+  const partial = scored.filter(x=>x.s.pct>=60&&x.s.pct<80).length;
+  const ok      = scored.filter(x=>x.s.pct>=80).length;
+  const maxBkt  = Math.max(nc,partial,ok);
+  const worst   = scored.filter(x=>x.s.pct<80).sort((a,b)=>a.s.pct-b.s.pct).slice(0,10);
+
+  const ruleBars = rulePass.map(({id,pct})=>{
+    const fc=pct>=80?'fill-g':pct>=60?'fill-a':'fill-r';
+    const pc=pct>=80?'pct-g':pct>=60?'pct-a':'pct-r';
+    return `<div class="an-bar-row">
+      <span class="an-bar-lbl">${id}</span>
+      <div class="an-track"><div class="an-fill ${fc}" style="width:${pct}%"></div></div>
+      <span class="pct ${pc}" style="font-size:11px;font-weight:700">${pct}%</span>
+    </div>`;
+  }).join('');
+
+  const pillarBars = pillarData.map(({p,full,avg,n})=>{
+    const fc=avg>=80?'fill-g':avg>=60?'fill-a':'fill-r';
+    const pc=avg>=80?'pct-g':avg>=60?'pct-a':'pct-r';
+    return `<div class="an-bar-row">
+      <span class="an-bar-lbl-long" title="${full}">${p}</span>
+      <div class="an-track"><div class="an-fill ${fc}" style="width:${avg}%"></div></div>
+      <span class="pct ${pc}" style="font-size:10px;font-weight:700">${avg}%</span>
+      <span style="font-size:9px;color:#9ca3af">(${n})</span>
+    </div>`;
+  }).join('');
+
+  const distCols = [
+    {label:'<60%\nNon-Compliant', count:nc,      cls:'fill-r', pCls:'pct-r'},
+    {label:'60–79%\nPartial',     count:partial,  cls:'fill-a', pCls:'pct-a'},
+    {label:'≥80%\nCompliant',     count:ok,       cls:'fill-g', pCls:'pct-g'},
+  ].map(({label,count,cls,pCls})=>{
+    const h = Math.round(count/maxBkt*100);
+    return `<div class="dist-col">
+      <span class="pct ${pCls}" style="font-size:14px;font-weight:700">${count}</span>
+      <div class="dist-bar ${cls}" style="height:${h}px"></div>
+      <span class="dist-lbl">${label}</span>
+    </div>`;
+  }).join('');
+
+  const bottom10 = worst.map(({r,s})=>{
+    const scc=scClass(s.pct);
+    const fc=scc==='g'?'fill-g':scc==='a'?'fill-a':'fill-r';
+    const pc=scc==='g'?'pct-g':scc==='a'?'pct-a':'pct-r';
+    return `<div class="bottom10-row" onclick="showModal('${r.id}')">
+      <span class="td-name" style="min-width:120px" title="${r.name}">${r.name}</span>
+      <div class="sb-track" style="flex:1;height:5px"><div class="sb-fill ${fc}" style="width:${s.pct}%"></div></div>
+      <span class="pct ${pc}" style="font-size:10px;font-weight:700">${s.pct}%</span>
+    </div>`;
+  }).join('');
+
+  document.getElementById('tab-analytics').innerHTML = `
+    <div class="analytics-grid">
+      <div class="an-card">
+        <div class="an-title">Rule compliance pass rate</div>
+        <div class="an-bars">${ruleBars}</div>
+      </div>
+      <div class="an-card">
+        <div class="an-title">Pillar average compliance</div>
+        <div class="an-bars" style="max-height:280px;overflow-y:auto">${pillarBars}</div>
+      </div>
+    </div>
+    <div class="analytics-grid">
+      <div class="an-card">
+        <div class="an-title">Compliance distribution — ${RECORDS.length} records</div>
+        <div class="dist-wrap">${distCols}</div>
+      </div>
+      <div class="an-card">
+        <div class="an-title">Bottom 10 — click to view detail</div>
+        <div style="display:grid;row-gap:5px">${bottom10}</div>
+      </div>
+    </div>`;
+}
+
+// ── TAB & FILTER CONTROLS ────────────────────────────────────────────────────
+function setTab(name, btn) {
+  activeTab = name;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('on'));
+  if (btn) btn.classList.add('on');
+  ['all','nc','violations','milestones','analytics'].forEach(t => {
+    const el = document.getElementById('tab-' + t);
+    if (el) el.style.display = (t === name ? 'block' : 'none');
+  });
+  if (name === 'all' || name === 'nc') renderCurrent();
+}
+
+function setF(group, val, btn) {
+  if (group === 'type')   fType   = val;
+  if (group === 'status') fStatus = val;
+  if (group === 'pillar') fPillar = val;
+
+  // Update button states for type and status groups
+  if (group === 'type' || group === 'status') {
+    const groupBtns = document.querySelectorAll(`.btn-f[onclick*="'${group}'"]`);
+    groupBtns.forEach(b => {
+      b.classList.remove('on','on-a','on-g');
+    });
+    if (btn) {
+      if (val === 'nc' || val === 'partial') btn.classList.add('on-a');
+      else if (val === 'ok')                 btn.classList.add('on-g');
+      else                                   btn.classList.add('on');
+    }
+  }
+  renderCurrent();
+}
+
+// ── MODAL ────────────────────────────────────────────────────────────────────
+function showModal(id) {
+  const r = RECORDS.find(x => x.id === id);
+  if (!r) return;
+  const { passes, pct } = scoreRecord(r);
+  const scc = scClass(pct);
+
+  document.getElementById('modal-type-badge').innerHTML =
+    r.type === 'program'
+      ? '<span class="badge-prog">PROGRAM</span>'
+      : '<span class="badge-proj">PROJECT</span>';
+  document.getElementById('modal-title').textContent = r.name;
+
+  const pctEl = document.getElementById('modal-pct');
+  pctEl.textContent = `${pct}% · ${scLabel(pct)}`;
+  pctEl.className = 'modal-pct mpct-' + scc;
+
+  document.getElementById('modal-meta').innerHTML =
+    `<strong>${r.id}</strong> &nbsp;·&nbsp; PM: <strong>${r.pm}</strong> &nbsp;·&nbsp;
+     RAG: <strong>${r.rag}</strong> &nbsp;·&nbsp;
+     Risks: <strong>${r.risks_total}</strong> &nbsp;·&nbsp;
+     Actions: <strong>${r.actions_total}</strong> &nbsp;·&nbsp;
+     Issues: <strong>${r.issues_total}</strong> &nbsp;·&nbsp;
+     Milestones: <strong>${r.miles_total}</strong>
+     ${r.pillar ? `&nbsp;·&nbsp; Pillar: <strong>${r.pillar.replace('CIO \u2013 ','')}</strong>` : ''}`;
+
+  document.getElementById('modal-rules').innerHTML = RULES.map((rule, i) => {
+    const p = passes[i];
+    const det = p ? '' : ruleDetail(r, i);
+    return `<div class="mrule ${p?'pass':'fail'}">
+      <div class="mrule-icon">${p?'✓':'✗'}</div>
+      <div>
+        <div class="mrule-lbl"><span class="mrule-id">${rule.id}</span>${rule.label}</div>
+        ${!p && det ? `<div class="mrule-desc">${det}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('modal-overlay').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDetailModal() {
+  document.getElementById('modal-overlay').style.display = 'none';
+  document.body.style.overflow = '';
+}
+function closeModal(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeDetailModal();
+}
+
+// ── BOOT ─────────────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
