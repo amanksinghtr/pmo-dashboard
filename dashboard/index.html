@@ -327,7 +327,7 @@ footer{text-align:center;padding:12px 20px;color:#9ca3af;font-size:9px;font-fami
 </div>
 
 <!-- ── MODAL ── -->
-<div id="modal-overlay" style="display:none" onclick="closeModal(event)">
+<div id="modal-overlay" class="modal-bg" style="display:none" onclick="closeModal(event)">
   <div class="modal-box" onclick="event.stopPropagation()">
     <div class="modal-hdr">
       <div class="modal-hdr-l">
@@ -986,7 +986,8 @@ function showModal(id) {
 }
 
 function closeDetailModal() {
-  document.getElementById('modal-overlay').style.display = 'none';
+  const ov = document.getElementById('modal-overlay');
+  ov.style.display = 'none';
   document.body.style.overflow = '';
 }
 function closeModal(e) {
