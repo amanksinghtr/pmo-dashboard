@@ -1,8 +1,14 @@
 """
-PMO Partner API - JSON Extractor (v10 - Proper program linkage)
+PMO Partner API - JSON Extractor (v11 - Fix R8 due-date field)
 - Filtered to Critical tiering only
 - Uses /programs/{id}/projects to build project → program linkage cleanly
 - Removes the non-existent program_id field on projects
+- FIX (v11): Action due-date is stored as 'target_date' in the API response,
+  NOT 'due_date'. The dashboard R8 rule (Actions have due dates) was reading
+  a.get('due_date') which always returned None, causing every action to be
+  counted as missing a date regardless of its actual value. Fixed in
+  build_entity() by normalising the field to 'due_date' on output so the
+  dashboard contract stays stable, and the correct source field is read.
 Run with: python "PMO Partner API - JSON Extractor.py"
 """
 
@@ -115,7 +121,17 @@ def fetch_raaid(pid, entity_type, headers):
         try:
             data = get(f"{base}/{category}", headers)
             items = data.get("data", data) if isinstance(data, dict) else data
-            result[category] = items or []
+            items = items or []
+            # ── R8 FIX ──────────────────────────────────────────────────────
+            # The API returns action due-dates under the key 'target_date',
+            # not 'due_date'. Normalise here so the rest of the pipeline
+            # (dashboard scoring rule R8) can safely call a.get('due_date').
+            if category == "actions":
+                for action in items:
+                    if "due_date" not in action:
+                        action["due_date"] = action.get("target_date") or None
+            # ────────────────────────────────────────────────────────────────
+            result[category] = items
         except Exception as e:
             print(f"  Warning: {category} for {pid}: {e}")
             result[category] = []
