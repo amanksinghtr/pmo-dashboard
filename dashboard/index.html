@@ -4,1012 +4,441 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PMO Compliance Dashboard</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0ede6;color:#1a1a18;font-size:13px;line-height:1.5}
-
-/* ── LOADING & ERROR STATES ── */
-#loader{position:fixed;inset:0;background:#0f2518;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:20px}
-#loader.hidden{display:none}
-.loader-logo{font-size:13px;font-weight:700;letter-spacing:3px;color:#fff;opacity:.6}
-.loader-title{font-size:22px;font-weight:600;color:#fff}
-.loader-bar-wrap{width:260px;height:3px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden}
-.loader-bar{height:100%;background:#c8390a;border-radius:2px;animation:loadpulse 1.4s ease-in-out infinite}
-@keyframes loadpulse{0%{width:0%;opacity:1}70%{width:85%}100%{width:100%;opacity:.4}}
-.loader-msg{font-size:11px;color:rgba(255,255,255,.5);letter-spacing:.5px}
-
-#error-state{display:none;position:fixed;inset:0;background:#0f2518;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:16px;padding:32px;text-align:center}
-#error-state.visible{display:flex}
-.err-icon{font-size:40px}
-.err-title{font-size:20px;font-weight:600;color:#fff}
-.err-msg{font-size:13px;color:rgba(255,255,255,.6);max-width:480px;line-height:1.6}
-.err-hint{font-size:11px;color:rgba(255,255,255,.35);font-family:monospace;background:rgba(255,255,255,.05);padding:10px 16px;border-radius:4px;max-width:480px;word-break:break-all}
-.err-retry{margin-top:8px;background:#c8390a;color:#fff;border:none;padding:8px 20px;border-radius:4px;font-size:12px;cursor:pointer;font-family:inherit}
-.err-retry:hover{background:#a82e08}
-
-/* ── LAYOUT ── */
-#app{display:none}
-#app.visible{display:block}
-
-/* ── HEADER ── */
-.hdr{background:#0f2518;border-bottom:2px solid #c8390a;padding:0 20px;height:50px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
-.hdr-l{display:flex;align-items:center;gap:12px}
-.brand{font-size:11px;font-weight:700;letter-spacing:2px;color:#fff}
-.hdr-sep{width:1px;height:18px;background:#c8390a;opacity:.6}
-.hdr-title{font-size:11px;color:#e8d9c0;letter-spacing:.5px}
-.hdr-r{display:flex;align-items:center;gap:10px}
-.hdr-snap{font-size:10px;color:#b0c4b1;font-family:monospace}
-.hdr-badge{background:#c8390a;color:#fff;padding:2px 8px;border-radius:3px;font-size:9px;font-weight:700;letter-spacing:1px}
-.hdr-refresh{background:transparent;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.6);padding:3px 10px;border-radius:3px;font-size:10px;cursor:pointer;font-family:inherit;transition:all .15s}
-.hdr-refresh:hover{border-color:#c8390a;color:#fff}
-.hdr-refresh.spinning{opacity:.5;pointer-events:none}
-
-/* ── SCORECARD ── */
-.scorecard{display:grid;grid-template-columns:repeat(8,1fr);gap:1px;background:#d4c9b8}
-.sc-cell{background:#fff;padding:12px 14px;text-align:center}
-.sc-val{font-size:22px;font-weight:700;line-height:1}
-.sc-lbl{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-top:4px}
-.v-red{color:#d64000}.v-amber{color:#c07020}.v-green{color:#1a5c1e}.v-blue{color:#1060c8}
-
-/* ── TABS ── */
-.tabs{background:#fff;border-bottom:1px solid #e5e1d8;padding:0 20px;display:flex;position:sticky;top:50px;z-index:100}
-.tab-btn{background:transparent;border:none;border-bottom:2px solid transparent;color:#6b7280;padding:10px 14px;cursor:pointer;font-size:11px;font-family:inherit;white-space:nowrap;transition:all .15s}
-.tab-btn:hover{color:#1a1a18}
-.tab-btn.on{color:#c8390a;border-bottom-color:#c8390a;font-weight:600}
-.tc{background:#e5e1d8;color:#6b7280;border-radius:10px;padding:1px 6px;font-size:9px;margin-left:4px}
-.tc.red{background:#fde8e0;color:#c8390a}
-
-/* ── TOOLBAR ── */
-.toolbar{background:#fff;border-bottom:1px solid #e5e1d8;padding:8px 20px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.tb-lbl{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#9ca3af}
-.btn-f{background:transparent;border:1px solid #d4c9b8;color:#6b7280;padding:3px 10px;border-radius:3px;cursor:pointer;font-size:10px;font-family:inherit;transition:all .12s}
-.btn-f:hover{border-color:#c8390a;color:#c8390a}
-.btn-f.on{background:#fde8e0;border-color:#c8390a;color:#c8390a}
-.btn-f.on-a{background:#fef0e0;border-color:#c07020;color:#c07020}
-.btn-f.on-g{background:#e0f4e2;border-color:#1a5c1e;color:#1a5c1e}
-.tb-search{margin-left:auto;background:#f5f5f0;border:1px solid #d4c9b8;color:#1a1a18;padding:4px 10px;border-radius:3px;font-size:11px;font-family:inherit;width:190px}
-.tb-search:focus{outline:none;border-color:#c8390a}
-.tb-search::placeholder{color:#9ca3af}
-.tb-select{background:#f5f5f0;border:1px solid #d4c9b8;color:#1a1a18;padding:3px 8px;border-radius:3px;font-size:11px;font-family:inherit;cursor:pointer;max-width:190px}
-.tb-select:focus{outline:none;border-color:#c8390a}
-
-/* ── MAIN ── */
-.main{padding:16px 20px}
-
-/* ── TABLE ── */
-.tbl-wrap{background:#fff;border:1px solid #e5e1d8;border-radius:5px;overflow:auto;max-height:calc(100vh - 260px)}
-table{width:100%;border-collapse:collapse;table-layout:fixed}
-.tbl-wrap table{min-width:900px}
-thead th{background:#f5f5f0;color:#6b7280;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:8px 10px;text-align:left;border-bottom:2px solid #e5e1d8;white-space:nowrap;position:sticky;top:0;z-index:5}
-tbody tr{border-bottom:1px solid #f0ede6;transition:background .1s;cursor:pointer}
-tbody tr:hover{background:#fef9f0}
-tbody tr:last-child{border-bottom:none}
-td{padding:7px 10px;vertical-align:middle}
-.td-num{color:#9ca3af;font-family:monospace;font-size:9px}
-.td-name{font-weight:500;color:#1a1a18;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.td-pm{color:#6b7280;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px}
-
-/* ── SCORE BAR ── */
-.sb-wrap{display:flex;align-items:center;gap:6px;min-width:100px}
-.sb-track{flex:1;height:5px;background:#e5e1d8;border-radius:3px;overflow:hidden}
-.sb-fill{height:100%;border-radius:3px}
-.fill-r{background:#d64000}.fill-a{background:#c07020}.fill-g{background:#1a5c1e}
-.pct{font-size:10px;font-family:monospace;min-width:28px;text-align:right}
-.pct-r{color:#d64000}.pct-a{color:#c07020}.pct-g{color:#1a5c1e}
-
-/* ── RULE CELLS ── */
-.r-pass{color:#22c55e;font-size:12px;text-align:center}
-.r-fail{color:#ef4444;font-size:12px;text-align:center}
-
-/* ── BADGES ── */
-.badge-proj{background:#dbeafe;color:#1e40af;border:none;border-radius:3px;padding:1px 6px;font-size:9px;font-weight:700}
-.badge-prog{background:#fef3c7;color:#92400e;border:none;border-radius:3px;padding:1px 6px;font-size:9px;font-weight:700}
-.rag-dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
-.rag-r{background:#d64000}.rag-a{background:#c07020}.rag-g{background:#1a5c1e}.rag-b{background:#1060c8}
-
-/* ── EMPTY ── */
-.empty{text-align:center;padding:40px;color:#9ca3af;font-size:12px}
-
-/* ── MODAL ── */
-.modal-bg{position:fixed;inset:0;background:rgba(15,37,24,.55);z-index:500;display:flex;align-items:center;justify-content:center}
-.modal-box{background:#fff;border-radius:6px;width:660px;max-width:94vw;max-height:88vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(15,37,24,.3)}
-.modal-hdr{background:#0f2518;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.modal-hdr-l{display:flex;align-items:center;gap:8px}
-.modal-ttl{font-size:13px;font-weight:600;color:#fff;max-width:420px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.modal-pct{font-family:monospace;font-size:11px;font-weight:700;padding:2px 7px;border-radius:3px}
-.mpct-g{background:#e0f4e2;color:#1a5c1e}.mpct-a{background:#fef0e0;color:#c07020}.mpct-r{background:#fde8e0;color:#d64000}
-.modal-cls{background:transparent;border:none;color:rgba(255,255,255,.55);cursor:pointer;font-size:18px;padding:0 4px;line-height:1}
-.modal-cls:hover{color:#fff}
-.modal-meta{padding:10px 18px;background:#f5f5f0;border-bottom:1px solid #e5e1d8;font-size:11px;color:#6b7280;flex-shrink:0}
-.modal-meta strong{color:#1a1a18}
-.modal-body{padding:16px 18px;overflow-y:auto}
-.modal-rules{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.mrule{padding:10px 12px;border-radius:4px;display:flex;align-items:flex-start;gap:8px}
-.mrule.pass{background:#e0f4e2;border:1px solid #6fbf75}
-.mrule.fail{background:#fde8e0;border:1px solid #e08060}
-.mrule-icon{font-size:14px;flex-shrink:0;margin-top:1px}
-.mrule.pass .mrule-icon{color:#1a5c1e}
-.mrule.fail .mrule-icon{color:#d64000}
-.mrule-lbl{font-size:11px;font-weight:600}
-.mrule.pass .mrule-lbl{color:#1a5c1e}
-.mrule.fail .mrule-lbl{color:#d64000}
-.mrule-id{font-family:monospace;font-size:9px;opacity:.65;margin-right:3px}
-.mrule-desc{font-size:10px;color:#6b7280;margin-top:2px;line-height:1.4}
-
-/* ── VIOLATIONS TAB ── */
-.vi-group{margin-bottom:16px}
-.vi-hd{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:#6b7280;padding:6px 0;border-bottom:1px solid #e5e1d8;margin-bottom:8px;display:flex;align-items:center;gap:8px}
-.vi-row{display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:1px solid #f5f2ec}
-.vi-row:last-child{border-bottom:none}
-.vi-num{font-size:9px;color:#9ca3af;font-family:monospace;min-width:22px;padding-top:2px}
-.vi-name{font-weight:600;font-size:11px;color:#1a1a18}
-.vi-pm{font-size:10px;color:#6b7280}
-.vi-badges{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px}
-.vi-badge{padding:1px 6px;border-radius:3px;font-size:9px;font-weight:600;background:#fde8e0;color:#c8390a;border:1px solid #c8390a}
-
-/* ── ANALYTICS ── */
-.analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
-.an-card{background:#fff;border:1px solid #e5e1d8;border-radius:4px;padding:12px 14px}
-.an-title{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:10px;font-weight:700}
-.an-bars{display:grid;row-gap:6px}
-.an-bar-row{display:flex;align-items:center;gap:8px}
-.an-bar-lbl{font-size:9px;color:#6b7280;font-family:monospace;font-weight:700;min-width:22px}
-.an-bar-lbl-long{font-size:9px;color:#6b7280;min-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.an-track{flex:1;height:8px;background:#e5e1d8;border-radius:3px;overflow:hidden}
-.an-fill{height:100%;border-radius:3px}
-.dist-wrap{display:flex;gap:16px;align-items:flex-end;height:130px;padding-bottom:22px}
-.dist-col{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
-.dist-bar{width:100%;border-radius:3px 3px 0 0;min-height:4px}
-.dist-lbl{font-size:9px;color:#6b7280;text-align:center;white-space:pre-line;line-height:1.3}
-.bottom10-row{display:flex;align-items:center;gap:6px;cursor:pointer;padding:2px 0}
-.bottom10-row:hover .td-name{text-decoration:underline}
-
-/* ── LEGEND ── */
-.legend{margin:0 0 16px;background:#fff;border:1px solid #e5e1d8;border-radius:4px;padding:14px 16px}
-.legend-title{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:#6b7280;margin-bottom:10px;font-weight:700}
-.legend-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
-.legend-item{display:flex;align-items:flex-start;gap:8px;padding:6px 8px;background:#f5f5f0;border-radius:3px;border:1px solid #e5e1d8}
-.legend-num{background:#0f2518;color:#fff;border-radius:3px;padding:1px 6px;font-size:10px;font-weight:700;font-family:monospace;white-space:nowrap;align-self:flex-start;margin-top:1px}
-.legend-label{font-size:10px;font-weight:600;color:#1a1a18}
-.legend-desc{font-size:9px;color:#6b7280;margin-top:2px;line-height:1.4}
-.legend-thr{display:flex;align-items:center;gap:14px;padding-top:10px;border-top:1px solid #e5e1d8;font-size:10px}
-.thr-lbl{color:#9ca3af;font-size:9px;text-transform:uppercase;letter-spacing:.5px}
-
-/* ── FOOTER ── */
-footer{text-align:center;padding:12px 20px;color:#9ca3af;font-size:9px;font-family:monospace;border-top:1px solid #e5e1d8;background:#fff}
-
-/* ── MILESTONES ── */
-.mile-tbl td{font-size:11px}
-</style>
 </head>
 <body>
 
-<!-- ── LOADING OVERLAY ── -->
-<div id="loader">
-  <div class="loader-logo">CIO PMO</div>
-  <div class="loader-title">Compliance Dashboard</div>
-  <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
-  <div class="loader-msg" id="loader-msg">Loading data…</div>
-</div>
-
-<!-- ── ERROR OVERLAY ── -->
-<div id="error-state">
-  <div class="err-icon">⚠</div>
-  <div class="err-title">Could not load dashboard data</div>
-  <div class="err-msg" id="err-msg">The dashboard couldn't fetch the data file. Make sure you're serving this file via a web server and that <code>pmo_data.json</code> exists in the <code>../data/</code> folder.</div>
-  <div class="err-hint" id="err-hint"></div>
-  <button class="err-retry" onclick="init()">Try again</button>
-</div>
-
-<!-- ── MAIN APP ── -->
-<div id="app">
-
-  <header class="hdr">
-    <div class="hdr-l">
-      <span class="brand">PMO</span>
-      <div class="hdr-sep"></div>
-      <span class="hdr-title">Compliance Dashboard</span>
-    </div>
-    <div class="hdr-r">
-      <span class="hdr-snap" id="hdr-snap">—</span>
-      <button class="hdr-refresh" id="refresh-btn" onclick="init()">↻ Refresh</button>
-      <span class="hdr-badge">LIVE DATA</span>
-    </div>
-  </header>
-
-  <div class="scorecard" id="scorecard"></div>
-
-  <div class="tabs">
-    <button class="tab-btn on" onclick="setTab('all',this)">All Records <span class="tc" id="cnt-all">0</span></button>
-    <button class="tab-btn" onclick="setTab('nc',this)">Non-Compliant <span class="tc red" id="cnt-nc">0</span></button>
-    <button class="tab-btn" onclick="setTab('violations',this)">Violations by Rule</button>
-    <button class="tab-btn" onclick="setTab('milestones',this)">At-Risk Milestones <span class="tc red" id="cnt-miles">0</span></button>
-    <button class="tab-btn" onclick="setTab('analytics',this)">Analytics</button>
-  </div>
-
-  <div class="toolbar">
-    <span class="tb-lbl">Type:</span>
-    <button class="btn-f on"    onclick="setF('type','all',this)">All</button>
-    <button class="btn-f"       onclick="setF('type','project',this)">Projects</button>
-    <button class="btn-f"       onclick="setF('type','program',this)">Programs</button>
-    <span style="width:8px"></span>
-    <span class="tb-lbl">Compliance:</span>
-    <button class="btn-f on"    onclick="setF('status','all',this)">All</button>
-    <button class="btn-f"       onclick="setF('status','nc',this)">Non-Compliant</button>
-    <button class="btn-f"       onclick="setF('status','partial',this)">Partial</button>
-    <button class="btn-f"       onclick="setF('status','ok',this)">Compliant</button>
-    <span style="width:8px"></span>
-    <select class="tb-select" id="pillar-select" onchange="setF('pillar',this.value)">
-      <option value="all">All Pillars</option>
-    </select>
-    <input class="tb-search" type="text" id="search-box" placeholder="Search name or PM…" oninput="renderCurrent()">
-  </div>
-
-  <div class="main">
-    <div id="tab-all">
-      <div class="tbl-wrap">
-        <table>
-          <colgroup>
-            <col style="width:32px"><col style="width:56px"><col style="width:210px">
-            <col style="width:145px"><col style="width:105px">
-            <col style="width:28px"><col style="width:28px"><col style="width:28px">
-            <col style="width:28px"><col style="width:28px"><col style="width:28px">
-            <col style="width:28px"><col style="width:28px"><col style="width:28px"><col style="width:28px">
-          </colgroup>
-          <thead><tr>
-            <th>#</th><th>Type</th><th>Name</th><th>PM / Owner</th><th>Score</th>
-            <th title="Risks have owners">R1</th>
-            <th title="Risks have mitigation plans">R2</th>
-            <th title="Status report up to date">R3</th>
-            <th title="Issues have owners">R4</th>
-            <th title="Issues have resolution plans">R5</th>
-            <th title="Has milestones">R6</th>
-            <th title="No overdue milestones">R7</th>
-            <th title="Actions have due dates">R8</th>
-            <th title="OKR populated">R9</th>
-            <th title="Service Maturity populated">R10</th>
-          </tr></thead>
-          <tbody id="tbody-all"></tbody>
-        </table>
-      </div>
-      <div id="count-all" style="margin-top:8px;font-size:10px;color:#9ca3af;text-align:right"></div>
-    </div>
-
-    <div id="tab-nc" style="display:none">
-      <div class="tbl-wrap">
-        <table>
-          <colgroup>
-            <col style="width:32px"><col style="width:56px"><col style="width:210px">
-            <col style="width:145px"><col style="width:105px">
-            <col style="width:28px"><col style="width:28px"><col style="width:28px">
-            <col style="width:28px"><col style="width:28px"><col style="width:28px">
-            <col style="width:28px"><col style="width:28px"><col style="width:28px"><col style="width:28px">
-          </colgroup>
-          <thead><tr>
-            <th>#</th><th>Type</th><th>Name</th><th>PM / Owner</th><th>Score</th>
-            <th title="Risks have owners">R1</th><th title="Risks have mitigation plans">R2</th>
-            <th title="Status report up to date">R3</th><th title="Issues have owners">R4</th>
-            <th title="Issues have resolution plans">R5</th><th title="Has milestones">R6</th>
-            <th title="No overdue milestones">R7</th><th title="Actions have due dates">R8</th>
-            <th title="OKR populated">R9</th><th title="Service Maturity populated">R10</th>
-          </tr></thead>
-          <tbody id="tbody-nc"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div id="tab-violations" style="display:none">
-      <div id="violations-body"></div>
-    </div>
-
-    <div id="tab-milestones" style="display:none">
-      <div class="tbl-wrap">
-        <table class="mile-tbl">
-          <colgroup>
-            <col style="width:32px"><col style="width:170px"><col style="width:250px">
-            <col style="width:90px"><col style="width:90px"><col style="width:80px">
-          </colgroup>
-          <thead><tr>
-            <th>#</th><th>Project / Program</th><th>Milestone</th>
-            <th>End Date</th><th>Status</th><th>Overdue</th>
-          </tr></thead>
-          <tbody id="tbody-miles"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div id="tab-analytics" style="display:none"></div>
-  </div>
-
-  <div class="legend" id="legend-block"></div>
-  <footer id="footer-stamp">—</footer>
-</div>
-
-<!-- ── MODAL ── -->
-<div id="modal-overlay" class="modal-bg" style="display:none" onclick="closeModal(event)">
-  <div class="modal-box" onclick="event.stopPropagation()">
-    <div class="modal-hdr">
-      <div class="modal-hdr-l">
-        <span id="modal-type-badge"></span>
-        <span class="modal-ttl" id="modal-title"></span>
-        <span class="modal-pct" id="modal-pct"></span>
-      </div>
-      <button class="modal-cls" onclick="closeDetailModal()">✕</button>
-    </div>
-    <div class="modal-meta" id="modal-meta"></div>
-    <div class="modal-body">
-      <div class="modal-rules" id="modal-rules"></div>
-    </div>
-  </div>
-</div>
-
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0ede6;color:#1a1a18;font-size:13px}
+.hdr{background:#0f2518;border-bottom:2px solid #c8390a;padding:0 20px;height:50px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
+.hdr-l{display:flex;align-items:center;gap:12px}
+.brand{font-size:11px;font-weight:700;letter-spacing:2px;color:#fff}
+.sep{width:1px;height:18px;background:#c8390a;opacity:.6}
+.hdr-title{font-size:11px;color:#e8d9c0;letter-spacing:.5px}
+.hdr-badge{background:#c8390a;color:#fff;padding:2px 8px;border-radius:3px;font-size:9px;font-weight:700;letter-spacing:1px}
+.hdr-date{font-size:11px;color:#b0c4b1;font-family:'Courier New',monospace}
+.cards{display:grid;grid-template-columns:repeat(8,1fr);gap:1px;background:#e5e1d8}
+.card{background:#ffffff;padding:12px 14px;text-align:center}
+.card-val{font-size:22px;font-weight:700;line-height:1}
+.card-lbl{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-top:4px}
+.v-red{color:#d64000}.v-amber{color:#c07020}.v-green{color:#1a5c1e}.v-blue{color:#1060c8}
+.tabs{background:#ffffff;border-bottom:.5px solid #e5e1d8;padding:0 20px;display:flex;gap:0;position:sticky;top:50px;z-index:100}
+.tab{background:transparent;border:none;border-bottom:2px solid transparent;color:#6b7280;padding:10px 14px;cursor:pointer;font-size:11px;font-family:inherit;white-space:nowrap;transition:all .15s}
+.tab:hover{color:#1a1a18}
+.tab.on{color:#c8390a;border-bottom-color:#c8390a;font-weight:600}
+.tc{background:#f5f5f0;color:#6b7280;border-radius:10px;padding:1px 6px;font-size:9px;margin-left:4px}
+.tc.red{background:#fde8e0;color:#c8390a}
+.toolbar{background:#ffffff;border-bottom:.5px solid #e5e1d8;padding:8px 20px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.lbl{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#9ca3af}
+.btn{background:transparent;border:.5px solid #d4c9b8;color:#6b7280;padding:3px 10px;border-radius:3px;cursor:pointer;font-size:10px;font-family:inherit;transition:all .12s}
+.btn:hover{border-color:#c8390a;color:#c8390a}
+.btn.on{background:#fde8e0;border-color:#c8390a;color:#c8390a}
+.btn.on-a{background:#fef0e0;border-color:#c07020;color:#c07020}
+.btn.on-g{background:#e0f4e2;border-color:#1a5c1e;color:#1a5c1e}
+.srch{margin-left:auto;background:#f5f5f0;border:.5px solid #d4c9b8;color:#1a1a18;padding:4px 10px;border-radius:3px;font-size:11px;font-family:inherit;width:180px}
+.srch:focus{outline:none;border-color:#c8390a}
+.srch::placeholder{color:#9ca3af}
+.psel{background:#f5f5f0;border:.5px solid #d4c9b8;color:#1a1a18;padding:3px 8px;border-radius:3px;font-size:11px;font-family:inherit;cursor:pointer;max-width:180px}
+.psel:focus{outline:none;border-color:#c8390a}
+.main{padding:16px 20px}
+.tblwrap{background:#ffffff;border:.5px solid #e5e1d8;border-radius:6px;overflow:auto;max-height:calc(100vh - 260px)}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+.tblwrap table{min-width:900px}
+thead th{background:#f5f5f0;color:#6b7280;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:8px 10px;text-align:left;border-bottom:.5px solid #d4c9b8;white-space:nowrap;position:sticky;top:0;z-index:5}
+tbody tr{border-bottom:.5px solid #e5e1d8;transition:background .1s;cursor:pointer}
+tbody tr:hover{background:#f5f5f0}
+tbody tr:last-child{border-bottom:none}
+td{padding:7px 10px;vertical-align:middle}
+.tid{color:#9ca3af;font-family:'Courier New',monospace;font-size:9px}
+.tname{font-weight:500;color:#1a1a18;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tpm{color:#6b7280;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px}
+.sbwrap{display:flex;align-items:center;gap:6px;min-width:100px}
+.sbar{flex:1;height:5px;background:#e5e1d8;border-radius:3px;overflow:hidden}
+.sfill{height:100%;border-radius:3px}
+.fr{background:#d64000}.fa{background:#c07020}.fg{background:#1a5c1e}
+.sp{font-size:10px;font-family:'Courier New',monospace;min-width:28px;text-align:right}
+.pr{color:#d64000}.pa{color:#c07020}.pg{color:#1a5c1e}
+.r-pass,.r-fail{font-size:12px;text-align:center}
+.r-pass{color:#22c55e}.r-fail{color:#ef4444}
+.tb-proj{background:#dbeafe;color:#1e40af;border:none;border-radius:3px;padding:1px 6px;font-size:9px;font-weight:700}
+.tb-prog{background:#fef3c7;color:#92400e;border:none;border-radius:3px;padding:1px 6px;font-size:9px;font-weight:700}
+.rag-dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+.rag-r{background:#d64000}.rag-a{background:#c07020}.rag-g{background:#1a5c1e}.rag-b{background:#1060c8}
+.empty{text-align:center;padding:32px;color:#9ca3af;font-size:12px}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;display:flex;align-items:center;justify-content:center}
+.modal{background:#ffffff;border-radius:8px;width:660px;max-width:94vw;max-height:88vh;overflow:hidden;display:flex;flex-direction:column;border:.5px solid #d4c9b8}
+.modal-hdr{background:#0f2518;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-hdr-l{display:flex;align-items:center;gap:8px}
+.modal-title{font-size:13px;font-weight:600;color:#fff;max-width:420px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mpct{font-family:'Courier New',monospace;font-size:11px;font-weight:700;padding:2px 7px;border-radius:3px}
+.mpct.g{background:#e0f4e2;color:#1a5c1e}.mpct.a{background:#fef0e0;color:#c07020}.mpct.r{background:#fde8e0;color:#d64000}
+.modal-cls{background:transparent;border:none;color:rgba(255,255,255,0.6);cursor:pointer;font-size:18px;padding:0 4px;line-height:1}
+.modal-cls:hover{color:#fff}
+.modal-meta{padding:10px 18px;background:#f5f5f0;border-bottom:.5px solid #e5e1d8;font-size:11px;color:#6b7280;flex-shrink:0}
+.modal-body{padding:16px 18px;overflow-y:auto}
+.modal-rules{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mrule{padding:10px 12px;border-radius:5px;display:flex;align-items:flex-start;gap:8px}
+.mrule.p{background:#e0f4e2;border:.5px solid #6fbf75}.mrule.f{background:#fde8e0;border:.5px solid #e08060}
+.mri{font-size:14px;flex-shrink:0;margin-top:1px}
+.mrule.p .mri{color:#1a5c1e}.mrule.f .mri{color:#d64000}
+.mrl{font-size:11px;font-weight:600}.mrule.p .mrl{color:#1a5c1e}.mrule.f .mrl{color:#d64000}
+.mrd{font-size:10px;color:#6b7280;margin-top:2px;line-height:1.4}
+.mrid{font-family:'Courier New',monospace;font-size:9px;opacity:.7;margin-right:3px}
+.vigrp{margin-bottom:16px}
+.vighd{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:#6b7280;padding:6px 0;border-bottom:.5px solid #d4c9b8;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.virow{display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:.5px solid #e5e1d8}
+.virow:last-child{border-bottom:none}
+.vinum{font-size:9px;color:#9ca3af;font-family:'Courier New',monospace;min-width:22px;padding-top:2px}
+.viname{font-weight:600;font-size:11px;color:#1a1a18}
+.vipm{font-size:10px;color:#6b7280}
+.vibadges{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px}
+.vibadge{padding:1px 6px;border-radius:3px;font-size:9px;font-weight:600}
+.vb-r{background:#fde8e0;color:#c8390a;border:.5px solid #c8390a}
+.lgd{margin:0 0 16px;background:#ffffff;border:.5px solid #e5e1d8;border-radius:5px;padding:14px 16px}
+.lgd-title{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:#6b7280;margin-bottom:10px;font-weight:700}
+.lgd-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+.lgd-item{display:flex;align-items:flex-start;gap:8px;padding:6px 8px;background:#f5f5f0;border-radius:3px;border:.5px solid #e5e1d8}
+.lgd-num{background:#0f2518;color:#fff;border-radius:3px;padding:1px 6px;font-size:10px;font-weight:700;font-family:'Courier New',monospace;white-space:nowrap;align-self:flex-start;margin-top:1px}
+.lgd-label{font-size:10px;font-weight:600;color:#1a1a18}
+.lgd-desc{font-size:9px;color:#6b7280;margin-top:2px;line-height:1.4}
+.lgd-thr{display:flex;align-items:center;gap:14px;padding-top:10px;border-top:.5px solid #e5e1d8;font-size:10px}
+.thr-lbl{color:#9ca3af;font-size:9px;text-transform:uppercase;letter-spacing:.5px}
+.foot{text-align:center;padding:14px;color:#9ca3af;font-size:9px;font-family:'Courier New',monospace;border-top:.5px solid #e5e1d8;background:#ffffff}
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.chart-card{background:#ffffff;border:.5px solid #e5e1d8;border-radius:5px;padding:12px 14px}
+.chart-title{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:10px;font-weight:700}
+</style>
+<h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">PMO Compliance Dashboard — 20 May 2026 snapshot, 107 records, 90 projects, 17 programs</h2>
+<div id="app"></div>
 <script>
-'use strict';
+const RECORDS=[{"id":"proj-184","type":"project","name":"Contract Lifecycle Management (CLM)","rag":"Green > Amber","status":"Active","pm":"Surisetty, Rajesh (TR Technology)","pillar":"CIO \u2013 Commercial & Corporate Engineering","tiering":"Critical","report_date":"","days_since_report":999,"okr":"","service_maturity":"Others","risks_total":3,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":1,"actions_incomplete":0,"actions_no_date":0,"issues_total":2,"issues_no_res":2,"issues_no_owner":0,"issues_no_date":2,"issues_no_plan":1,"miles_total":3,"miles_overdue":0},{"id":"proj-183","type":"project","name":"Pagero - eSSO/MFA Solution and Security Tech migration","rag":"Green","status":"Active","pm":"Colianni, Dawn (TR Technology)","pillar":"CIO \u2013 Information Security & Risk Management","tiering":"Critical","report_date":"2026-05-19","days_since_report":1,"okr":"CIO 1a - Deliver an improved and market leading product experience for our customers (S3NS)","service_maturity":"S3NS - PE-2-05 | Landing Zones","risks_total":4,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":20,"actions_incomplete":9,"actions_no_date":2,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":1,"miles_overdue":0},{"id":"proj-182","type":"project","name":"Pagero Cloud Migration (Public) and Office Networking","rag":"Green","status":"Active","pm":"Jena, Vikas (TR Technology)","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-19","days_since_report":1,"okr":"CIO 2 - Enable fast and safe changes to production through CI/CD automation to accelerate innovation and improve product reliability","service_maturity":"PE-2 |  Core Platform Services","risks_total":4,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":1,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":10,"miles_overdue":0},{"id":"proj-181","type":"project","name":"Product Engineering & Platform Readiness","rag":"Red > Amber","status":"Active","pm":"Parkes, Lorna (TR Technology)","pillar":"CIO","tiering":"Critical","report_date":"2026-05-19","days_since_report":1,"okr":"CIO 1 - Deliver an improved and market leading product experience for our customers","service_maturity":"PE-2 |  Core Platform Services","risks_total":2,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":8,"actions_incomplete":7,"actions_no_date":0,"issues_total":1,"issues_no_res":1,"issues_no_owner":0,"issues_no_date":1,"issues_no_plan":0,"miles_total":8,"miles_overdue":0},{"id":"proj-180","type":"project","name":"Pagero - Legal Entity migrations","rag":"Green","status":"Active","pm":"Rosonke, McCain (TR Technology)","pillar":"CIO \u2013 Commercial & Corporate Engineering","tiering":"Critical","report_date":"2026-05-19","days_since_report":1,"okr":"CIO 3 - Accelerate adoption of the unified, strategic Commercial Systems stack to deliver a modern, seamless commercial experience for customers and internal teams","service_maturity":"CCE-4 | Order-to-Cash","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":3,"issues_no_res":1,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":12,"miles_overdue":0},{"id":"proj-178","type":"project","name":"AI Reimagine Other Pillar Point Solutions","rag":"Green","status":"Active","pm":"Kramareva, Yuliia (TR Technology)","pillar":"","tiering":"Critical","report_date":"","days_since_report":999,"okr":"","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":4,"miles_overdue":0},{"id":"proj-177","type":"project","name":"Plat Eng AI Reimagine","rag":"Green","status":"Active","pm":"Kramareva, Yuliia (TR Technology)","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-15","days_since_report":5,"okr":"","service_maturity":"Others","risks_total":3,"risks_no_owner":3,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":1,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":3,"miles_overdue":0},{"id":"proj-176","type":"project","name":"Service Mgmt AI Reimagine","rag":"Amber","status":"Active","pm":"Loch, Talia (TR Technology)","pillar":"CIO \u2013 Service Management","tiering":"Critical","report_date":"2026-05-13","days_since_report":7,"okr":"","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":5,"actions_incomplete":3,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":4,"miles_overdue":0},{"id":"proj-175","type":"project","name":"Comm Eng AI Reimagine","rag":"Amber","status":"Active","pm":"Narang, Preeti (TR Technology)","pillar":"CIO \u2013 Commercial & Corporate Engineering","tiering":"Critical","report_date":"2026-05-14","days_since_report":6,"okr":"","service_maturity":"Others","risks_total":3,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":2,"actions_total":9,"actions_incomplete":9,"actions_no_date":0,"issues_total":1,"issues_no_res":1,"issues_no_owner":1,"issues_no_date":1,"issues_no_plan":0,"miles_total":2,"miles_overdue":0},{"id":"proj-170","type":"project","name":"CIO Co-Counsel Next Rollout","rag":"Green","status":"Active","pm":"Allison, Richard P. (TR Technology)","pillar":"CIO \u2013 Service Management","tiering":"Critical","report_date":"2026-05-11","days_since_report":9,"okr":"","service_maturity":"Others","risks_total":6,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":12,"actions_incomplete":6,"actions_no_date":0,"issues_total":3,"issues_no_res":2,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":2,"miles_overdue":0},{"id":"proj-169","type":"project","name":"PMO Monitoring","rag":"Red > Amber","status":"Active","pm":"Allison, Richard P. (TR Technology)","pillar":"CIO \u2013 Strategy & Operations","tiering":"Critical","report_date":"2026-05-17","days_since_report":3,"okr":"","service_maturity":"Others","risks_total":2,"risks_no_owner":1,"risks_no_mit":2,"risks_no_date":2,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":2,"issues_no_res":2,"issues_no_owner":2,"issues_no_date":2,"issues_no_plan":2,"miles_total":1,"miles_overdue":0},{"id":"proj-168","type":"project","name":"IA Remediations","rag":"Red","status":"Active","pm":"Steinman, Shannon D. (TR Technology)","pillar":"CIO \u2013 Strategy & Operations","tiering":"Critical","report_date":"2026-05-14","days_since_report":6,"okr":"CIO1a - Deliver an improved and market leading product experience for our customers","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":19,"miles_overdue":5},{"id":"proj-155","type":"project","name":"Employee AI Enablement for Full Workforce (NEW)","rag":"Green","status":"Active","pm":"(No PM)","pillar":"CIO \u2013 Employee Technology Services","tiering":"Critical","report_date":"","days_since_report":999,"okr":"","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":0,"miles_overdue":0},{"id":"proj-148","type":"project","name":"Rep Led Trials | Y27 | Enterprise Trial LATAM Expansion","rag":"On Hold","status":"Active","pm":"Luna, Victor Ramirez","pillar":"","tiering":"Critical","report_date":"","days_since_report":999,"okr":"","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":0,"miles_overdue":0},{"id":"proj-147","type":"project","name":"Comm Sys - Trials","rag":"Green","status":"Active","pm":"Luna, Victor Ramirez","pillar":"","tiering":"Critical","report_date":"","days_since_report":999,"okr":"","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":1,"miles_overdue":0},{"id":"proj-145","type":"project","name":"Comm Sys - Mid Term Modifications: Add Units","rag":"Green","status":"Active","pm":"Luna, Victor Ramirez","pillar":"","tiering":"Critical","report_date":"","days_since_report":999,"okr":"","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":1,"miles_overdue":0},{"id":"proj-144","type":"project","name":"ICFR Transformation - Privileged and Confidential","rag":"Green","status":"Active","pm":"Steinman, Shannon D. (TR Technology)","pillar":"CIO \u2013 Strategy & Operations","tiering":"Critical","report_date":"2026-05-14","days_since_report":6,"okr":"","service_maturity":"Others","risks_total":12,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":12,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":7,"miles_overdue":3},{"id":"proj-143","type":"project","name":"Rep Led Trials | Y26Q2 | Enterprise Trial AEM Expansion MVP 2","rag":"Green","status":"Active","pm":"Luna, Victor Ramirez","pillar":"","tiering":"Critical","report_date":"","days_since_report":999,"okr":"","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":1,"miles_overdue":0},{"id":"proj-141","type":"project","name":"TR Government Baseline Compliance - Privileged and Confidential","rag":"Green","status":"Active","pm":"Steinman, Shannon D. (TR Technology)","pillar":"CIO \u2013 Strategy & Operations","tiering":"Critical","report_date":"2026-05-14","days_since_report":6,"okr":"CIO1a - Deliver an improved and market leading product experience for our customers","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":1,"miles_overdue":0},{"id":"proj-139","type":"project","name":"Digital Offers - Accelerating Digital Sales & Renewals","rag":"Green","status":"Active","pm":"Gadwal, Ejaz Ahmed (TR Technology)","pillar":"CIO \u2013 Commercial & Corporate Engineering","tiering":"Critical","report_date":"","days_since_report":999,"okr":"","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":0,"miles_overdue":0},{"id":"proj-138","type":"project","name":"Global Product - Product Store Feature Enhancements","rag":"Green","status":"Active","pm":"Krishnan, Deepak","pillar":"CIO \u2013 Commercial & Corporate Engineering","tiering":"Critical","report_date":"","days_since_report":999,"okr":"","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":1,"miles_overdue":0},{"id":"proj-135","type":"project","name":"Sydney DC Exit Project","rag":"Green","status":"Active","pm":"Scarborough, Keith","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-18","days_since_report":2,"okr":"PLE-3 - Infrastructure Modernization & AI Adoption - Migrate legacy workloads from Colo to Cloud","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":1,"miles_overdue":0},{"id":"proj-134","type":"project","name":"LHR3 DC Exit Project","rag":"Green","status":"Active","pm":"Scarborough, Keith","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-18","days_since_report":2,"okr":"PLE-3 - Infrastructure Modernization & AI Adoption - Migrate legacy workloads from Colo to Cloud","service_maturity":"Others","risks_total":3,"risks_no_owner":1,"risks_no_mit":0,"risks_no_date":2,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":3,"miles_overdue":0},{"id":"proj-133","type":"project","name":"Disaster Recovery Optimization","rag":"Green","status":"Active","pm":"D Hatti, Vijayakumar (TR Technology)","pillar":"CIO \u2013 Enterprise Architecture","tiering":"Critical","report_date":"2026-05-15","days_since_report":5,"okr":"","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":6,"miles_overdue":0},{"id":"proj-132","type":"project","name":"FindLaw Divestiture - Office Hours","rag":"Green","status":"Active","pm":"An, Stephanie (TR Technology)","pillar":"CIO \u2013 Integration Management Office","tiering":"Critical","report_date":"2026-05-12","days_since_report":8,"okr":"Divestiture","service_maturity":"Divestiture","risks_total":1,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":1,"actions_total":1,"actions_incomplete":1,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":2,"miles_overdue":0},{"id":"proj-131","type":"project","name":"Rep Led Trials | Y26Q1 |  Enterprise Trial Onboarding for New legal Products","rag":"Green","status":"Active","pm":"Luna, Victor Ramirez","pillar":"","tiering":"Critical","report_date":"","days_since_report":999,"okr":"","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":6,"miles_overdue":0},{"id":"proj-129","type":"project","name":"NYNJ PA Project - Privileged and Confidential","rag":"Amber","status":"Active","pm":"Steinman, Shannon D. (TR Technology)","pillar":"CIO \u2013 Strategy & Operations","tiering":"Critical","report_date":"2026-05-14","days_since_report":6,"okr":"CIO1a - Deliver an improved and market leading product experience for our customers","service_maturity":"Others","risks_total":9,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":5,"actions_total":10,"actions_incomplete":8,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":6,"miles_overdue":0},{"id":"proj-128","type":"project","name":"Signature Standalone - Cloud Integration (M&A)","rag":"Green","status":"Active","pm":"Kumari, Prasanna (TR Technology)","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-18","days_since_report":2,"okr":"PLE: Other PLE-pillar specific OKR","service_maturity":"Others","risks_total":1,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":5,"miles_overdue":0},{"id":"proj-127","type":"project","name":"Datadog Hygiene","rag":"Green","status":"Active","pm":"DePalma, JoEllen (TR Technology)","pillar":"CIO \u2013 Service Management","tiering":"Critical","report_date":"2026-05-15","days_since_report":5,"okr":"","service_maturity":"Others","risks_total":14,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":12,"actions_total":58,"actions_incomplete":42,"actions_no_date":0,"issues_total":5,"issues_no_res":5,"issues_no_owner":0,"issues_no_date":2,"issues_no_plan":0,"miles_total":6,"miles_overdue":0},{"id":"proj-126","type":"project","name":"Tic Tie Calculate - Cloud Integration (M&A)","rag":"Green","status":"Active","pm":"Kumari, Prasanna (TR Technology)","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-18","days_since_report":2,"okr":"PLE: Other PLE-pillar specific OKR","service_maturity":"Others","risks_total":1,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":1,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":18,"miles_overdue":1},{"id":"proj-124","type":"project","name":"SafeSend One - Cloud Integration (M&A)","rag":"Green","status":"Active","pm":"Kumari, Prasanna (TR Technology)","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-14","days_since_report":6,"okr":"PLE: Other PLE-pillar specific OKR","service_maturity":"Others","risks_total":2,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":31,"miles_overdue":0},{"id":"proj-123","type":"project","name":"Digita Virtual Office AVD/Azure Migration (DVO)","rag":"Green","status":"Active","pm":"Torkelson, Mark (TR Technology)","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-14","days_since_report":6,"okr":"","service_maturity":"Others","risks_total":2,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":8,"miles_overdue":0},{"id":"proj-120","type":"project","name":"VMware to Hyper-V Migration","rag":"Green","status":"Active","pm":"Torkelson, Mark (TR Technology)","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-14","days_since_report":6,"okr":"PLE: Optimize software spend across TR (run rate savings)","service_maturity":"Others","risks_total":1,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":2,"miles_overdue":0},{"id":"proj-119","type":"project","name":"Rep Led Trials | Y26Q2 | Enterprise Trial MLF/GLLF Expansion","rag":"Amber > Green","status":"Active","pm":"Luna, Victor Ramirez","pillar":"","tiering":"Critical","report_date":"","days_since_report":999,"okr":"","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":6,"miles_overdue":0},{"id":"proj-118","type":"project","name":"Rep Led Trials | Y26Q2 | Enterprise Trial Onboarding for TAAP Products","rag":"Green","status":"Active","pm":"Luna, Victor Ramirez","pillar":"","tiering":"Critical","report_date":"","days_since_report":999,"okr":"","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":1,"miles_overdue":0},{"id":"proj-117","type":"project","name":"Customer Ticket Journey","rag":"Green","status":"Active","pm":"DePalma, JoEllen (TR Technology)","pillar":"CIO \u2013 Service Management","tiering":"Critical","report_date":"2026-05-15","days_since_report":5,"okr":"","service_maturity":"Others","risks_total":16,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":10,"actions_total":66,"actions_incomplete":18,"actions_no_date":0,"issues_total":2,"issues_no_res":1,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":18,"miles_overdue":0},{"id":"proj-116","type":"project","name":"DevOps Automation / IDP","rag":"Green","status":"Active","pm":"Colianni, Dawn (TR Technology)","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-13","days_since_report":7,"okr":"PLE-1\tDeveloper Experience","service_maturity":"PE-1- 06 I Internal Developer Experience","risks_total":1,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":7,"miles_overdue":0},{"id":"proj-115","type":"project","name":"GST Modernization","rag":"Amber","status":"Active","pm":"Mataczynski, Jeff (TR Technology)","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-18","days_since_report":2,"okr":"PLE-4 \u2013 25% Win to Linux Modernizations","service_maturity":"Cloud Optimization: L2 - PLE3","risks_total":3,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":4,"actions_incomplete":4,"actions_no_date":0,"issues_total":2,"issues_no_res":2,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":5,"miles_overdue":0},{"id":"proj-114","type":"project","name":"Project Aether: Enable AIAgents for Infrastructure Services leading to AI Powered Platforms","rag":"Green","status":"Active","pm":"Jena, Vikas (TR Technology)","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-19","days_since_report":1,"okr":"","service_maturity":"Others","risks_total":1,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":1,"issues_no_res":1,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":13,"miles_overdue":1},{"id":"proj-112","type":"project","name":"Enterprise Strategy for Cloud Containerization","rag":"Green","status":"Active","pm":"D Hatti, Vijayakumar (TR Technology)","pillar":"CIO \u2013 Enterprise Architecture","tiering":"Critical","report_date":"2026-05-15","days_since_report":5,"okr":"","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":4,"miles_overdue":0},{"id":"proj-111","type":"project","name":"ESS Tax ID Phase 1","rag":"Blue","status":"Completed","pm":"Kortagere Raghunath, Sudarshan (TR Technology)","pillar":"CIO \u2013 Commercial & Corporate Engineering","tiering":"Critical","report_date":"","days_since_report":999,"okr":"","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":0,"miles_overdue":0},{"id":"proj-110","type":"project","name":"TMS Re-Platform","rag":"Green","status":"Active","pm":"B H, Manjunatha R. (TR Technology)","pillar":"","tiering":"Critical","report_date":"2026-05-13","days_since_report":7,"okr":"Commercial effectiveness \u2013 enabling faster territory and quota planning","service_maturity":"Others","risks_total":5,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":5,"actions_total":5,"actions_incomplete":3,"actions_no_date":3,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":13,"miles_overdue":0},{"id":"proj-109","type":"project","name":"Local User Migration","rag":"Amber","status":"Active","pm":"Steinman, Shannon D. (TR Technology)","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-19","days_since_report":1,"okr":"Completing the OnePass local user migrations. Enabling AI, API and Partnership Growth / ONESOURCE - CIAM Migration.","service_maturity":"Others","risks_total":2,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":3,"miles_overdue":0},{"id":"proj-108","type":"project","name":"Rep Led Trials | Y26Q1 | Rep Excellence Enablement","rag":"Green","status":"Active","pm":"Luna, Victor Ramirez","pillar":"CIO \u2013 Commercial & Corporate Engineering","tiering":"Critical","report_date":"","days_since_report":999,"okr":"","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":5,"miles_overdue":1},{"id":"proj-107","type":"project","name":"SSO Migration","rag":"Red > Amber","status":"Active","pm":"Cuevas, Eduardo (TR Technology)","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-15","days_since_report":5,"okr":"Improve customer experience by consolidating/standardizing their login to all TR Products","service_maturity":"Others","risks_total":4,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":14,"actions_incomplete":9,"actions_no_date":0,"issues_total":4,"issues_no_res":4,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":5,"miles_overdue":0},{"id":"proj-106","type":"project","name":"Custom Pro Deal Functionality for UK","rag":"Amber > Red","status":"Active","pm":"Inti, Anantha (TR Commercial Excellence)","pillar":"","tiering":"Critical","report_date":"","days_since_report":999,"okr":"SMGE Sales Org achieving Expected deal functionality for bundled products","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":2,"actions_incomplete":2,"actions_no_date":2,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":1,"miles_overdue":1},{"id":"proj-105","type":"project","name":"Enterprise Identity and Entitlement","rag":"Amber","status":"Active","pm":"D Hatti, Vijayakumar (TR Technology)","pillar":"CIO \u2013 Enterprise Architecture","tiering":"Critical","report_date":"2026-05-15","days_since_report":5,"okr":"","service_maturity":"Others","risks_total":5,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":3,"issues_no_res":3,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":4,"miles_overdue":0},{"id":"proj-104","type":"project","name":"Enterprise AI","rag":"Green","status":"Active","pm":"Jena, Vikas (TR Technology)","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-19","days_since_report":1,"okr":"PLE: Percent of total LLM Token Consumption through the LLM Orchestrator","service_maturity":"Others","risks_total":1,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":7,"miles_overdue":0},{"id":"proj-103","type":"project","name":"Transform FinOps","rag":"Green","status":"Active","pm":"J, Sumitha (TR Technology)","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-15","days_since_report":5,"okr":"PLE-11 \u2013 1% Cloud Forecast Maturity / PLE-12 Cloud cost savings","service_maturity":"FinOps, PE-3-02","risks_total":1,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":9,"miles_overdue":0},{"id":"proj-102","type":"project","name":"Optimize TR Estate","rag":"Red > Amber","status":"Active","pm":"J, Sumitha (TR Technology)","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-15","days_since_report":5,"okr":"PLE-5 \u2013 80% Total Graviton Adoption","service_maturity":"FinOps, PE-3-02","risks_total":2,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":14,"miles_overdue":0},{"id":"proj-100","type":"project","name":"Time base Integration","rag":"Green","status":"Active","pm":"Sharma, Deepika (TR Technology)","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-13","days_since_report":7,"okr":"Enterprise Project","service_maturity":"Others","risks_total":2,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":84,"actions_incomplete":54,"actions_no_date":39,"issues_total":1,"issues_no_res":1,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":18,"miles_overdue":0},{"id":"proj-098","type":"project","name":"Montreal DC Exit Project","rag":"Amber > Green","status":"Active","pm":"Kumari, Prasanna (TR Technology)","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-13","days_since_report":7,"okr":"PLE: Other PLE-pillar specific OKR","service_maturity":"Others","risks_total":7,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":13,"miles_overdue":7},{"id":"proj-097","type":"project","name":"FedRAMP - CIAM Product Onboarding","rag":"Green","status":"Active","pm":"Partridge, Alyssa (TR Technology)","pillar":"CIO \u2013 Information Security & Risk Management","tiering":"Critical","report_date":"2026-05-18","days_since_report":2,"okr":"Enable FedRAMP compliant customer access through a scalable CIAM foundation","service_maturity":"Others","risks_total":2,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":17,"actions_incomplete":4,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":3,"miles_overdue":0},{"id":"proj-096","type":"project","name":"FedRAMP - CoCounsel","rag":"Amber > Green","status":"Active","pm":"Partridge, Alyssa (TR Technology)","pillar":"CIO \u2013 Information Security & Risk Management","tiering":"Critical","report_date":"2026-05-18","days_since_report":2,"okr":"Achieve FedRAMP Authorization for CoCounsel","service_maturity":"Others","risks_total":1,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":2,"actions_incomplete":1,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":5,"miles_overdue":0},{"id":"proj-095","type":"project","name":"Cloud Modernization Office","rag":"Green","status":"Active","pm":"Mataczynski, Jeff (TR Technology)","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-18","days_since_report":2,"okr":"FinOps Target - Q4-2026","service_maturity":"Cloud Scorecard","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":1,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":4,"miles_overdue":0},{"id":"proj-094","type":"project","name":"LatAm Top of Funnel Migration","rag":"Green","status":"Active","pm":"An, Stephanie (TR Technology)","pillar":"CIO \u2013 Integration Management Office","tiering":"Critical","report_date":"2026-05-12","days_since_report":8,"okr":"CIO-3c - $ of sales processed on strategic stack","service_maturity":"","risks_total":4,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":4,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":3,"issues_no_res":2,"issues_no_owner":0,"issues_no_date":2,"issues_no_plan":0,"miles_total":7,"miles_overdue":0},{"id":"proj-092","type":"project","name":"Legal Tracker Migration","rag":"Green","status":"Active","pm":"An, Stephanie (TR Technology)","pillar":"CIO \u2013 Integration Management Office","tiering":"Critical","report_date":"2026-05-12","days_since_report":8,"okr":"CIO-3c / CIO-3b strategic stack","service_maturity":"Others","risks_total":3,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":2,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":5,"miles_overdue":0},{"id":"proj-091","type":"project","name":"Markham DC Exit Project","rag":"Green","status":"Active","pm":"Kumari, Prasanna (TR Technology)","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-13","days_since_report":7,"okr":"PLE: Other PLE-pillar specific OKR","service_maturity":"Others","risks_total":1,"risks_no_owner":1,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":27,"issues_no_res":7,"issues_no_owner":2,"issues_no_date":2,"issues_no_plan":0,"miles_total":10,"miles_overdue":0},{"id":"proj-090","type":"project","name":"Virtual Office + Netfirm DR project","rag":"Green","status":"Active","pm":"J, Sumitha (TR Technology)","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-15","days_since_report":5,"okr":"","service_maturity":"Others","risks_total":2,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":1,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":10,"miles_overdue":0},{"id":"proj-089","type":"project","name":"UltraTax MYC -EMS","rag":"Green","status":"Active","pm":"Patnaik, Suman (TR Technology)","pillar":"CIO \u2013 Commercial & Corporate Engineering","tiering":"Critical","report_date":"2026-05-19","days_since_report":1,"okr":"","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":6,"actions_incomplete":6,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":6,"miles_overdue":0},{"id":"proj-088","type":"project","name":"Certinia CS Implementation Wave 1","rag":"Amber","status":"Active","pm":"Patra, Srini (TR Technology)","pillar":"CIO \u2013 Commercial & Corporate Engineering","tiering":"Critical","report_date":"2026-05-13","days_since_report":7,"okr":"","service_maturity":"Others","risks_total":2,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":3,"issues_no_res":1,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":5,"miles_overdue":1},{"id":"proj-087","type":"project","name":"Customer Success - Gainsight decommission","rag":"Green","status":"Active","pm":"Patra, Srini (TR Technology)","pillar":"CIO \u2013 Commercial & Corporate Engineering","tiering":"Critical","report_date":"2026-05-14","days_since_report":6,"okr":"","service_maturity":"Others","risks_total":1,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":1,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":2,"miles_overdue":0},{"id":"proj-086","type":"project","name":"Evaluation of alternatives to Broadcom\u2019s CA product suite","rag":"Green","status":"Active","pm":"Cuevas, Eduardo (TR Technology)","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-15","days_since_report":5,"okr":"Cost avoidance","service_maturity":"Others","risks_total":5,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":10,"actions_incomplete":5,"actions_no_date":0,"issues_total":1,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":15,"miles_overdue":0},{"id":"proj-085","type":"project","name":"ExaCS TaxOne Production Build","rag":"Green","status":"Active","pm":"Schlagel, Ryan (TR Technology)","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-14","days_since_report":6,"okr":"n/a","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":1,"miles_overdue":0},{"id":"proj-084","type":"project","name":"Passwordless Authentication and Ping Migration","rag":"Green","status":"Active","pm":"Jaiswal, Sonal (TR Technology)","pillar":"CIO \u2013 Information Security & Risk Management","tiering":"Critical","report_date":"2026-05-01","days_since_report":19,"okr":"TBD","service_maturity":"Others","risks_total":6,"risks_no_owner":6,"risks_no_mit":0,"risks_no_date":6,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":14,"miles_overdue":0},{"id":"proj-083","type":"project","name":"TAAP Print Accelerate (unison to SAP)","rag":"Amber > Green","status":"Active","pm":"Rosonke, McCain (TR Technology)","pillar":"CIO \u2013 Commercial & Corporate Engineering","tiering":"Critical","report_date":"2026-05-07","days_since_report":13,"okr":"","service_maturity":"Others","risks_total":1,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":1,"actions_total":15,"actions_incomplete":15,"actions_no_date":12,"issues_total":1,"issues_no_res":1,"issues_no_owner":0,"issues_no_date":1,"issues_no_plan":0,"miles_total":14,"miles_overdue":0},{"id":"proj-079","type":"project","name":"AI-Powered Regression Testing","rag":"Green","status":"Active","pm":"Shanmughan, Sudheesh (TR Technology)","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-15","days_since_report":5,"okr":"PLE-9 Platform Reliability Security & Quality","service_maturity":"PE-1 | Developer Experience - L2\nPE-1-07 | Quality Engineering - L3","risks_total":1,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":7,"actions_incomplete":4,"actions_no_date":0,"issues_total":2,"issues_no_res":1,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":8,"miles_overdue":0},{"id":"proj-078","type":"project","name":"GTM4 Cloud Modernization","rag":"Amber","status":"Active","pm":"Shanmughan, Sudheesh (TR Technology)","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-15","days_since_report":5,"okr":"PLE-4 \u2013 25% Win to Linux Modernizations","service_maturity":"Cloud Optimization: L2 - PLE3","risks_total":2,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":3,"actions_incomplete":2,"actions_no_date":0,"issues_total":1,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":17,"miles_overdue":0},{"id":"proj-077","type":"project","name":"SOX 404 Sailpoint application onboarding","rag":"Green","status":"Active","pm":"Patnaik, Suman (TR Technology)","pillar":"CIO \u2013 Information Security & Risk Management","tiering":"Critical","report_date":"2026-05-05","days_since_report":15,"okr":"","service_maturity":"","risks_total":3,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":1,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":20,"miles_overdue":0},{"id":"proj-071","type":"project","name":"Software Supply Chain Security (Code Provenance & SBOMs)","rag":"Green","status":"Active","pm":"Oblea, Tane (TR Technology)","pillar":"CIO \u2013 Information Security & Risk Management","tiering":"Critical","report_date":"","days_since_report":999,"okr":"","service_maturity":"Others","risks_total":2,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":1,"issues_no_res":1,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":4,"miles_overdue":0},{"id":"proj-067","type":"project","name":"Modernize Detect & Response","rag":"Green","status":"Active","pm":"Oblea, Tane (TR Technology)","pillar":"CIO \u2013 Information Security & Risk Management","tiering":"Critical","report_date":"","days_since_report":999,"okr":"","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":2,"miles_overdue":0},{"id":"proj-066","type":"project","name":"Modernize Attack Surface Reduction","rag":"Green","status":"Active","pm":"Oblea, Tane (TR Technology)","pillar":"CIO \u2013 Information Security & Risk Management","tiering":"Critical","report_date":"","days_since_report":999,"okr":"","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":3,"miles_overdue":0},{"id":"proj-065","type":"project","name":"Baseline - Accelerate Adoption of AI-Augmented Vulnerability Remediation","rag":"Green","status":"Active","pm":"Oblea, Tane (TR Technology)","pillar":"CIO \u2013 Information Security & Risk Management","tiering":"Critical","report_date":"","days_since_report":999,"okr":"","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":1,"issues_no_res":1,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":2,"miles_overdue":0},{"id":"proj-064","type":"project","name":"Customer Trust AI Strategy","rag":"Amber","status":"Active","pm":"Mayers, Amanda (TR Technology)","pillar":"CIO \u2013 Customer Trust","tiering":"Critical","report_date":"2026-05-19","days_since_report":1,"okr":"Strengthen Operational Rigor across all Customer Trust Functions","service_maturity":"CT-5 | AI Enablement","risks_total":4,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":1,"actions_total":14,"actions_incomplete":5,"actions_no_date":0,"issues_total":5,"issues_no_res":2,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":9,"miles_overdue":0},{"id":"proj-063","type":"project","name":"Brazil Tax Reform","rag":"Red > Amber","status":"Active","pm":"Oliva, Elizabeth (TR Technology)","pillar":"CIO \u2013 Commercial & Corporate Engineering","tiering":"Critical","report_date":"2026-05-15","days_since_report":5,"okr":"","service_maturity":"Others","risks_total":3,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":1,"actions_total":15,"actions_incomplete":11,"actions_no_date":0,"issues_total":6,"issues_no_res":6,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":1,"miles_total":2,"miles_overdue":0},{"id":"proj-062","type":"project","name":"SafeSend One","rag":"Amber","status":"Active","pm":"Patra, Srini (TR Technology)","pillar":"CIO \u2013 Commercial & Corporate Engineering","tiering":"Critical","report_date":"2026-05-15","days_since_report":5,"okr":"","service_maturity":"Others","risks_total":11,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":2,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":5,"miles_overdue":0},{"id":"proj-059","type":"project","name":"SAP ECC Upgrade","rag":"Blue","status":"Completed","pm":"Kandra, Subramanyam N. (TR Technology)","pillar":"CIO \u2013 Commercial & Corporate Engineering","tiering":"Critical","report_date":"2026-04-24","days_since_report":26,"okr":"","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":0,"miles_overdue":0},{"id":"proj-058","type":"project","name":"ETS Service Desk Automation","rag":"Amber > Green","status":"Active","pm":"L, Kiran Kumar (TR Technology)","pillar":"","tiering":"Critical","report_date":"2026-05-15","days_since_report":5,"okr":"","service_maturity":"Others","risks_total":10,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":3,"actions_total":46,"actions_incomplete":27,"actions_no_date":0,"issues_total":2,"issues_no_res":1,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":9,"miles_overdue":1},{"id":"proj-056","type":"project","name":"S&O, Customer Trust: Point Solutions","rag":"Green","status":"Active","pm":"Kramareva, Yuliia (TR Technology)","pillar":"","tiering":"Critical","report_date":"","days_since_report":999,"okr":"","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":0,"miles_overdue":0},{"id":"proj-054","type":"project","name":"AI Reimagine Other Pillar Point Solutions","rag":"Green","status":"Active","pm":"Kramareva, Yuliia (TR Technology)","pillar":"CIO \u2013 Strategy & Operations","tiering":"Critical","report_date":"2026-05-14","days_since_report":6,"okr":"","service_maturity":"Others","risks_total":1,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":4,"miles_overdue":0},{"id":"proj-051","type":"project","name":"Service Health Remediation (SHA)","rag":"Green","status":"Active","pm":"D Hatti, Vijayakumar (TR Technology)","pillar":"CIO \u2013 Service Management","tiering":"Critical","report_date":"2026-05-15","days_since_report":5,"okr":"% SHA >= C  - 90%","service_maturity":"Others","risks_total":1,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":1,"miles_overdue":0},{"id":"proj-047","type":"project","name":"SM Diamond Lanes - DevOps Acceleration","rag":"Amber","status":"Active","pm":"Colianni, Dawn (TR Technology)","pillar":"CIO \u2013 Service Management","tiering":"Critical","report_date":"2026-05-13","days_since_report":7,"okr":"CIO-2a - # of Products enabled on Diamond Lane","service_maturity":"SM-1 | Product Service Delivery (L2)","risks_total":7,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":14,"miles_overdue":0},{"id":"proj-036","type":"project","name":"FedRAMP - Akkadia","rag":"Green","status":"Active","pm":"Partridge, Alyssa (TR Technology)","pillar":"CIO \u2013 Information Security & Risk Management","tiering":"Critical","report_date":"2026-05-13","days_since_report":7,"okr":"Enable FedRAMP Legal Research capabilities","service_maturity":"Others","risks_total":1,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":3,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":7,"miles_overdue":0},{"id":"proj-024","type":"project","name":"SM AIOps/Event Management (SNOW)","rag":"Amber > Green","status":"Active","pm":"Loch, Talia (TR Technology)","pillar":"CIO \u2013 Service Management","tiering":"Critical","report_date":"2026-05-13","days_since_report":7,"okr":"","service_maturity":"Others","risks_total":7,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":7,"actions_total":144,"actions_incomplete":38,"actions_no_date":32,"issues_total":16,"issues_no_res":11,"issues_no_owner":0,"issues_no_date":11,"issues_no_plan":3,"miles_total":5,"miles_overdue":3},{"id":"proj-023","type":"project","name":"Cobalt Modernization","rag":"Amber > Green","status":"Active","pm":"Jeff Mataczynski","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-18","days_since_report":2,"okr":"PLE-4 \u2013 25% Win to Linux Modernizations","service_maturity":"Cloud Optimization: L2 - PLE3","risks_total":3,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":5,"miles_overdue":0},{"id":"proj-022","type":"project","name":"DELETE - No Longer NeededCommercial Process and Systems Workstreams","rag":"Green","status":"Active","pm":"Tricia McCarthy","pillar":"CIO \u2013 Commercial & Corporate Engineering","tiering":"Critical","report_date":"","days_since_report":999,"okr":"","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":32,"miles_overdue":8},{"id":"proj-015","type":"project","name":"IFS (ERP) Cloud Migration(Muzulu Azure Cloud)","rag":"Green","status":"Active","pm":"Manjunath Reddy B H","pillar":"CIO \u2013 Commercial & Corporate Engineering","tiering":"Critical","report_date":"2026-05-19","days_since_report":1,"okr":"Helps to align with TR cloud first strategy and improves the resiliency","service_maturity":"Others","risks_total":9,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":36,"actions_incomplete":25,"actions_no_date":10,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":19,"miles_overdue":2},{"id":"proj-013","type":"project","name":"Pricing Engine","rag":"Red","status":"Active","pm":"Rodrigo Sanchez","pillar":"CIO \u2013 Commercial & Corporate Engineering","tiering":"Critical","report_date":"2026-05-18","days_since_report":2,"okr":"","service_maturity":"Others","risks_total":17,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":2,"actions_total":65,"actions_incomplete":62,"actions_no_date":44,"issues_total":5,"issues_no_res":4,"issues_no_owner":0,"issues_no_date":3,"issues_no_plan":0,"miles_total":6,"miles_overdue":0},{"id":"proj-012","type":"project","name":"Software Cost Optimization","rag":"Amber","status":"Active","pm":"Klare Swenson","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-06","days_since_report":14,"okr":"5.2 Software optimization","service_maturity":"Others","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":1,"issues_no_res":1,"issues_no_owner":0,"issues_no_date":1,"issues_no_plan":0,"miles_total":4,"miles_overdue":0},{"id":"proj-006","type":"project","name":"Pagero - S3NS Cloud Provider Build and Support","rag":"Green","status":"Active","pm":"Colianni, Dawn (TR Technology)","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-19","days_since_report":1,"okr":"CIO 1a - Deliver an improved and market leading product experience for our customers (S3NS)","service_maturity":"S3NS - PE-2-05 | Landing Zones","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":9,"miles_overdue":0},{"id":"prog-044","type":"program","name":"FedRAMP - CoCounsel Core","rag":"Green","status":"Active","pm":"Peter France","pillar":"CIO \u2013 Information Security & Risk Management","tiering":"Critical","report_date":"","days_since_report":999,"okr":"FedRAMP Authorization of CoCounsel Core","service_maturity":"","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":2,"actions_incomplete":2,"actions_no_date":0,"issues_total":1,"issues_no_res":1,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":4,"miles_overdue":0},{"id":"prog-043","type":"program","name":"FedRAMP Authorization","rag":"Amber","status":"Active","pm":"Peter France","pillar":"CIO \u2013 Information Security & Risk Management","tiering":"Critical","report_date":"2026-05-19","days_since_report":1,"okr":"FedRAMP Authorization of Thomson Reuters Legal Research & TR Risk & Fraud packages","service_maturity":"","risks_total":4,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":1,"miles_overdue":0},{"id":"prog-042","type":"program","name":"Legacy Product Migration","rag":"Green","status":"Active","pm":"An, Stephanie (TR Technology)","pillar":"CIO \u2013 Integration Management Office","tiering":"Critical","report_date":"","days_since_report":999,"okr":"","service_maturity":"","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":0,"miles_overdue":0},{"id":"prog-037","type":"program","name":"Pagero Integration","rag":"Red","status":"Active","pm":"Parkes, Lorna (TR Technology)","pillar":"CIO","tiering":"Critical","report_date":"2026-05-19","days_since_report":1,"okr":"CIO 1 - Deliver an improved and market leading product experience for our customers","service_maturity":"SM-1 | Product Service Delivery (L2)\nCCE-4 | Order-to-Cash\nPE-2 |  Core Platform Services","risks_total":8,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":12,"actions_incomplete":8,"actions_no_date":0,"issues_total":3,"issues_no_res":3,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":11,"miles_overdue":1},{"id":"prog-034","type":"program","name":"Commercial Process and Systems Program","rag":"Amber","status":"Active","pm":"Simonds, Jennifer N. (TR Technology)","pillar":"CIO \u2013 Commercial & Corporate Engineering","tiering":"Critical","report_date":"2026-05-18","days_since_report":2,"okr":"Enable $158.7 M Sales and $61.6M revenue","service_maturity":"","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":3,"issues_no_res":3,"issues_no_owner":3,"issues_no_date":0,"issues_no_plan":3,"miles_total":4,"miles_overdue":0},{"id":"prog-031","type":"program","name":"Digital Retention - Digital Offers Taap","rag":"Green","status":"Active","pm":"Ejaz Ahmed Gadwal","pillar":"","tiering":"Critical","report_date":"","days_since_report":999,"okr":"","service_maturity":"","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":0,"miles_overdue":0},{"id":"prog-027","type":"program","name":"Colo Exit & Optimization","rag":"Green","status":"Active","pm":"Scarborough, Keith","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-18","days_since_report":2,"okr":"2.2 Cloud Optimization / Modernization - Migrate legacy workloads from Colo to Cloud","service_maturity":"","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":5,"miles_overdue":0},{"id":"prog-026","type":"program","name":"Contact Center AI Enablement","rag":"Green","status":"Active","pm":"Sri Srinivasan Venkataraman","pillar":"CIO \u2013 Commercial & Corporate Engineering","tiering":"Critical","report_date":"2026-05-15","days_since_report":5,"okr":"","service_maturity":"","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":4,"miles_overdue":0},{"id":"prog-024","type":"program","name":"Enterprise Trials (NEW)","rag":"Green","status":"Active","pm":"Luna, Victor Ramirez","pillar":"CIO \u2013 Commercial & Corporate Engineering","tiering":"Critical","report_date":"","days_since_report":999,"okr":"","service_maturity":"","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":0,"miles_overdue":0},{"id":"prog-020","type":"program","name":"Compliance Program - Privileged and Confidential","rag":"Red","status":"Active","pm":"Steinman, Shannon D. (TR Technology)","pillar":"CIO \u2013 Strategy & Operations","tiering":"Critical","report_date":"2026-05-14","days_since_report":6,"okr":"CIO1a - Deliver an improved and market leading product experience for our customers","service_maturity":"","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":4,"miles_overdue":0},{"id":"prog-018","type":"program","name":"Customer Success Enablement","rag":"Amber","status":"Active","pm":"Patra, Srini (TR Technology)","pillar":"CIO \u2013 Commercial & Corporate Engineering","tiering":"Critical","report_date":"2026-05-14","days_since_report":6,"okr":"","service_maturity":"","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":4,"miles_overdue":0},{"id":"prog-017","type":"program","name":"CIAM Migrations","rag":"Red","status":"Active","pm":"Steinman, Shannon D. (TR Technology)","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-19","days_since_report":1,"okr":"Migrate 65% of all SSO customers by Dec 31, 2026 (all legacy IDPs). Migrate 100% of OnePass accounts (SSO and Local) to CIAM by Dec 31, 2026.","service_maturity":"","risks_total":7,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":2,"actions_total":1,"actions_incomplete":1,"actions_no_date":0,"issues_total":5,"issues_no_res":5,"issues_no_owner":0,"issues_no_date":3,"issues_no_plan":0,"miles_total":11,"miles_overdue":0},{"id":"prog-016","type":"program","name":"Mergers, Acquisitions & Divestitures (MAD)","rag":"Amber","status":"Active","pm":"Allison, Richard P. (TR Technology)","pillar":"CIO \u2013 Strategy & Operations","tiering":"Critical","report_date":"2026-05-13","days_since_report":7,"okr":"","service_maturity":"","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":6,"miles_overdue":0},{"id":"prog-008","type":"program","name":"AI Reimagine (CIO)","rag":"Amber","status":"Active","pm":"Berry, Paul","pillar":"CIO \u2013 Strategy & Operations","tiering":"Critical","report_date":"2026-05-14","days_since_report":6,"okr":"","service_maturity":"","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":3,"miles_overdue":0},{"id":"prog-007","type":"program","name":"Cloud Optimization","rag":"Amber","status":"Active","pm":"Schroeder, Maureen (TR Technology)","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-05-19","days_since_report":1,"okr":"PLE-4/PLE-5/PLE-11/PLE-12 Cloud Optimization OKRs","service_maturity":"Cloud Optimization: L2 - PLE3 | Tech Standards & Governance","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":4,"miles_overdue":0},{"id":"prog-006","type":"program","name":"GCP Cloud Migration Program","rag":"Green","status":"Active","pm":"Kumar, Ramendra (TR Technology)","pillar":"CIO \u2013 Platform Engineering","tiering":"Critical","report_date":"2026-04-30","days_since_report":20,"okr":"","service_maturity":"","risks_total":9,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":9,"actions_total":10,"actions_incomplete":10,"actions_no_date":9,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":4,"miles_overdue":0},{"id":"prog-005","type":"program","name":"SAP Upgrades (ECC/WRP, PI/PO, Portal)","rag":"Green","status":"Active","pm":"Kortagere Raghunath, Sudarshan (TR Technology)","pillar":"CIO \u2013 Commercial & Corporate Engineering","tiering":"Critical","report_date":"2026-04-24","days_since_report":26,"okr":"","service_maturity":"","risks_total":0,"risks_no_owner":0,"risks_no_mit":0,"risks_no_date":0,"actions_total":0,"actions_incomplete":0,"actions_no_date":0,"issues_total":0,"issues_no_res":0,"issues_no_owner":0,"issues_no_date":0,"issues_no_plan":0,"miles_total":0,"miles_overdue":0}];
 
-// ── CONFIG ──────────────────────────────────────────────────────────────────
-// DATA_URL: path to pmo_data.json, resolved for each environment.
-//
-// Environment detection:
-//   1. GitHub Pages  → https://your-org.github.io/pmo-dashboard/dashboard/index.html
-//                      fetches ../data/pmo_data.json  ✓
-//   2. Local server  → http://localhost:3000/dashboard/index.html
-//                      fetches ../data/pmo_data.json  ✓
-//   3. Direct file   → file:///...  or  about:srcdoc  (Claude preview)
-//                      relative fetch not possible → shows upload prompt instead
-//
-const DATA_URL = (function() {
-  const proto = window.location.protocol;
-  // file:// or about:srcdoc (opened directly or Claude preview) — use upload fallback
-  if (proto !== 'http:' && proto !== 'https:') return null;
-  // Running via HTTP server — use a simple relative path.
-  // This file lives at  .../dashboard/index.html
-  // The data file lives at  .../data/pmo_data.json
-  // So from here, ../data/pmo_data.json always works.
-  return '../data/pmo_data.json';
-})();
+const MILESTONES=[{"project":"Pagero Cloud Migration (Public) and Office Networking","rid":"proj-182","type":"project","name":"Migrate to TR standard CI tooling (e.x.Github , Actions,Cumulus)","status":"Delayed","rag":"Amber","end":"2026-12-30","variance":0},{"project":"Product Engineering & Platform Readiness","rid":"proj-181","type":"project","name":"S3NS Environment Prod","status":"In Progress","rag":"Red","end":"2026-06-12","variance":0},{"project":"AI Reimagine Other Pillar Point Solutions","rid":"proj-178","type":"project","name":"ETS Service Desk Automation","status":"In Progress","rag":"Amber","end":"2026-12-31","variance":0},{"project":"Service Mgmt AI Reimagine","rid":"proj-176","type":"project","name":"DevOps Acceleration","status":"In Progress","rag":"Amber","end":"2026-12-31","variance":0},{"project":"Service Mgmt AI Reimagine","rid":"proj-176","type":"project","name":"Deployment of TRT (ITIL)","status":"In Progress","rag":"Amber","end":"2026-12-31","variance":0},{"project":"Service Mgmt AI Reimagine","rid":"proj-176","type":"project","name":"Deployment of SRE Agents","status":"In Progress","rag":"Amber","end":"2026-12-31","variance":0},{"project":"IA Remediations","rid":"proj-168","type":"project","name":"Protecht Issue ID: 1016577 - Findings from scan results and Remediation Actions","status":"Not Started","rag":"Red","end":"2026-03-31","variance":50},{"project":"IA Remediations","rid":"proj-168","type":"project","name":"Protecht Issue ID: 1016931 - ITGC","status":"Not Started","rag":"Red","end":"2026-03-31","variance":50},{"project":"IA Remediations","rid":"proj-168","type":"project","name":"Protecht Issue ID: 1016549 - Lack of Formalized Support and Governance Structure","status":"In Progress","rag":"Red","end":"2025-12-31","variance":140},{"project":"IA Remediations","rid":"proj-168","type":"project","name":"Protecht Issue ID: 1016573 - Absence of OSS Classification","status":"Not Started","rag":"Red","end":"2026-03-31","variance":50},{"project":"IA Remediations","rid":"proj-168","type":"project","name":"Protecht Issue ID: 1016865 - Business Continuity Plan & Disaster Recovery","status":"Delayed","rag":"Red","end":"2026-03-06","variance":75},{"project":"ICFR Transformation - Privileged and Confidential","rid":"proj-144","type":"project","name":"Track D-Ownership & Certification Model workstream: Self-assessment process Pilot program","status":"In Progress","rag":"Green","end":"2026-05-18","variance":2},{"project":"ICFR Transformation - Privileged and Confidential","rid":"proj-144","type":"project","name":"Track C-Control Rationalization & Standardization: Receive all input/responses from key contacts","status":"In Progress","rag":"Green","end":"2026-05-15","variance":5},{"project":"ICFR Transformation - Privileged and Confidential","rid":"proj-144","type":"project","name":"Track A-Platform/Tooling workstream: Present current & proposed state of tooling landscape","status":"In Progress","rag":"Green","end":"2026-05-15","variance":5},{"project":"NYNJ PA Project - Privileged and Confidential","rid":"proj-129","type":"project","name":"NYNJ PA - CoCounsel for MS Outlook Add-In available for onboarding in production","status":"Not Started","rag":"Amber","end":"2026-09-30","variance":0},{"project":"NYNJ PA Project - Privileged and Confidential","rid":"proj-129","type":"project","name":"CoCounsel FedRAMP available in Production","status":"Not Started","rag":"Amber","end":"2026-09-30","variance":0},{"project":"NYNJ PA Project - Privileged and Confidential","rid":"proj-129","type":"project","name":"CoCounsel available in production for NYNJ PA onboarding","status":"Not Started","rag":"Amber","end":"2026-09-30","variance":0},{"project":"Tic Tie Calculate - Cloud Integration (M&A)","rid":"proj-126","type":"project","name":"Production Environment Integration Planning and Critical Data Migration (TTC Prod)","status":"Planned","rag":"Green","end":"2026-03-31","variance":50},{"project":"GST Modernization","rid":"proj-115","type":"project","name":"Phase 1B (Batch Services)","status":"Delayed","rag":"Red","end":"2026-06-19","variance":0},{"project":"Project Aether: Enable AIAgents for Infrastructure Services leading to AI Powered Platforms","rid":"proj-114","type":"project","name":"ISRM Architecture Review Agent","status":"Delayed","rag":"On Hold","end":"2026-01-30","variance":110},{"project":"Local User Migration","rid":"proj-109","type":"project","name":"Migrate 100% of all local users from ONESOURCE to CIAM","status":"In Progress","rag":"Amber","end":"2027-12-31","variance":0},{"project":"Rep Led Trials | Y26Q1 | Rep Excellence Enablement","rid":"proj-108","type":"project","name":"Rep Led Trials | Y26Q2 | Unified Trial Journey Experience - Removing Trial Dashboard","status":"In Progress","rag":"Green","end":"2026-03-10","variance":71},{"project":"SSO Migration","rid":"proj-107","type":"project","name":"Phase 2 \u2013 Complete 33% of targeted SSO migrations","status":"In Progress","rag":"Red","end":"2026-08-30","variance":0},{"project":"SSO Migration","rid":"proj-107","type":"project","name":"Phase 3 \u2013 Complete 65% of targeted SSO migrations","status":"In Progress","rag":"Red","end":"2026-12-31","variance":0},{"project":"Custom Pro Deal Functionality for UK","rid":"proj-106","type":"project","name":"Overall project timeline for Custom Pro Deal Functionality for UK","status":"Planned","rag":"Green","end":"2026-05-09","variance":11},{"project":"Enterprise Identity and Entitlement","rid":"proj-105","type":"project","name":"CoCounsel Next Pilots enabled","status":"Not Started","rag":"Amber","end":"2026-07-31","variance":0},{"project":"Optimize TR Estate","rid":"proj-102","type":"project","name":"Achieve Finance Defined Savings Target for CIO","status":"In Progress","rag":"Red","end":"2026-12-31","variance":0},{"project":"Montreal DC Exit Project","rid":"proj-098","type":"project","name":"Discovery Phase: Complete Application Dependency Discovery","status":"In Progress","rag":"Green","end":"2026-05-04","variance":16},{"project":"Montreal DC Exit Project","rid":"proj-098","type":"project","name":"Migration Architecture & Planning Phase: Define future database migration requirements","status":"Not Started","rag":"Green","end":"2026-05-15","variance":5},{"project":"Montreal DC Exit Project","rid":"proj-098","type":"project","name":"Discovery Phase: Complete Network, Router, & Firewall Discovery","status":"In Progress","rag":"Green","end":"2026-05-04","variance":16},{"project":"Montreal DC Exit Project","rid":"proj-098","type":"project","name":"Migration Architecture & Planning Phase: Define future-state server architecture requirements","status":"Not Started","rag":"Green","end":"2026-05-15","variance":5},{"project":"Montreal DC Exit Project","rid":"proj-098","type":"project","name":"Migration Architecture & Planning Phase: Define future network migration requirements","status":"Not Started","rag":"Green","end":"2026-05-15","variance":5},{"project":"Montreal DC Exit Project","rid":"proj-098","type":"project","name":"Migration Architecture & Planning Phase: Define future monitoring requirements","status":"Not Started","rag":"Green","end":"2026-05-15","variance":5},{"project":"Montreal DC Exit Project","rid":"proj-098","type":"project","name":"Migration Architecture & Planning Phase: Define future storage migration requirements","status":"Not Started","rag":"Green","end":"2026-05-15","variance":5},{"project":"Certinia CS Implementation Wave 1","rid":"proj-088","type":"project","name":"Plan","status":"In Progress","rag":"Green","end":"2026-05-16","variance":4},{"project":"GTM4 Cloud Modernization","rid":"proj-078","type":"project","name":"AMS to AWS DB Migration of Prod servers \u2013 Wave1 and Decom","status":"In Progress","rag":"Amber","end":"2026-06-01","variance":0},{"project":"GTM4 Cloud Modernization","rid":"proj-078","type":"project","name":"GTM4 Windows to Linux Migration Phase 2 - Export and import management Production Wave2 Rollout","status":"Not Started","rag":"Amber","end":"2026-08-28","variance":0},{"project":"GTM4 Cloud Modernization","rid":"proj-078","type":"project","name":"GTM4 Windows to Linux Migration Phase 3 - Reporting Services Migration and Decom","status":"Planned","rag":"Amber","end":"2026-12-31","variance":0},{"project":"SOX 404 Sailpoint application onboarding","rid":"proj-077","type":"project","name":"Alliant SailPoint onboarding go-live","status":"In Progress","rag":"Amber","end":"2026-09-30","variance":0},{"project":"SOX 404 Sailpoint application onboarding","rid":"proj-077","type":"project","name":"High Radius SailPoint onboarding go-live","status":"In Progress","rag":"Amber","end":"2026-07-30","variance":0},{"project":"SOX 404 Sailpoint application onboarding","rid":"proj-077","type":"project","name":"Sungard Avantgard Integrity SailPoint onboarding go-live","status":"In Progress","rag":"Amber","end":"2026-09-30","variance":0},{"project":"Customer Trust AI Strategy","rid":"proj-064","type":"project","name":"2026 Overall Program Completion - Customer Trust AI Strategy","status":"In Progress","rag":"Amber","end":"2027-06-30","variance":0},{"project":"Customer Trust AI Strategy","rid":"proj-064","type":"project","name":"Phase 1 - Milestone 3: Establish and operationalize the Content Governance process","status":"In Progress","rag":"Amber","end":"2026-08-01","variance":0},{"project":"Customer Trust AI Strategy","rid":"proj-064","type":"project","name":"Phase 1 - Milestone 1: Establish and build a trusted content knowledge base","status":"In Progress","rag":"Amber","end":"2026-09-30","variance":0},{"project":"SafeSend One","rid":"proj-062","type":"project","name":"SSOne - Market/Sales/Support/ SSP delivery release","status":"In Progress","rag":"Amber","end":"2026-06-20","variance":0},{"project":"SafeSend One","rid":"proj-062","type":"project","name":"Overall Project Completion","status":"In Progress","rag":"Amber","end":"2026-12-15","variance":0},{"project":"ETS Service Desk Automation","rid":"proj-058","type":"project","name":"Conversational workflows configured","status":"In Progress","rag":"Green","end":"2026-05-15","variance":5},{"project":"AI Reimagine Other Pillar Point Solutions","rid":"proj-054","type":"project","name":"ETS Discovery & Benefits 2026","status":"In Progress","rag":"Amber","end":"2026-06-30","variance":0},{"project":"SM Diamond Lanes - DevOps Acceleration","rid":"proj-047","type":"project","name":"Milestones 3\u20134: Diamond Lane Contracts & Change Scorecard (v1)","status":"In Progress","rag":"Amber","end":"2026-06-30","variance":0},{"project":"SM Diamond Lanes - DevOps Acceleration","rid":"proj-047","type":"project","name":"Milestone 5: ServiceNow Diamond Lane Policy & Standard Change Integration (Deferred)","status":"Not Started","rag":"Red","end":"2026-06-30","variance":0},{"project":"SM Diamond Lanes - DevOps Acceleration","rid":"proj-047","type":"project","name":"Milestone 6: Pipeline\u2011Driven Change Automation","status":"In Progress","rag":"Amber","end":"2026-05-31","variance":0},{"project":"SM Diamond Lanes - DevOps Acceleration","rid":"proj-047","type":"project","name":"EP - Diamond Lane (DevOps Acceleration)","status":"In Progress","rag":"Amber","end":"2026-12-31","variance":0},{"project":"SM AIOps/Event Management (SNOW)","rid":"proj-024","type":"project","name":"Scale Onboarding","status":"Not Started","rag":"Amber","end":"2026-12-04","variance":0},{"project":"SM AIOps/Event Management (SNOW)","rid":"proj-024","type":"project","name":"MVP - Early Adopter Onboarding","status":"Not Started","rag":"Amber","end":"2026-05-31","variance":0},{"project":"SM AIOps/Event Management (SNOW)","rid":"proj-024","type":"project","name":"POV","status":"In Progress","rag":"Amber","end":"2026-05-01","variance":19},{"project":"SM AIOps/Event Management (SNOW)","rid":"proj-024","type":"project","name":"Complete FedRAMP governance and compliance spreadsheet for AIOps integration","status":"In Progress","rag":"Green","end":"2026-05-14","variance":6},{"project":"SM AIOps/Event Management (SNOW)","rid":"proj-024","type":"project","name":"Update GTM4 and SIAM FinOpsDatadogAlerts monitors to AIOps webhook","status":"In Progress","rag":"Green","end":"2026-05-18","variance":2},{"project":"Cobalt Modernization","rid":"proj-023","type":"project","name":"Elastic Search to Open Search","status":"In Progress","rag":"Amber","end":"2026-10-01","variance":0},{"project":"DELETE - No Longer NeededCommercial Process and Systems Workstreams","rid":"proj-022","type":"project","name":"Revenue Recognition \u2013 Time-Based (CoCounsel Tax, R2A, R2R)","status":"In Progress","rag":"Green","end":"2026-04-27","variance":23},{"project":"DELETE - No Longer NeededCommercial Process and Systems Workstreams","rid":"proj-022","type":"project","name":"Prof Services \u2013 SurePrep","status":"In Progress","rag":"Red","end":"2026-06-08","variance":0},{"project":"DELETE - No Longer NeededCommercial Process and Systems Workstreams","rid":"proj-022","type":"project","name":"Refunds \u2013 ACH","status":"In Progress","rag":"Amber","end":"2026-05-25","variance":0},{"project":"DELETE - No Longer NeededCommercial Process and Systems Workstreams","rid":"proj-022","type":"project","name":"Prof Services \u2013 CoCounsel Tax","status":"In Progress","rag":"Amber","end":"2026-06-22","variance":0},{"project":"DELETE - No Longer NeededCommercial Process and Systems Workstreams","rid":"proj-022","type":"project","name":"Co-Terms","status":"In Progress","rag":"Red","end":"2026-07-13","variance":0},{"project":"DELETE - No Longer NeededCommercial Process and Systems Workstreams","rid":"proj-022","type":"project","name":"Indirect Tax Management","status":"In Progress","rag":"Green","end":"2026-05-01","variance":19},{"project":"DELETE - No Longer NeededCommercial Process and Systems Workstreams","rid":"proj-022","type":"project","name":"Monthly Billing","status":"In Progress","rag":"Red","end":"2026-06-22","variance":0},{"project":"DELETE - No Longer NeededCommercial Process and Systems Workstreams","rid":"proj-022","type":"project","name":"CoCounsel Tax, R2A, R2R","status":"In Progress","rag":"Green","end":"2026-05-12","variance":8},{"project":"DELETE - No Longer NeededCommercial Process and Systems Workstreams","rid":"proj-022","type":"project","name":"Finance Operations \u2013 Reporting","status":"In Progress","rag":"Amber","end":"2026-04-27","variance":23},{"project":"DELETE - No Longer NeededCommercial Process and Systems Workstreams","rid":"proj-022","type":"project","name":"TREC \u2013 SurePrep","status":"In Progress","rag":"Amber","end":"2026-05-25","variance":0},{"project":"DELETE - No Longer NeededCommercial Process and Systems Workstreams","rid":"proj-022","type":"project","name":"Royalties \u2013 Percent of Royalty Basis (Phase 1)","status":"In Progress","rag":"Green","end":"2026-05-12","variance":8},{"project":"DELETE - No Longer NeededCommercial Process and Systems Workstreams","rid":"proj-022","type":"project","name":"Renewals Phase 1 \u2013 Auto-Renewals","status":"In Progress","rag":"Amber","end":"2026-06-15","variance":0},{"project":"DELETE - No Longer NeededCommercial Process and Systems Workstreams","rid":"proj-022","type":"project","name":"Finance Operations \u2013 Commissions","status":"In Progress","rag":"Amber","end":"2026-07-27","variance":0},{"project":"DELETE - No Longer NeededCommercial Process and Systems Workstreams","rid":"proj-022","type":"project","name":"Professional Services \u2013 SafeSend","status":"In Progress","rag":"Amber","end":"2026-07-13","variance":0},{"project":"DELETE - No Longer NeededCommercial Process and Systems Workstreams","rid":"proj-022","type":"project","name":"Usage/CC \u2013 SurePrep (Interim Release)","status":"In Progress","rag":"Green","end":"2026-05-12","variance":8},{"project":"DELETE - No Longer NeededCommercial Process and Systems Workstreams","rid":"proj-022","type":"project","name":"Mid-Term Modification (Add Seat)","status":"In Progress","rag":"Red","end":"2026-07-27","variance":0},{"project":"DELETE - No Longer NeededCommercial Process and Systems Workstreams","rid":"proj-022","type":"project","name":"FSD Cancellation and Non-Revenue Modification","status":"In Progress","rag":"Amber","end":"2026-07-13","variance":0},{"project":"DELETE - No Longer NeededCommercial Process and Systems Workstreams","rid":"proj-022","type":"project","name":"Standalone Credits \u2013 Goodwill and Full Credits","status":"In Progress","rag":"Amber","end":"2026-05-25","variance":0},{"project":"DELETE - No Longer NeededCommercial Process and Systems Workstreams","rid":"proj-022","type":"project","name":"SurePrep Phase 2 \u2013 Services and Software","status":"In Progress","rag":"Green","end":"2026-05-12","variance":8},{"project":"DELETE - No Longer NeededCommercial Process and Systems Workstreams","rid":"proj-022","type":"project","name":"TREC Business Go-Live \u2013 AIA","status":"In Progress","rag":"Green","end":"2026-04-27","variance":23},{"project":"IFS (ERP) Cloud Migration(Muzulu Azure Cloud)","rid":"proj-015","type":"project","name":"Migration Planning Phase","status":"In Progress","rag":"Green","end":"2026-05-17","variance":3},{"project":"IFS (ERP) Cloud Migration(Muzulu Azure Cloud)","rid":"proj-015","type":"project","name":"Test Environment Migration to Azure Complete","status":"Planned","rag":"Green","end":"2026-05-10","variance":10},{"project":"Pricing Engine","rid":"proj-013","type":"project","name":"Release 1 Go Live","status":"Planned","rag":"Red","end":"2026-08-14","variance":0},{"project":"Pricing Engine","rid":"proj-013","type":"project","name":"Release 2 Go Live","status":"Planned","rag":"Amber","end":"2026-09-14","variance":0},{"project":"Pagero Integration","rid":"prog-037","type":"program","name":"S3NS Pre-Prod environment","status":"In Progress","rag":"Red","end":"2026-05-15","variance":5},{"project":"Pagero Integration","rid":"prog-037","type":"program","name":"S3NS Prod environment build","status":"Not Started","rag":"Red","end":"2026-06-12","variance":0},{"project":"Pagero Integration","rid":"prog-037","type":"program","name":"Overall project completion - French mandate Go Live","status":"In Progress","rag":"Amber","end":"2026-09-01","variance":0},{"project":"Pagero Integration","rid":"prog-037","type":"program","name":"PDP certification - mid year audit","status":"In Progress","rag":"Amber","end":"2026-06-30","variance":0},{"project":"Pagero Integration","rid":"prog-037","type":"program","name":"S3NS Pre-Prod environment (v2)","status":"In Progress","rag":"Amber","end":"2026-05-25","variance":0},{"project":"CIAM Migrations","rid":"prog-017","type":"program","name":"Complete 22% of Total SSO Connection Migrations (1,256 connections) by end of Q2 2026","status":"In Progress","rag":"Red","end":"2026-06-30","variance":0},{"project":"CIAM Migrations","rid":"prog-017","type":"program","name":"Complete 44% of Total SSO Connection Migrations (2,474 connections) by end of Q3 2026","status":"Planned","rag":"Red","end":"2026-09-30","variance":0},{"project":"AI Reimagine (CIO)","rid":"prog-008","type":"program","name":"Commercial Eng. Benefits Unlock","status":"In Progress","rag":"Amber","end":"2026-12-31","variance":0}];
 
-// ── CONSTANTS ────────────────────────────────────────────────────────────────
-const RULES = [
-  { id:'R1',  label:'Risks have owners',           desc:'All logged risks must have a named owner assigned' },
-  { id:'R2',  label:'Risks have mitigation plans',  desc:'Every risk must have a documented mitigation or response plan' },
-  { id:'R3',  label:'Status report up to date',     desc:'Status report updated within the last 7 days' },
-  { id:'R4',  label:'Issues have owners',           desc:'All open issues must have a named owner assigned' },
-  { id:'R5',  label:'Issues have resolution plans', desc:'All open issues must have a resolution plan documented' },
-  { id:'R6',  label:'Has milestones',               desc:'At least one milestone must be defined' },
-  { id:'R7',  label:'No overdue milestones',        desc:'No milestones should be past their LE end date' },
-  { id:'R8',  label:'Actions have due dates',       desc:'All open actions must have a due date assigned' },
-  { id:'R9',  label:'OKR populated',                desc:'OKR field must be populated' },
-  { id:'R10', label:'Service Maturity populated',   desc:'Service Maturity field must be populated' },
-];
+const RULES=[{id:"R1",label:"Risks have owners",desc:"All logged risks must have a named owner assigned"},{id:"R2",label:"Risks have mitigation plans",desc:"Every risk must have a documented mitigation or response plan"},{id:"R3",label:"Status report up to date",desc:"Status report must have been updated within the last 7 days"},{id:"R4",label:"Issues have owners",desc:"All open issues must have a named owner responsible for resolution"},{id:"R5",label:"Issues have resolution plans",desc:"All open issues must have a resolution plan documented"},{id:"R6",label:"Has milestones",desc:"Project or program must have at least one milestone defined"},{id:"R7",label:"No overdue milestones",desc:"No milestones should be past their Latest Estimate end date"},{id:"R8",label:"Actions have due dates",desc:"All open actions must have a due date assigned"},{id:"R9",label:"OKR populated",desc:"Project or program OKR field must be populated"},{id:"R10",label:"Service Maturity populated",desc:"Service Maturity field must be populated"}];
 
-// ── STATE ────────────────────────────────────────────────────────────────────
-let RECORDS = [], MILESTONES = [];
-let activeTab = 'all';
-let fType = 'all', fStatus = 'all', fPillar = 'all';
-
-// ── DATA TRANSFORMER (mirrors the Python generate_data.py logic) ─────────────
-function transformData(raw) {
-  const today = new Date(raw.generated_at
-    ? raw.generated_at.substring(0,10)
-    : new Date().toISOString().substring(0,10));
-
-  function personStr(p) {
-    if (!p) return '';
-    if (typeof p === 'object') return (p.name || '').trim();
-    return String(p).trim();
-  }
-  function parseDate(val) {
-    if (!val || val === '' || val === 'null') return null;
-    try { return new Date(String(val).substring(0,10)); } catch(e) { return null; }
-  }
-  function daysSince(dateStr) {
-    const d = parseDate(dateStr);
-    if (!d) return 999;
-    return Math.floor((today - d) / 86400000);
-  }
-
-  const records = [], milestones = [];
-
-  for (const e of (raw.entities || [])) {
-    const rec = {
-      id:               e.id || '',
-      type:             e.type || 'project',
-      name:             (e.name || '').trim(),
-      rag:              (e.rag_status || '').trim(),
-      status:           (e.status || '').trim(),
-      pm:               personStr(e.manager) || '(No PM)',
-      pillar:           (e.pillar || '').trim(),
-      tiering:          (e.tiering || '').trim(),
-      report_date:      e.latest_report ? (e.latest_report.date || '') : '',
-      days_since_report: e.latest_report ? daysSince(e.latest_report.date) : 999,
-      okr:              (e.okrs || '').trim(),
-      service_maturity: (e.service_maturity || '').trim(),
-      risks_total:0, risks_no_owner:0, risks_no_mit:0, risks_no_date:0,
-      actions_total:0, actions_incomplete:0, actions_no_date:0,
-      issues_total:0, issues_no_res:0, issues_no_owner:0, issues_no_date:0, issues_no_plan:0,
-      miles_total:0, miles_overdue:0,
-    };
-
-    const own = (arr) => (arr || []).filter(i =>
-      (i.friendly_id || '').startsWith(e.id + '/'));
-
-    for (const r of own(e.risks)) {
-      if ((r.status || '').toLowerCase() === 'closed') continue;
-      rec.risks_total++;
-      if (!personStr(r.risk_owner))            rec.risks_no_owner++;
-      if (!(r.mitigation || '').trim())         rec.risks_no_mit++;
-      if (!r.target_closure_date)               rec.risks_no_date++;
-    }
-    for (const a of own(e.actions)) {
-      rec.actions_total++;
-      const done = ['complete','completed','closed','done']
-        .includes((a.status||'').toLowerCase());
-      if (!done) {
-        rec.actions_incomplete++;
-        if (!a.target_date) rec.actions_no_date++;
-      }
-    }
-    for (const i of own(e.issues)) {
-      rec.issues_total++;
-      const resolved = ['resolved','closed','complete','completed']
-        .includes((i.status||'').toLowerCase());
-      if (!resolved) {
-        rec.issues_no_res++;
-        if (!personStr(i.owner))              rec.issues_no_owner++;
-        if (!i.target_closure_date)           rec.issues_no_date++;
-        if (!(i.resolution || '').trim())     rec.issues_no_plan++;
-      }
-    }
-    for (const m of own(e.milestones)) {
-      rec.miles_total++;
-      const mstatus = (m.status || '').toLowerCase();
-      const leEnd   = parseDate(m.le_end_date);
-      const planEnd = parseDate(m.planned_end_date);
-      const endDate = leEnd || planEnd;
-      const done    = ['complete','completed','closed','done'].includes(mstatus);
-      const overdue = endDate && endDate < today && !done;
-      if (overdue) rec.miles_overdue++;
-      const rag = (m.rag_status || '').trim();
-      if (overdue || ['red','amber'].includes(rag.toLowerCase())) {
-        milestones.push({
-          project:  rec.name,
-          rid:      rec.id,
-          type:     rec.type,
-          name:     (m.name || '').trim(),
-          status:   m.status || '',
-          rag:      rag,
-          end:      endDate ? endDate.toISOString().substring(0,10) : '',
-          variance: (overdue && endDate) ? Math.floor((today - endDate) / 86400000) : 0,
-        });
-      }
-    }
-    records.push(rec);
-  }
-  return { records, milestones, generated_at: raw.generated_at || '' };
+function scoreRecord(r){
+  const R1=r.risks_total===0||r.risks_no_owner===0;
+  const R2=r.risks_total===0||r.risks_no_mit===0;
+  const R3=r.days_since_report<=7;
+  const R4=r.issues_total===0||r.issues_no_owner===0;
+  const R5=r.issues_total===0||r.issues_no_plan===0;
+  const R6=r.miles_total>0;
+  const R7=r.miles_overdue===0;
+  const R8=r.actions_total===0||r.actions_no_date===0;
+  const R9=!!(r.okr&&r.okr.trim());
+  const R10=!!(r.service_maturity&&r.service_maturity.trim());
+  const passes=[R1,R2,R3,R4,R5,R6,R7,R8,R9,R10];
+  return{passes,pct:Math.round(passes.filter(Boolean).length/10*100)};
 }
 
-// ── SCORING ──────────────────────────────────────────────────────────────────
-function scoreRecord(r) {
-  const passes = [
-    r.risks_total===0   || r.risks_no_owner===0,
-    r.risks_total===0   || r.risks_no_mit===0,
-    r.days_since_report <= 7,
-    r.issues_total===0  || r.issues_no_owner===0,
-    r.issues_total===0  || r.issues_no_plan===0,
-    r.miles_total > 0,
-    r.miles_overdue===0,
-    r.actions_total===0 || r.actions_no_date===0,
-    !!(r.okr && r.okr.trim()),
-    !!(r.service_maturity && r.service_maturity.trim()),
+function sc(p){return p>=80?'g':p>=60?'a':'r';}
+function scLabel(p){return p>=80?'Compliant':p>=60?'Partial':'Non-Compliant';}
+function ragDot(rag){
+  const r=(rag||'').toLowerCase();
+  if(r.includes('red'))return'rag-r';
+  if(r.includes('amber'))return'rag-a';
+  if(r.includes('blue'))return'rag-b';
+  return'rag-g';
+}
+function getRuleDetail(r,i){
+  const d=[
+    r.risks_no_owner>0?`${r.risks_no_owner} risk(s) missing owner`:'',
+    r.risks_no_mit>0?`${r.risks_no_mit} risk(s) missing mitigation`:'',
+    r.days_since_report>=999?'No status report filed':`Last report ${r.days_since_report}d ago (>7d threshold)`,
+    r.issues_no_owner>0?`${r.issues_no_owner} issue(s) missing owner`:'',
+    r.issues_no_plan>0?`${r.issues_no_plan} issue(s) missing resolution plan`:'',
+    r.miles_total===0?'No milestones defined':'',
+    r.miles_overdue>0?`${r.miles_overdue} milestone(s) past LE date`:'',
+    r.actions_no_date>0?`${r.actions_no_date} action(s) missing due date`:'',
+    !r.okr||!r.okr.trim()?'OKR field not populated':'',
+    !r.service_maturity||!r.service_maturity.trim()?'Service Maturity not populated':'',
   ];
-  return { passes, pct: Math.round(passes.filter(Boolean).length / 10 * 100) };
-}
-function scClass(p) { return p>=80?'g':p>=60?'a':'r'; }
-function scLabel(p) { return p>=80?'Compliant':p>=60?'Partial':'Non-Compliant'; }
-function ragDotClass(rag) {
-  const r = (rag||'').toLowerCase();
-  if (r.includes('red'))   return 'rag-r';
-  if (r.includes('amber')) return 'rag-a';
-  if (r.includes('blue'))  return 'rag-b';
-  return 'rag-g';
-}
-function ruleDetail(r, i) {
-  return [
-    r.risks_no_owner>0   ? `${r.risks_no_owner} risk(s) missing owner` : '',
-    r.risks_no_mit>0     ? `${r.risks_no_mit} risk(s) missing mitigation plan` : '',
-    r.days_since_report>=999 ? 'No status report filed'
-      : `Last report ${r.days_since_report} day(s) ago (>7d threshold)`,
-    r.issues_no_owner>0  ? `${r.issues_no_owner} issue(s) missing owner` : '',
-    r.issues_no_plan>0   ? `${r.issues_no_plan} issue(s) missing resolution plan` : '',
-    r.miles_total===0    ? 'No milestones defined' : '',
-    r.miles_overdue>0    ? `${r.miles_overdue} milestone(s) past their LE date` : '',
-    r.actions_no_date>0  ? `${r.actions_no_date} action(s) missing a due date` : '',
-    (!r.okr||!r.okr.trim()) ? 'OKR field is empty — please populate in the project record' : `Current value: "${r.okr}"`,
-    (!r.service_maturity||!r.service_maturity.trim()) ? 'Service Maturity field is empty — please populate in the project record' : `Current value: "${r.service_maturity}"`,
-  ][i] || '';
+  return d[i]||'';
 }
 
-// ── FETCH & INIT ─────────────────────────────────────────────────────────────
-async function init() {
-  document.getElementById('loader').classList.remove('hidden');
-  document.getElementById('error-state').classList.remove('visible');
-  document.getElementById('app').classList.remove('visible');
+let tab='all',fType='all',fStatus='all',fPillar='all',search='',modal=null;
 
-  const btn = document.getElementById('refresh-btn');
-  btn.classList.add('spinning');
+const scored=RECORDS.map(r=>({r,s:scoreRecord(r)}));
+const pillars=[...new Set(RECORDS.map(r=>r.pillar).filter(p=>p&&p.trim()))].sort();
+const nc=scored.filter(x=>x.s.pct<60).length;
+const partial=scored.filter(x=>x.s.pct>=60&&x.s.pct<80).length;
+const ok=scored.filter(x=>x.s.pct>=80).length;
+const avg=Math.round(scored.reduce((a,x)=>a+x.s.pct,0)/scored.length);
+const projects=RECORDS.filter(r=>r.type==='project').length;
+const programs=RECORDS.filter(r=>r.type==='program').length;
+const projComp=Math.round(scored.filter(x=>x.r.type==='project'&&x.s.pct>=80).length/Math.max(1,projects)*100);
+const progComp=Math.round(scored.filter(x=>x.r.type==='program'&&x.s.pct>=80).length/Math.max(1,programs)*100);
 
-  // Not running via HTTP — show file-upload fallback
-  if (!DATA_URL) {
-    document.getElementById('loader').classList.add('hidden');
-    showFilePrompt();
-    btn.classList.remove('spinning');
-    return;
-  }
-
-  document.getElementById('loader-msg').textContent =
-    'Fetching ' + DATA_URL.split('/').pop() + '...';
-
-  try {
-    const res = await fetch(DATA_URL + '?t=' + Date.now());
-    if (!res.ok) throw new Error('HTTP ' + res.status + ' - ' + res.statusText);
-
-    document.getElementById('loader-msg').textContent = 'Transforming records...';
-    const raw = await res.json();
-
-    document.getElementById('loader-msg').textContent = 'Scoring compliance rules...';
-    await new Promise(r => setTimeout(r, 60));
-
-    loadFromRaw(raw);
-
-  } catch (err) {
-    document.getElementById('loader').classList.add('hidden');
-    const es = document.getElementById('error-state');
-    es.classList.add('visible');
-    document.getElementById('err-msg').innerHTML =
-      'Could not fetch <code>' + DATA_URL + '</code>.<br><br>' +
-      'Check that:<br>' +
-      '1. You started the server from the <strong>repo root</strong> with <code>npx serve .</code><br>' +
-      '2. The file <code>data/pmo_data.json</code> exists in your repo<br>' +
-      '3. You are visiting <code>http://localhost:3000/dashboard/</code> (not opening the HTML directly)';
-    document.getElementById('err-hint').textContent = 'Error: ' + err.message;
-    console.error('[PMO Dashboard] Load error:', err);
-  }
-  btn.classList.remove('spinning');
-}
-
-// Shared: process raw JSON and render
-function loadFromRaw(raw) {
-  const result = transformData(raw);
-  RECORDS    = result.records;
-  MILESTONES = result.milestones;
-  buildUI(result.generated_at);
-  document.getElementById('loader').classList.add('hidden');
-  document.getElementById('error-state').classList.remove('visible');
-  document.getElementById('app').classList.add('visible');
-  const fp = document.getElementById('file-prompt');
-  if (fp) fp.style.display = 'none';
-}
-
-// File-upload fallback (for file:// or direct open)
-function showFilePrompt() {
-  if (!document.getElementById('file-prompt')) {
-    const div = document.createElement('div');
-    div.id = 'file-prompt';
-    div.style.cssText =
-      'position:fixed;inset:0;background:#0f2518;display:flex;flex-direction:column;' +
-      'align-items:center;justify-content:center;gap:20px;z-index:998;padding:32px;text-align:center';
-    div.innerHTML =
-      '<div style="font-size:13px;font-weight:700;letter-spacing:3px;color:#fff;opacity:.5">CIO PMO</div>' +
-      '<div style="font-size:22px;font-weight:600;color:#fff">Compliance Dashboard</div>' +
-      '<div style="font-size:13px;color:rgba(255,255,255,.6);max-width:460px;line-height:1.7">' +
-        'This dashboard is designed to run via a local web server.<br>' +
-        'To use it now, select your <code style="background:rgba(255,255,255,.1);padding:1px 6px;border-radius:3px">pmo_data.json</code> file directly:' +
-      '</div>' +
-      '<label style="background:#c8390a;color:#fff;padding:10px 24px;border-radius:4px;cursor:pointer;font-size:13px;font-family:inherit">' +
-        'Open pmo_data.json' +
-        '<input type="file" accept=".json" style="display:none" onchange="handleFileUpload(event)">' +
-      '</label>' +
-      '<div style="font-size:11px;color:rgba(255,255,255,.3);max-width:460px;line-height:1.6">' +
-        'For the full live-data experience, run:<br>' +
-        '<code style="background:rgba(255,255,255,.08);padding:4px 10px;border-radius:3px;display:inline-block;margin-top:6px">npx serve .</code>' +
-        ' from the repo root, then open ' +
-        '<code style="background:rgba(255,255,255,.08);padding:4px 10px;border-radius:3px;display:inline-block;margin-top:4px">http://localhost:3000/dashboard/</code>' +
-      '</div>';
-    document.body.appendChild(div);
-  } else {
-    document.getElementById('file-prompt').style.display = 'flex';
-  }
-}
-
-function handleFileUpload(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  document.getElementById('loader').classList.remove('hidden');
-  document.getElementById('loader-msg').textContent = 'Reading ' + file.name + '...';
-  const fp = document.getElementById('file-prompt');
-  if (fp) fp.style.display = 'none';
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const raw = JSON.parse(e.target.result);
-      loadFromRaw(raw);
-    } catch(err) {
-      document.getElementById('loader').classList.add('hidden');
-      if (fp) fp.style.display = 'flex';
-      alert('Could not parse JSON: ' + err.message);
-    }
-  };
-  reader.readAsText(file);
-}
-
-// ── BUILD UI (runs after data loaded) ────────────────────────────────────────
-function buildUI(generated_at) {
-  const all    = RECORDS.map(r => ({ r, s: scoreRecord(r) }));
-  const nc     = all.filter(x => x.s.pct < 60).length;
-  const partial= all.filter(x => x.s.pct >= 60 && x.s.pct < 80).length;
-  const ok     = all.filter(x => x.s.pct >= 80).length;
-  const avg    = Math.round(all.reduce((a,x) => a + x.s.pct, 0) / all.length);
-  const projs  = RECORDS.filter(r => r.type === 'project').length;
-  const progs  = RECORDS.filter(r => r.type === 'program').length;
-  const projPct= Math.round(all.filter(x=>x.r.type==='project'&&x.s.pct>=80).length/Math.max(1,projs)*100);
-  const progPct= Math.round(all.filter(x=>x.r.type==='program'&&x.s.pct>=80).length/Math.max(1,progs)*100);
-
-  // Scorecard
-  document.getElementById('scorecard').innerHTML = `
-    <div class="sc-cell"><div class="sc-val">${RECORDS.length}</div><div class="sc-lbl">Total Records</div></div>
-    <div class="sc-cell"><div class="sc-val v-blue">${projs}/${progs}</div><div class="sc-lbl">Projects/Programs</div></div>
-    <div class="sc-cell"><div class="sc-val v-red">${nc}</div><div class="sc-lbl">Non-Compliant</div></div>
-    <div class="sc-cell"><div class="sc-val v-amber">${partial}</div><div class="sc-lbl">Partial</div></div>
-    <div class="sc-cell"><div class="sc-val v-green">${ok}</div><div class="sc-lbl">Compliant</div></div>
-    <div class="sc-cell"><div class="sc-val v-${scClass(avg)}">${avg}%</div><div class="sc-lbl">Avg Score</div></div>
-    <div class="sc-cell"><div class="sc-val v-green">${projPct}%</div><div class="sc-lbl">Projects ≥80%</div></div>
-    <div class="sc-cell"><div class="sc-val v-green">${progPct}%</div><div class="sc-lbl">Programs ≥80%</div></div>`;
-
-  // Tab counts
-  document.getElementById('cnt-all').textContent   = RECORDS.length;
-  document.getElementById('cnt-nc').textContent    = nc;
-  document.getElementById('cnt-miles').textContent = MILESTONES.length;
-
-  // Header snapshot
-  let snapText = 'Critical tier only';
-  if (generated_at) {
-    const d = new Date(generated_at.substring(0,10));
-    snapText = d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) + ' snapshot';
-  }
-  document.getElementById('hdr-snap').textContent = snapText;
-
-  // Pillar dropdown
-  const pillars = [...new Set(RECORDS.map(r=>r.pillar).filter(p=>p&&p.trim()))].sort();
-  const sel = document.getElementById('pillar-select');
-  sel.innerHTML = '<option value="all">All Pillars</option>' +
-    pillars.map(p => `<option value="${p}">${p.replace('CIO \u2013 ','')}</option>`).join('');
-  sel.value = fPillar;
-
-  // Legend
-  document.getElementById('legend-block').innerHTML = `
-    <div class="legend-title">Compliance Rules</div>
-    <div class="legend-grid">
-      ${RULES.map(r=>`<div class="legend-item"><span class="legend-num">${r.id}</span>
-        <div><span class="legend-label">${r.label}</span><span class="legend-desc">${r.desc}</span></div>
-      </div>`).join('')}
-    </div>
-    <div class="legend-thr">
-      <span class="thr-lbl">Thresholds:</span>
-      <span style="color:#1a5c1e;font-weight:600">■ Compliant ≥80%</span>
-      <span style="color:#c07020;font-weight:600">■ Partial 60–79%</span>
-      <span style="color:#d64000;font-weight:600">■ Non-Compliant &lt;60%</span>
-    </div>`;
-
-  // Footer
-  document.getElementById('footer-stamp').textContent =
-    `${snapText} · ${RECORDS.length} records (${projs} projects, ${progs} programs) · 10 compliance rules · Critical tier`;
-
-  renderAll();
-}
-
-// ── FILTERING ────────────────────────────────────────────────────────────────
-function getFiltered() {
-  const q = (document.getElementById('search-box').value || '').toLowerCase();
-  return RECORDS.map(r => ({ r, s: scoreRecord(r) })).filter(({ r, s }) => {
-    if (fType === 'project' && r.type !== 'project') return false;
-    if (fType === 'program' && r.type !== 'program') return false;
-    if (fStatus === 'nc'      && s.pct >= 60)              return false;
-    if (fStatus === 'partial' && (s.pct<60||s.pct>=80))    return false;
-    if (fStatus === 'ok'      && s.pct < 80)               return false;
-    if (fPillar !== 'all'     && r.pillar !== fPillar)      return false;
-    if (q && !r.name.toLowerCase().includes(q) && !r.pm.toLowerCase().includes(q)) return false;
+function getFiltered(){
+  const q=search.toLowerCase();
+  return scored.filter(({r,s})=>{
+    if(fType==='project'&&r.type!=='project')return false;
+    if(fType==='program'&&r.type!=='program')return false;
+    if(fStatus==='nc'&&s.pct>=60)return false;
+    if(fStatus==='partial'&&(s.pct<60||s.pct>=80))return false;
+    if(fStatus==='ok'&&s.pct<80)return false;
+    if(fPillar!=='all'&&r.pillar!==fPillar)return false;
+    if(q&&!r.name.toLowerCase().includes(q)&&!r.pm.toLowerCase().includes(q))return false;
     return true;
   });
 }
 
-// ── RENDER ───────────────────────────────────────────────────────────────────
-function renderAll() {
-  renderCurrent();
-  renderViolations();
-  renderMilestones();
-  renderAnalytics();
-}
+function render(){
+  const filtered=getFiltered();
+  const ncFiltered=filtered.filter(x=>x.s.pct<60);
+  const ruleViol=RULES.map((rule,ri)=>({rule,ri,failing:scored.filter(x=>!x.s.passes[ri]).map(x=>x.r)}));
 
-function renderCurrent() {
-  const filtered = getFiltered();
-  if (activeTab === 'all') renderTable('tbody-all', filtered, 'count-all', RECORDS.length);
-  else if (activeTab === 'nc') renderTable('tbody-nc', filtered.filter(x=>x.s.pct<60), null, null);
-}
-
-function renderTable(tbodyId, rows, countId, total) {
-  const tb = document.getElementById(tbodyId);
-  if (!rows.length) {
-    tb.innerHTML = `<tr><td colspan="15"><div class="empty">No records match the current filters.</div></td></tr>`;
-  } else {
-    tb.innerHTML = rows.map(({r, s}, i) => {
-      const scc = scClass(s.pct);
-      const fillCls = scc==='g'?'fill-g':scc==='a'?'fill-a':'fill-r';
-      const pctCls  = scc==='g'?'pct-g':scc==='a'?'pct-a':'pct-r';
-      return `<tr onclick="showModal('${r.id}')">
-        <td class="td-num">${i+1}</td>
-        <td>${r.type==='program'?'<span class="badge-prog">PROG</span>':'<span class="badge-proj">PROJ</span>'}</td>
-        <td><div style="display:flex;align-items:center;gap:6px">
-          <span class="rag-dot ${ragDotClass(r.rag)}"></span>
-          <span class="td-name" title="${r.name}">${r.name}</span>
-        </div></td>
-        <td class="td-pm" title="${r.pm}">${r.pm}</td>
-        <td><div class="sb-wrap">
-          <div class="sb-track"><div class="sb-fill ${fillCls}" style="width:${s.pct}%"></div></div>
-          <span class="pct ${pctCls}">${s.pct}%</span>
-        </div></td>
-        ${s.passes.map(p=>`<td class="${p?'r-pass':'r-fail'}">${p?'✓':'✗'}</td>`).join('')}
-      </tr>`;
-    }).join('');
-  }
-  if (countId) {
-    document.getElementById(countId).textContent =
-      `${rows.length} of ${total} records shown`;
-  }
-}
-
-function renderViolations() {
-  const scored = RECORDS.map(r => ({ r, s: scoreRecord(r) }));
-  let html = '';
-  RULES.forEach((rule, ri) => {
-    const failing = scored.filter(x => !x.s.passes[ri]).map(x => x.r);
-    html += `<div class="vi-group">
-      <div class="vi-hd">
-        <span style="background:#0f2518;color:#fff;border-radius:3px;padding:1px 6px;font-family:monospace;font-size:9px;font-weight:700">${rule.id}</span>
-        <span style="font-size:11px;font-weight:600;color:#1a1a18">${rule.label}</span>
-        ${failing.length===0
-          ? '<span style="color:#22c55e;font-size:11px">✓ All compliant</span>'
-          : `<span style="color:#ef4444;font-size:11px">${failing.length} failing</span>`}
-      </div>`;
-    failing.forEach((r, i) => {
-      const det = ruleDetail(r, ri);
-      html += `<div class="vi-row">
-        <span class="vi-num">${i+1}</span>
-        <div style="flex:1">
-          <div style="display:flex;align-items:center;gap:6px">
-            ${r.type==='program'?'<span class="badge-prog" style="font-size:8px">PROG</span>':'<span class="badge-proj" style="font-size:8px">PROJ</span>'}
-            <span class="vi-name">${r.name}</span>
-          </div>
-          <div class="vi-pm">${r.pm}</div>
-          ${det?`<div class="vi-badges"><span class="vi-badge">${det}</span></div>`:''}
-        </div>
-      </div>`;
-    });
-    html += `</div>`;
-  });
-  document.getElementById('violations-body').innerHTML = html;
-}
-
-function renderMilestones() {
-  const sorted = [...MILESTONES].sort((a,b) => b.variance - a.variance);
-  document.getElementById('tbody-miles').innerHTML = sorted.map((m, i) => {
-    const vc = m.variance>60?'pct-r':m.variance>30?'pct-a':'pct-g';
-    const sc = m.status==='Delayed'?'#ef4444':m.status==='In Progress'?'#f59e0b':'#9ca3af';
-    return `<tr>
-      <td class="td-num">${i+1}</td>
-      <td><div style="display:flex;align-items:center;gap:5px">
-        <span class="rag-dot ${ragDotClass(m.rag)}"></span>
-        <span style="font-weight:500">${m.project}</span>
-      </div></td>
-      <td style="color:#6b7280">${m.name}</td>
-      <td style="font-family:monospace;font-size:10px;color:#6b7280">${m.end}</td>
-      <td><span style="color:${sc};font-weight:600">${m.status}</span></td>
-      <td><span class="pct ${vc}" style="font-weight:700">+${m.variance}d</span></td>
-    </tr>`;
-  }).join('');
-}
-
-function renderAnalytics() {
-  const scored = RECORDS.map(r => ({ r, s: scoreRecord(r) }));
-  const rulePass = RULES.map((rule, ri) => ({
-    id: rule.id,
-    pct: Math.round(scored.filter(x => x.s.passes[ri]).length / scored.length * 100)
-  }));
-  const pillars = [...new Set(RECORDS.map(r=>r.pillar).filter(p=>p&&p.trim()))].sort();
-  const pillarData = pillars.map(p => {
-    const recs = scored.filter(x => x.r.pillar === p);
-    if (!recs.length) return null;
-    return {
-      p: p.replace('CIO \u2013 ',''),
-      full: p,
-      avg: Math.round(recs.reduce((a,x)=>a+x.s.pct,0)/recs.length),
-      n: recs.length
-    };
-  }).filter(Boolean).sort((a,b)=>a.avg-b.avg);
-
-  const nc      = scored.filter(x=>x.s.pct<60).length;
-  const partial = scored.filter(x=>x.s.pct>=60&&x.s.pct<80).length;
-  const ok      = scored.filter(x=>x.s.pct>=80).length;
-  const maxBkt  = Math.max(nc,partial,ok);
-  const worst   = scored.filter(x=>x.s.pct<80).sort((a,b)=>a.s.pct-b.s.pct).slice(0,10);
-
-  const ruleBars = rulePass.map(({id,pct})=>{
-    const fc=pct>=80?'fill-g':pct>=60?'fill-a':'fill-r';
-    const pc=pct>=80?'pct-g':pct>=60?'pct-a':'pct-r';
-    return `<div class="an-bar-row">
-      <span class="an-bar-lbl">${id}</span>
-      <div class="an-track"><div class="an-fill ${fc}" style="width:${pct}%"></div></div>
-      <span class="pct ${pc}" style="font-size:11px;font-weight:700">${pct}%</span>
-    </div>`;
-  }).join('');
-
-  const pillarBars = pillarData.map(({p,full,avg,n})=>{
-    const fc=avg>=80?'fill-g':avg>=60?'fill-a':'fill-r';
-    const pc=avg>=80?'pct-g':avg>=60?'pct-a':'pct-r';
-    return `<div class="an-bar-row">
-      <span class="an-bar-lbl-long" title="${full}">${p}</span>
-      <div class="an-track"><div class="an-fill ${fc}" style="width:${avg}%"></div></div>
-      <span class="pct ${pc}" style="font-size:10px;font-weight:700">${avg}%</span>
-      <span style="font-size:9px;color:#9ca3af">(${n})</span>
-    </div>`;
-  }).join('');
-
-  const distCols = [
-    {label:'<60%\nNon-Compliant', count:nc,      cls:'fill-r', pCls:'pct-r'},
-    {label:'60–79%\nPartial',     count:partial,  cls:'fill-a', pCls:'pct-a'},
-    {label:'≥80%\nCompliant',     count:ok,       cls:'fill-g', pCls:'pct-g'},
-  ].map(({label,count,cls,pCls})=>{
-    const h = Math.round(count/maxBkt*100);
-    return `<div class="dist-col">
-      <span class="pct ${pCls}" style="font-size:14px;font-weight:700">${count}</span>
-      <div class="dist-bar ${cls}" style="height:${h}px"></div>
-      <span class="dist-lbl">${label}</span>
-    </div>`;
-  }).join('');
-
-  const bottom10 = worst.map(({r,s})=>{
-    const scc=scClass(s.pct);
-    const fc=scc==='g'?'fill-g':scc==='a'?'fill-a':'fill-r';
-    const pc=scc==='g'?'pct-g':scc==='a'?'pct-a':'pct-r';
-    return `<div class="bottom10-row" onclick="showModal('${r.id}')">
-      <span class="td-name" style="min-width:120px" title="${r.name}">${r.name}</span>
-      <div class="sb-track" style="flex:1;height:5px"><div class="sb-fill ${fc}" style="width:${s.pct}%"></div></div>
-      <span class="pct ${pc}" style="font-size:10px;font-weight:700">${s.pct}%</span>
-    </div>`;
-  }).join('');
-
-  document.getElementById('tab-analytics').innerHTML = `
-    <div class="analytics-grid">
-      <div class="an-card">
-        <div class="an-title">Rule compliance pass rate</div>
-        <div class="an-bars">${ruleBars}</div>
-      </div>
-      <div class="an-card">
-        <div class="an-title">Pillar average compliance</div>
-        <div class="an-bars" style="max-height:280px;overflow-y:auto">${pillarBars}</div>
-      </div>
+  let html=`
+  <div class="hdr">
+    <div class="hdr-l">
+      <span class="brand">PMO</span><div class="sep"></div>
+      <span class="hdr-title">Compliance Dashboard</span>
     </div>
-    <div class="analytics-grid">
-      <div class="an-card">
-        <div class="an-title">Compliance distribution — ${RECORDS.length} records</div>
-        <div class="dist-wrap">${distCols}</div>
-      </div>
-      <div class="an-card">
-        <div class="an-title">Bottom 10 — click to view detail</div>
-        <div style="display:grid;row-gap:5px">${bottom10}</div>
-      </div>
-    </div>`;
-}
+    <div style="display:flex;align-items:center;gap:12px">
+      <span class="hdr-date">20 May 2026 · Critical Tier · 107 records</span>
+      <span class="hdr-badge">LIVE DATA</span>
+    </div>
+  </div>
+  <div class="cards">
+    <div class="card"><div class="card-val">${RECORDS.length}</div><div class="card-lbl">Total Records</div></div>
+    <div class="card"><div class="card-val v-blue">${projects}/${programs}</div><div class="card-lbl">Projects/Programs</div></div>
+    <div class="card"><div class="card-val v-red">${nc}</div><div class="card-lbl">Non-Compliant</div></div>
+    <div class="card"><div class="card-val v-amber">${partial}</div><div class="card-lbl">Partial</div></div>
+    <div class="card"><div class="card-val v-green">${ok}</div><div class="card-lbl">Compliant</div></div>
+    <div class="card"><div class="card-val v-${sc(avg)}">${avg}%</div><div class="card-lbl">Avg Score</div></div>
+    <div class="card"><div class="card-val v-green">${projComp}%</div><div class="card-lbl">Projects ≥80%</div></div>
+    <div class="card"><div class="card-val v-green">${progComp}%</div><div class="card-lbl">Programs ≥80%</div></div>
+  </div>
+  <div class="tabs">
+    <button class="tab${tab==='all'?' on':''}" onclick="setTab('all')">All Records <span class="tc">${RECORDS.length}</span></button>
+    <button class="tab${tab==='nc'?' on':''}" onclick="setTab('nc')">Non-Compliant <span class="tc red">${nc}</span></button>
+    <button class="tab${tab==='violations'?' on':''}" onclick="setTab('violations')">Violations by Rule</button>
+    <button class="tab${tab==='milestones'?' on':''}" onclick="setTab('milestones')">At-Risk Milestones <span class="tc red">${MILESTONES.length}</span></button>
+    <button class="tab${tab==='analytics'?' on':''}" onclick="setTab('analytics')">Analytics</button>
+  </div>
+  <div class="toolbar">
+    <span class="lbl">Type:</span>
+    <button class="btn${fType==='all'?' on':''}" onclick="setFType('all')">All</button>
+    <button class="btn${fType==='project'?' on':''}" onclick="setFType('project')">Projects</button>
+    <button class="btn${fType==='program'?' on':''}" onclick="setFType('program')">Programs</button>
+    <span style="width:8px"></span>
+    <span class="lbl">Status:</span>
+    <button class="btn${fStatus==='all'?' on':''}" onclick="setFStatus('all')">All</button>
+    <button class="btn${fStatus==='nc'?' on-a':''}" onclick="setFStatus('nc')">Non-Compliant</button>
+    <button class="btn${fStatus==='partial'?' on-a':''}" onclick="setFStatus('partial')">Partial</button>
+    <button class="btn${fStatus==='ok'?' on-g':''}" onclick="setFStatus('ok')">Compliant</button>
+    <span style="width:8px"></span>
+    <select class="psel" onchange="setPillar(this.value)">
+      <option value="all"${fPillar==='all'?' selected':''}>All Pillars</option>
+      ${pillars.map(p=>`<option value="${p}"${fPillar===p?' selected':''}>${p.replace('CIO \u2013 ','')}</option>`).join('')}
+    </select>
+    <input class="srch" type="text" placeholder="Search name or PM\u2026" value="${search}" oninput="setSearch(this.value)">
+  </div>
+  <div class="main">`;
 
-// ── TAB & FILTER CONTROLS ────────────────────────────────────────────────────
-function setTab(name, btn) {
-  activeTab = name;
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('on'));
-  if (btn) btn.classList.add('on');
-  ['all','nc','violations','milestones','analytics'].forEach(t => {
-    const el = document.getElementById('tab-' + t);
-    if (el) el.style.display = (t === name ? 'block' : 'none');
-  });
-  if (name === 'all' || name === 'nc') renderCurrent();
-}
+  if(tab==='all'||tab==='nc'){
+    const rows=(tab==='all'?filtered:ncFiltered);
+    html+=`<div class="tblwrap"><table>
+      <colgroup><col style="width:32px"><col style="width:56px"><col style="width:200px"><col style="width:140px"><col style="width:100px">${RULES.map(()=>'<col style="width:28px">').join('')}</colgroup>
+      <thead><tr><th>#</th><th>Type</th><th>Name</th><th>PM / Owner</th><th>Score</th>${RULES.map(rule=>`<th title="${rule.label}">${rule.id}</th>`).join('')}</tr></thead>
+      <tbody>`;
+    if(!rows.length){html+=`<tr><td colspan="15"><div class="empty">No records match current filters</div></td></tr>`;}
+    else{rows.forEach(({r,s},i)=>{
+      const dot=ragDot(r.rag);
+      const badge=r.type==='program'?'<span class="tb-prog">PROG</span>':'<span class="tb-proj">PROJ</span>';
+      const scc=sc(s.pct);
+      const fillC=scc==='g'?'fg':scc==='a'?'fa':'fr';
+      const pctC=scc==='g'?'pg':scc==='a'?'pa':'pr';
+      html+=`<tr onclick="openModal('${r.id}')">
+        <td class="tid">${i+1}</td><td>${badge}</td>
+        <td><div style="display:flex;align-items:center;gap:6px"><span class="rag-dot ${dot}"></span><span class="tname" title="${r.name}">${r.name}</span></div></td>
+        <td class="tpm" title="${r.pm}">${r.pm}</td>
+        <td><div class="sbwrap"><div class="sbar"><div class="sfill ${fillC}" style="width:${s.pct}%"></div></div><span class="sp ${pctC}">${s.pct}%</span></div></td>
+        ${s.passes.map(p=>`<td class="${p?'r-pass':'r-fail'}">${p?'✓':'✗'}</td>`).join('')}
+      </tr>`;})}
+    html+=`</tbody></table></div>`;
+    html+=`<div style="margin-top:8px;font-size:10px;color:#9ca3af;text-align:right">${rows.length} of ${RECORDS.length} records shown</div>`;
+  }
 
-function setF(group, val, btn) {
-  if (group === 'type')   fType   = val;
-  if (group === 'status') fStatus = val;
-  if (group === 'pillar') fPillar = val;
-
-  // Update button states for type and status groups
-  if (group === 'type' || group === 'status') {
-    const groupBtns = document.querySelectorAll(`.btn-f[onclick*="'${group}'"]`);
-    groupBtns.forEach(b => {
-      b.classList.remove('on','on-a','on-g');
+  if(tab==='violations'){
+    html+=`<div>`;
+    ruleViol.forEach(({rule,ri,failing})=>{
+      const allOk=failing.length===0;
+      html+=`<div class="vigrp">
+        <div class="vighd">
+          <span style="background:#0f2518;color:#fff;border-radius:3px;padding:1px 6px;font-family:'Courier New',monospace;font-size:9px;font-weight:700">${rule.id}</span>
+          <span style="font-size:11px;font-weight:600;color:#1a1a18">${rule.label}</span>
+          ${allOk?'<span style="color:#22c55e;font-size:11px">\u2713 All compliant</span>':'<span style="color:#ef4444;font-size:11px">'+failing.length+' failing</span>'}
+        </div>`;
+      if(!allOk){failing.forEach((r,i)=>{
+        const badge=r.type==='program'?'<span class="tb-prog" style="font-size:8px">PROG</span>':'<span class="tb-proj" style="font-size:8px">PROJ</span>';
+        const det=getRuleDetail(r,ri);
+        html+=`<div class="virow"><span class="vinum">${i+1}</span>
+          <div style="flex:1">
+            <div style="display:flex;align-items:center;gap:6px">${badge}<span class="viname">${r.name}</span></div>
+            <div class="vipm">${r.pm}</div>
+            ${det?`<div class="vibadges"><span class="vibadge vb-r">${det}</span></div>`:''}
+          </div></div>`;})}
+      html+=`</div>`;
     });
-    if (btn) {
-      if (val === 'nc' || val === 'partial') btn.classList.add('on-a');
-      else if (val === 'ok')                 btn.classList.add('on-g');
-      else                                   btn.classList.add('on');
+    html+=`</div>`;
+  }
+
+  if(tab==='milestones'){
+    const sorted=[...MILESTONES].sort((a,b)=>b.variance-a.variance);
+    html+=`<div class="tblwrap"><table>
+      <colgroup><col style="width:32px"><col style="width:160px"><col style="width:240px"><col style="width:90px"><col style="width:90px"><col style="width:80px"></colgroup>
+      <thead><tr><th>#</th><th>Project / Program</th><th>Milestone</th><th>End Date</th><th>Status</th><th>Overdue</th></tr></thead>
+      <tbody>`;
+    sorted.forEach((m,i)=>{
+      const vc=m.variance>60?'pr':m.variance>30?'pa':'pg';
+      const sc2=m.status==='Delayed'?'#ef4444':m.status==='In Progress'?'#f59e0b':'#6b7280';
+      html+=`<tr>
+        <td class="tid">${i+1}</td>
+        <td><div style="display:flex;align-items:center;gap:5px"><span class="rag-dot ${ragDot(m.rag)}"></span><span style="font-weight:500;font-size:11px">${m.project}</span></div></td>
+        <td style="font-size:11px;color:#6b7280">${m.name}</td>
+        <td style="font-family:'Courier New',monospace;font-size:10px;color:#6b7280">${m.end}</td>
+        <td><span style="color:${sc2};font-size:10px;font-weight:600">${m.status}</span></td>
+        <td><span class="sp ${vc}" style="font-weight:700">+${m.variance}d</span></td>
+      </tr>`;
+    });
+    html+=`</tbody></table></div>`;
+  }
+
+  if(tab==='analytics'){
+    const rulePass=RULES.map((rule,ri)=>({label:rule.id,pct:Math.round(scored.filter(x=>x.s.passes[ri]).length/scored.length*100)}));
+    const pillarData=pillars.map(p=>{
+      const recs=scored.filter(x=>x.r.pillar===p);
+      if(!recs.length)return null;
+      const avgP=Math.round(recs.reduce((a,x)=>a+x.s.pct,0)/recs.length);
+      return{p:p.replace('CIO \u2013 ',''),avgP,total:recs.length};
+    }).filter(Boolean);
+    html+=`<div>
+      <div class="chart-row">
+        <div class="chart-card">
+          <div class="chart-title">Rule compliance pass rate (all 107 records)</div>
+          <div style="display:grid;row-gap:6px">`;
+    rulePass.forEach(({label,pct})=>{
+      const fillC=pct>=80?'fg':pct>=60?'fa':'fr';
+      const pctC=pct>=80?'pg':pct>=60?'pa':'pr';
+      html+=`<div style="display:flex;align-items:center;gap:8px">
+        <span style="font-family:'Courier New',monospace;font-size:9px;font-weight:700;color:#6b7280;min-width:22px">${label}</span>
+        <div class="sbar" style="flex:1;height:8px"><div class="sfill ${fillC}" style="width:${pct}%"></div></div>
+        <span class="sp ${pctC}" style="font-size:11px;font-weight:700">${pct}%</span>
+      </div>`;
+    });
+    html+=`</div></div>
+        <div class="chart-card">
+          <div class="chart-title">Pillar average compliance</div>
+          <div style="display:grid;row-gap:5px;max-height:280px;overflow-y:auto">`;
+    pillarData.sort((a,b)=>a.avgP-b.avgP).forEach(({p,avgP,total})=>{
+      const fillC=avgP>=80?'fg':avgP>=60?'fa':'fr';
+      const pctC=avgP>=80?'pg':avgP>=60?'pa':'pr';
+      html+=`<div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:9px;color:#6b7280;min-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${p}">${p}</span>
+        <div class="sbar" style="flex:1;height:8px"><div class="sfill ${fillC}" style="width:${avgP}%"></div></div>
+        <span class="sp ${pctC}" style="font-size:10px;font-weight:700">${avgP}%</span>
+        <span style="font-size:9px;color:#9ca3af">(${total})</span>
+      </div>`;
+    });
+    html+=`</div></div></div>
+      <div class="chart-row">
+        <div class="chart-card">
+          <div class="chart-title">Compliance distribution — 107 records</div>
+          <div style="display:flex;gap:16px;align-items:flex-end;height:140px;padding-bottom:24px">`;
+    const buckets=[{label:'<60%\nNon-Compliant',count:nc,c:'fr',pc:'pr'},{label:'60–79%\nPartial',count:partial,c:'fa',pc:'pa'},{label:'≥80%\nCompliant',count:ok,c:'fg',pc:'pg'}];
+    const maxBkt=Math.max(...buckets.map(b=>b.count));
+    buckets.forEach(({label,count,c,pc})=>{
+      const h=Math.round(count/maxBkt*100);
+      html+=`<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1">
+        <span class="sp ${pc}" style="font-size:14px;font-weight:700">${count}</span>
+        <div style="width:100%;height:${h}px;min-height:4px;border-radius:3px 3px 0 0" class="sfill ${c}"></div>
+        <span style="font-size:9px;color:#6b7280;text-align:center;white-space:pre-line;line-height:1.2">${label}</span>
+      </div>`;
+    });
+    html+=`</div></div>
+        <div class="chart-card">
+          <div class="chart-title">Bottom 10 — click to view detail</div>
+          <div style="display:grid;row-gap:5px">`;
+    const worst=scored.filter(x=>x.s.pct<80).sort((a,b)=>a.s.pct-b.s.pct).slice(0,10);
+    worst.forEach(({r,s})=>{
+      const scc=sc(s.pct);
+      const fillC=scc==='g'?'fg':scc==='a'?'fa':'fr';
+      const pctC=scc==='g'?'pg':scc==='a'?'pa':'pr';
+      html+=`<div style="display:flex;align-items:center;gap:6px;cursor:pointer" onclick="openModal('${r.id}')">
+        <span style="font-size:9px;color:#6b7280;min-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${r.name}">${r.name}</span>
+        <div class="sbar" style="flex:1;height:5px"><div class="sfill ${fillC}" style="width:${s.pct}%"></div></div>
+        <span class="sp ${pctC}" style="font-size:10px;font-weight:700">${s.pct}%</span>
+      </div>`;
+    });
+    html+=`</div></div></div></div>`;
+  }
+
+  html+=`</div>`;
+
+  html+=`<div class="lgd">
+    <div class="lgd-title">Compliance Rules Legend</div>
+    <div class="lgd-grid">`;
+  RULES.forEach(rule=>{html+=`<div class="lgd-item"><span class="lgd-num">${rule.id}</span><div><span class="lgd-label">${rule.label}</span><span class="lgd-desc">${rule.desc}</span></div></div>`;});
+  html+=`</div>
+    <div class="lgd-thr">
+      <span class="thr-lbl">Thresholds:</span>
+      <span style="color:#1a5c1e;font-size:10px;font-weight:600">\u25a0 Compliant \u226580%</span>
+      <span style="color:#c07020;font-size:10px;font-weight:600">\u25a0 Partial 60\u201379%</span>
+      <span style="color:#d64000;font-size:10px;font-weight:600">\u25a0 Non-Compliant &lt;60%</span>
+    </div>
+  </div>
+  <div class="foot">Snapshot: 20 May 2026 \u00b7 107 records (90 projects, 17 programs) \u00b7 10 compliance rules \u00b7 Critical tier only \u00b7 NC:${nc} \u00b7 Partial:${partial} \u00b7 Compliant:${ok}</div>`;
+
+  if(modal){
+    const r=RECORDS.find(x=>x.id===modal);
+    if(r){
+      const{passes,pct:mpct}=scoreRecord(r);
+      const badge=r.type==='program'?'<span class="tb-prog">PROGRAM</span>':'<span class="tb-proj">PROJECT</span>';
+      html+=`<div class="modal-bg" onclick="closeModalBg(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+          <div class="modal-hdr">
+            <div class="modal-hdr-l">${badge}<span class="modal-title">${r.name}</span><span class="mpct ${sc(mpct)}">${mpct}% \u00b7 ${scLabel(mpct)}</span></div>
+            <button class="modal-cls" onclick="closeM()">\u2715</button>
+          </div>
+          <div class="modal-meta">
+            <strong>${r.id}</strong> &nbsp;\u00b7&nbsp; PM: <strong>${r.pm}</strong> &nbsp;\u00b7&nbsp;
+            RAG: <strong>${r.rag}</strong> &nbsp;\u00b7&nbsp;
+            Risks: <strong>${r.risks_total}</strong> &nbsp;\u00b7&nbsp;
+            Actions: <strong>${r.actions_total}</strong> &nbsp;\u00b7&nbsp;
+            Issues: <strong>${r.issues_total}</strong> &nbsp;\u00b7&nbsp;
+            Milestones: <strong>${r.miles_total}</strong>
+            ${r.pillar?'&nbsp;\u00b7&nbsp; Pillar: <strong>'+r.pillar.replace('CIO \u2013 ','')+'</strong>':''}
+          </div>
+          <div class="modal-body">
+            <div class="modal-rules">`;
+      RULES.forEach((rule,i)=>{
+        const p=passes[i];
+        const det=p?'':getRuleDetail(r,i);
+        html+=`<div class="mrule ${p?'p':'f'}">
+          <div class="mri">${p?'\u2713':'\u2717'}</div>
+          <div><div class="mrl"><span class="mrid">${rule.id}</span>${rule.label}</div>${!p&&det?`<div class="mrd">${det}</div>`:''}</div>
+        </div>`;
+      });
+      html+=`</div></div></div></div>`;
     }
   }
-  renderCurrent();
+
+  document.getElementById('app').innerHTML=html;
 }
 
-// ── MODAL ────────────────────────────────────────────────────────────────────
-function showModal(id) {
-  const r = RECORDS.find(x => x.id === id);
-  if (!r) return;
-  const { passes, pct } = scoreRecord(r);
-  const scc = scClass(pct);
+function setTab(t){tab=t;render();}
+function setFType(v){fType=v;render();}
+function setFStatus(v){fStatus=v;render();}
+function setPillar(v){fPillar=v;render();}
+function setSearch(v){search=v;render();}
+function openModal(id){modal=id;render();}
+function closeM(){modal=null;render();}
+function closeModalBg(e){if(e.target.classList.contains('modal-bg')){modal=null;render();}}
 
-  document.getElementById('modal-type-badge').innerHTML =
-    r.type === 'program'
-      ? '<span class="badge-prog">PROGRAM</span>'
-      : '<span class="badge-proj">PROJECT</span>';
-  document.getElementById('modal-title').textContent = r.name;
-
-  const pctEl = document.getElementById('modal-pct');
-  pctEl.textContent = `${pct}% · ${scLabel(pct)}`;
-  pctEl.className = 'modal-pct mpct-' + scc;
-
-  document.getElementById('modal-meta').innerHTML =
-    `<strong>${r.id}</strong> &nbsp;·&nbsp; PM: <strong>${r.pm}</strong> &nbsp;·&nbsp;
-     RAG: <strong>${r.rag}</strong> &nbsp;·&nbsp;
-     Risks: <strong>${r.risks_total}</strong> &nbsp;·&nbsp;
-     Actions: <strong>${r.actions_total}</strong> &nbsp;·&nbsp;
-     Issues: <strong>${r.issues_total}</strong> &nbsp;·&nbsp;
-     Milestones: <strong>${r.miles_total}</strong>
-     ${r.pillar ? `&nbsp;·&nbsp; Pillar: <strong>${r.pillar.replace('CIO \u2013 ','')}</strong>` : ''}
-     <div style="margin-top:8px;padding-top:8px;border-top:1px solid #e5e1d8;display:grid;grid-template-columns:1fr 1fr;gap:6px">
-       <div>
-         <span style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#9ca3af;font-weight:700">OKR (R9)</span><br>
-         <span style="font-size:11px;color:${r.okr ? '#1a5c1e' : '#d64000'};font-weight:500">
-           ${r.okr ? r.okr : '⚠ Not populated — R9 will fail'}
-         </span>
-       </div>
-       <div>
-         <span style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#9ca3af;font-weight:700">Service Maturity (R10)</span><br>
-         <span style="font-size:11px;color:${r.service_maturity ? '#1a5c1e' : '#d64000'};font-weight:500">
-           ${r.service_maturity ? r.service_maturity : '⚠ Not populated — R10 will fail'}
-         </span>
-       </div>
-     </div>`;
-
-  document.getElementById('modal-rules').innerHTML = RULES.map((rule, i) => {
-    const p = passes[i];
-    const det = p ? '' : ruleDetail(r, i);
-    return `<div class="mrule ${p?'pass':'fail'}">
-      <div class="mrule-icon">${p?'✓':'✗'}</div>
-      <div>
-        <div class="mrule-lbl"><span class="mrule-id">${rule.id}</span>${rule.label}</div>
-        ${!p && det ? `<div class="mrule-desc">${det}</div>` : ''}
-      </div>
-    </div>`;
-  }).join('');
-
-  document.getElementById('modal-overlay').style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
-
-function closeDetailModal() {
-  const ov = document.getElementById('modal-overlay');
-  ov.style.display = 'none';
-  document.body.style.overflow = '';
-}
-function closeModal(e) {
-  if (e.target === document.getElementById('modal-overlay')) closeDetailModal();
-}
-
-// ── BOOT ─────────────────────────────────────────────────────────────────────
-init();
+render();
 </script>
+
 </body>
 </html>
