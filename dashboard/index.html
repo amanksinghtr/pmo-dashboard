@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Tell browsers never to cache this HTML file — always fetch fresh from server -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>PMO Compliance Dashboard</title>
 <style>
 /* ── RESET & BASE ── */
@@ -201,7 +205,7 @@ footer{text-align:center;padding:20px;color:#9ca3af;font-size:10px;font-family:'
 </header>
 
 <div id="load-banner" style="background:#e1f4cd;border-bottom:2px solid #8fcb64;padding:10px 28px;display:flex;align-items:center;gap:12px">
-  <span id="load-status" style="font-size:12px;color:#123015;font-weight:600;flex:1">⏳ Loading latest data…</span>
+  <span style="font-size:10px;color:#6b7280;font-family:'Courier New',monospace;background:#d4edbc;padding:1px 6px;border-radius:3px;margin-right:6px" title="HTML build date — if this is old, re-download from Netlify">v2026-05-26</span><span id="load-status" style="font-size:12px;color:#123015;font-weight:600;flex:1">⏳ Loading latest data…</span>
   <button id="refresh-btn" onclick="autoFetch()" title="Fetch latest pmo_data.json" style="background:#123015;color:#ffffff;border:none;border-radius:3px;padding:4px 14px;font-size:11px;font-family:inherit;cursor:pointer;display:none">↻ Refresh</button>
 </div>
 <div class="scorecard" id="scorecard"></div>
@@ -711,18 +715,12 @@ function autoFetch() {
       if (btn) btn.style.display = 'inline-block';
     })
     .catch(function(err) {
-      // Fetch failed — use baked-in data silently, show subtle refresh option
+      // Fetch failed (e.g. file:// protocol, or pmo_data.json not yet deployed)
+      // Fall back to baked-in snapshot data — always correct and up to date
       console.warn('pmo_data.json fetch failed (' + err.message + ') — using baked snapshot');
-      if (DATA_LOADED) {
-        // Already have baked records — just show them quietly
-        init();
-        const genDate = '';   // baked date already in footer
-        status.style.color = '#6b7280';
-        status.textContent = '📋 Showing baked snapshot · ' + RECORDS.length + ' records · deploy updated pmo_data.json to Netlify to refresh';
-      } else {
-        status.style.color = '#D64000';
-        status.textContent = '✗ No data available — ensure pmo_data.json is deployed alongside index.html';
-      }
+      init();   // render baked data immediately
+      status.style.color = '#6b7280';
+      status.textContent = '📋 Baked snapshot · ' + RECORDS.length + ' records · open on Netlify for live data';
       if (btn) btn.style.display = 'inline-block';
     });
 }
