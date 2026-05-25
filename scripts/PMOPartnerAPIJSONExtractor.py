@@ -1,5 +1,5 @@
 """
-PMO Partner API - JSON Extractor (v11 - Fix R8 due-date field)
+PMO Partner API - JSON Extractor (v12 - Add okrs + service_maturity fields)
 - Filtered to Critical tiering only
 - Uses /programs/{id}/projects to build project → program linkage cleanly
 - Removes the non-existent program_id field on projects
@@ -9,6 +9,11 @@ PMO Partner API - JSON Extractor (v11 - Fix R8 due-date field)
   counted as missing a date regardless of its actual value. Fixed in
   build_entity() by normalising the field to 'due_date' on output so the
   dashboard contract stays stable, and the correct source field is read.
+- FIX (v12): build_entity() was not copying 'okrs' and 'service_maturity' from
+  the API entity object (p) into the output dict. These fields exist on the
+  project/program API response but were silently dropped. Dashboard rules R9
+  (OKR populated) and R10 (Service Maturity populated) therefore always received
+  empty strings regardless of what the API returned.
 Run with: python "PMO Partner API - JSON Extractor.py"
 """
 
@@ -159,32 +164,36 @@ def build_entity(p, entity_type, headers):
     raaid          = fetch_raaid(pid, entity_type, headers)
 
     return {
-        "id":             clean(p.get("friendly_id")),
-        "uuid":           clean(p.get("id")),
-        "type":           entity_type,
-        "name":           clean(p.get("name")),
-        "rag_status":     clean(p.get("rag_status")),
-        "status_history": status_history,
-        "status":         clean(p.get(status_key)),
-        "manager":        person_str(p.get(manager_key)),
-        "sponsor":        person_str(p.get("sponsor")),
-        "start_date":     clean(p.get("start_date")),
-        "end_date":       clean(p.get("end_date")),
-        "budget":         clean(p.get("budget")),
-        "pillar":         clean(p.get("pillar")),
-        "tiering":        clean(p.get(tiering_key)),
-        "program_id":     "",         # resolved after all entities built
-        "program_name":   "",         # resolved after all entities built
-        "latest_report":  report,
-        "risks":          raaid["risks"],
-        "actions":        raaid["actions"],
-        "assumptions":    raaid["assumptions"],
-        "issues":         raaid["issues"],
-        "dependencies":   raaid["dependencies"],
-        "decisions":      raaid["decisions"],
-        "milestones":     raaid["milestones"],
-        "stakeholders":   raaid["stakeholders"],
-        "objectives":     raaid["objectives"],
+        "id":               clean(p.get("friendly_id")),
+        "uuid":             clean(p.get("id")),
+        "type":             entity_type,
+        "name":             clean(p.get("name")),
+        "rag_status":       clean(p.get("rag_status")),
+        "status_history":   status_history,
+        "status":           clean(p.get(status_key)),
+        "manager":          person_str(p.get(manager_key)),
+        "sponsor":          person_str(p.get("sponsor")),
+        "start_date":       clean(p.get("start_date")),
+        "end_date":         clean(p.get("end_date")),
+        "budget":           clean(p.get("budget")),
+        "pillar":           clean(p.get("pillar")),
+        "tiering":          clean(p.get(tiering_key)),
+        # R9: OKR text lives on the entity object itself
+        "okrs":             clean(p.get("okrs") or ""),
+        # R10: Service Maturity lives on the entity object itself
+        "service_maturity": clean(p.get("service_maturity") or ""),
+        "program_id":       "",         # resolved after all entities built
+        "program_name":     "",         # resolved after all entities built
+        "latest_report":    report,
+        "risks":            raaid["risks"],
+        "actions":          raaid["actions"],
+        "assumptions":      raaid["assumptions"],
+        "issues":           raaid["issues"],
+        "dependencies":     raaid["dependencies"],
+        "decisions":        raaid["decisions"],
+        "milestones":       raaid["milestones"],
+        "stakeholders":     raaid["stakeholders"],
+        "objectives":       raaid["objectives"],
     }
 
 
