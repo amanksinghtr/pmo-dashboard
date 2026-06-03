@@ -1,5 +1,5 @@
 """
-PMO Partner API - JSON Extractor (v13 - Fix clean() for non-string API values)
+PMO Partner API - JSON Extractor (v14 - R3 date fix + milestone In Progress filter)
 - Filtered to Critical tiering only
 - Uses /programs/{id}/projects to build project → program linkage cleanly
 - Removes the non-existent program_id field on projects
@@ -21,15 +21,27 @@ PMO Partner API - JSON Extractor (v13 - Fix clean() for non-string API values)
   project/program API response but were silently dropped. Dashboard rules R9
   (OKR populated) and R10 (Service Maturity populated) therefore always received
   empty strings regardless of what the API returned.
-Run with: python "PMO Partner API - JSON Extractor.py"
+- FIX (v14a): R3 date fix — fetch_latest_report used created_at first (original
+  draft date), ignoring updated_at. If a PM created a report on May 19 then
+  updated it on May 27, the extractor stored May 19, making R3 fail despite the
+  report being current. Fixed: max(created_at, updated_at) always used so the
+  most recently touched date wins. Threshold stays at 7 days.
+- FIX (v14b): Milestone filter — Overdue Milestones tab now shows ONLY milestones
+  with status 'In Progress'. Previously Completed, Not Started, Planned and
+  Delayed were all included. Only In Progress milestones with a past end date
+  are genuinely overdue and need action.
+Run with: python PMOPartnerAPIJSONExtractor.py
 """
 
 import requests
 import json
-from datetime import datetime
+from datetime import datetime, date
 
 BASE_URL    = "https://bxd4pvbnhh.execute-api.us-east-1.amazonaws.com/prod"
 OUTPUT_FILE = r"/Users/amankumarsingh/Desktop/PMOPartner/pmo_data_export.json"
+
+# R3 threshold: days since last report before it is considered stale
+REPORT_STALE_DAYS = 7
 
 
 def get(path, headers, params=None):
@@ -110,7 +122,12 @@ def fetch_latest_report(pid, entity_type, headers):
             return None
         latest = reports[0]
         report_id = latest.get("id") or latest.get("report_id")
-        date = latest.get("created_at") or latest.get("updated_at") or ""
+        # R3 FIX: take max(created_at, updated_at) so the most recently
+        # touched date is used. created_at alone reflects the draft date, not
+        # when the PM last filed/updated the report.
+        created_at  = latest.get("created_at") or ""
+        updated_at  = latest.get("updated_at") or ""
+        date        = max(created_at, updated_at)   # ISO strings: lexicographic max = most recent
         content = clean(latest.get("content", ""))
         return {
             "report_id": clean(str(report_id)) if report_id else "",
@@ -154,6 +171,15 @@ def fetch_raaid(pid, entity_type, headers):
                 for action in items:
                     if "due_date" not in action:
                         action["due_date"] = action.get("target_date") or None
+            # ── Milestone filter ─────────────────────────────────────────────
+            # Only keep 'In Progress' milestones. Completed ones are done;
+            # Not Started/Planned/Delayed have not been actively worked yet.
+            # This ensures the Overdue tab only surfaces actionable items.
+            if category == "milestones":
+                items = [
+                    m for m in items
+                    if (m.get("status") or "").strip().lower() == "in progress"
+                ]
             # ────────────────────────────────────────────────────────────────
             result[category] = items
         except Exception as e:
@@ -204,6 +230,10 @@ def build_entity(p, entity_type, headers):
         "program_id":       "",         # resolved after all entities built
         "program_name":     "",         # resolved after all entities built
         "latest_report":    report,
+        "days_since_report": (
+            (date.today() - date.fromisoformat(report["date"])).days
+            if report and report.get("date") else 999
+        ),
         "risks":            raaid["risks"],
         "actions":          raaid["actions"],
         "assumptions":      raaid["assumptions"],
@@ -289,11 +319,12 @@ def main():
     print(f"  (Projects with no link may belong to a non-Critical program — to capture those, the script would need to fetch all programs not just critical ones.)")
 
     output = {
-        "generated_at":   datetime.now().isoformat(),
-        "tiering_filter": "Critical",
-        "project_count":  len(projects),
-        "program_count":  len(programs),
-        "entities":       entities,
+        "generated_at":      datetime.now().isoformat(),
+        "tiering_filter":    "Critical",
+        "project_count":     len(projects),
+        "program_count":     len(programs),
+        "report_stale_days": REPORT_STALE_DAYS,
+        "entities":          entities,
     }
 
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
