@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-10T22:17:07.861393",
+  "generated_at": "2026-06-10T22:54:17.165311",
   "tiering_filter": "Critical",
   "project_count": 77,
   "program_count": 18,
@@ -44,6 +44,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "48988ff9-2684-4784-a0c2-28fe9340e971",
         "date": "2026-06-04",
@@ -702,6 +704,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "d4553ad2-6c42-423c-af97-f51b821d7081",
         "date": "2026-06-04",
@@ -1869,6 +1873,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "6a2cba98-0fc8-495d-97f9-8afe6dafd8f8",
         "date": "2026-06-03",
@@ -1955,6 +1961,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "7484f97e-40b8-4519-88e5-721cf4acce61",
         "date": "2026-06-03",
@@ -2059,6 +2067,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": null,
       "days_since_report": 999,
       "risks": [
@@ -2411,6 +2421,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "8180df3b-51c8-4e8e-8637-629759f2bd0f",
         "date": "2026-05-29",
@@ -2475,6 +2487,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "f289a49c-159e-4194-8b3b-e9d4bc96b438",
         "date": "2026-06-08",
@@ -3550,6 +3564,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "3fa8c0c0-6afe-4a90-af8c-e5f7a61aafe8",
         "date": "2026-06-10",
@@ -4412,6 +4428,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "921981a6-a645-4e97-9681-08655be787cd",
         "date": "2026-06-08",
@@ -5380,6 +5398,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "69485aea-0499-4e40-b4c1-afb9d06f9dd6",
         "date": "2026-05-28",
@@ -6130,6 +6150,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "1622fe40-b698-4f1f-bf2f-ff92b447b835",
         "date": "2026-06-04",
@@ -6573,6 +6595,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "b5812093-4ba7-4176-9429-a9fbea4e748c",
         "date": "2026-06-05",
@@ -7254,6 +7278,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "e6f7e28a-351f-43eb-bb68-e1a3da387a8d",
         "date": "2026-06-05",
@@ -7830,6 +7856,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "e7975733-0364-4458-8164-fa845f222999",
         "date": "2026-06-05",
@@ -9601,6 +9629,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "b2efdef2-d474-4b66-834c-55e26eb96721",
         "date": "2026-06-10",
@@ -11367,6 +11397,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "ca22277d-8969-4db2-b312-a17bd3882331",
         "date": "2026-06-04",
@@ -11985,6 +12017,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": null,
       "days_since_report": 999,
       "risks": [],
@@ -12027,6 +12061,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "569f3e13-32c4-4e62-ab2f-cd4391997712",
         "date": "2026-06-05",
@@ -13526,6 +13562,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "b855949d-1262-46fe-8de9-861d08145c95",
         "date": "2026-06-05",
@@ -14736,6 +14774,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "c60d2969-6c06-48b1-aa79-576a8a6e6308",
         "date": "2026-06-05",
@@ -14861,6 +14901,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "4a3b9df7-743e-4042-9eed-d47ec1349e37",
         "date": "2026-06-09",
@@ -14990,6 +15032,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "e38d2a66-41f5-4e6e-8f98-e65d95545292",
         "date": "2026-06-02",
@@ -15161,6 +15205,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "6acf98fc-6059-417b-a23b-3091771c6812",
         "date": "2026-06-10",
@@ -16116,6 +16162,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "6b777558-b0b8-496a-b20c-897fd8552440",
         "date": "2026-06-09",
@@ -16202,6 +16250,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "61d4bbdb-e20d-4fe3-9fcb-9148de90105f",
         "date": "2026-06-02",
@@ -16381,6 +16431,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "007d8390-fe7e-4160-8889-79833e7b3772",
         "date": "2026-06-05",
@@ -19903,6 +19955,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "b9e61eb8-1b98-4b85-ba04-9f99ff5e88b8",
         "date": "2026-06-01",
@@ -20227,6 +20281,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "a5159197-3f8d-47da-acb5-2885863d8e21",
         "date": "2026-06-07",
@@ -23901,6 +23957,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "13df3bce-5124-43df-94cd-64831f4077d4",
         "date": "2026-06-01",
@@ -24302,6 +24360,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "adbc09e9-169b-4090-a05d-fe6a31c6a739",
         "date": "2026-06-02",
@@ -25603,6 +25663,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "bb7488e4-f545-4f6d-a948-0f3137e48afb",
         "date": "2026-06-01",
@@ -26186,6 +26248,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "e0d9c7df-42a0-4b10-996b-db254d50fdeb",
         "date": "2026-05-27",
@@ -26807,6 +26871,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "ceb467ed-2505-4d57-9f15-1e89d75461ae",
         "date": "2026-06-10",
@@ -26973,6 +27039,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "3222e09e-ba68-409d-b6aa-4471f8c16136",
         "date": "2026-06-05",
@@ -31871,6 +31939,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "f76c8fc8-fd20-4a0e-ba6e-bb7dcf643760",
         "date": "2026-06-10",
@@ -32528,6 +32598,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "f8d9262f-12e8-420a-b7c0-a7400129e96a",
         "date": "2026-06-08",
@@ -33297,6 +33369,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "1e2291b6-bf9f-4643-8828-1e5ca6ee1156",
         "date": "2026-06-04",
@@ -33622,6 +33696,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "1863dbc2-c9b3-4443-9907-94bc1202e056",
         "date": "2026-06-01",
@@ -33949,6 +34025,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "9571908d-6ba7-4ca1-be53-7df3e38ff510",
         "date": "2026-06-04",
@@ -35413,6 +35491,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "a6c9e3c6-15df-4163-a4ec-6e5635f961be",
         "date": "2026-06-05",
@@ -35845,6 +35925,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "3e28c174-aa54-4f9f-9f7a-dacbfce0e726",
         "date": "2026-06-05",
@@ -38189,6 +38271,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "0901c4bb-65bb-4079-ad9d-c96c157eb0f1",
         "date": "2026-06-09",
@@ -38890,6 +38974,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "f664c628-701d-4bab-af5e-b84794a4fbaa",
         "date": "2026-06-04",
@@ -39208,6 +39294,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "695670c0-a036-4d1b-a1be-2737b9ed0ea6",
         "date": "2026-06-05",
@@ -39476,6 +39564,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "bb2d0517-bbdb-41a7-8afd-88d9dc017555",
         "date": "2026-06-05",
@@ -39734,6 +39824,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "d1024ce4-24a1-4ba0-ad8f-2eeb5f0a5605",
         "date": "2026-06-08",
@@ -42526,6 +42618,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "d2cdb5e6-88a0-46ad-a856-09910039ae81",
         "date": "2026-06-01",
@@ -43347,6 +43441,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "285d52b1-ea8d-4188-a39c-75dba96c77a3",
         "date": "2026-06-09",
@@ -45210,6 +45306,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "f5d1711f-b8b9-414a-9292-858569616dfa",
         "date": "2026-06-09",
@@ -47089,6 +47187,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "b2072468-eecc-40e9-9f5f-89b57b1ebd5a",
         "date": "2026-06-05",
@@ -47871,6 +47971,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "c627ed98-1a62-4c29-a2f0-248d64d83f82",
         "date": "2026-06-03",
@@ -53893,6 +53995,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "b35d31ce-2868-4af7-9c81-e5e58b7785db",
         "date": "2026-06-05",
@@ -55680,6 +55784,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "b7ef3301-2286-443e-8f92-d7f49198bd01",
         "date": "2026-06-01",
@@ -57024,6 +57130,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "495bd562-31c9-40c5-b81d-2cfce879e55d",
         "date": "2026-06-09",
@@ -57993,6 +58101,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "b47b9873-a6fd-47c4-b49b-3cb2c790d03f",
         "date": "2026-06-03",
@@ -58723,6 +58833,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "863ede4c-9f55-4ad3-bfcb-6006056ab723",
         "date": "2026-06-08",
@@ -60288,6 +60400,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "39e0393a-e8de-4622-b8df-05fb177e8405",
         "date": "2026-05-28",
@@ -60453,6 +60567,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "6e24133d-e7d1-453b-ab95-96c9d8dae6ad",
         "date": "2026-06-04",
@@ -60539,6 +60655,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "761476cf-24e8-49d0-877b-5b5fec8bb6e5",
         "date": "2026-05-21",
@@ -62535,6 +62653,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "ffae402d-27eb-4deb-89a7-16cc801767f6",
         "date": "2026-06-05",
@@ -63651,6 +63771,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "a24a76aa-4501-497b-8be7-d3bf7f307121",
         "date": "2026-06-05",
@@ -64949,6 +65071,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "c806cd6f-4950-4d7f-afb7-a5fd5c6a51f2",
         "date": "2026-06-04",
@@ -65836,6 +65960,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "9e741b7d-9eca-405d-b71f-49e317478a98",
         "date": "2026-06-09",
@@ -67948,6 +68074,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "f8575aa6-9ec8-4c22-a86a-b6be44e2a1f5",
         "date": "2026-06-02",
@@ -70166,6 +70294,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "08ac166b-8632-411b-bf77-34a0e3116d4a",
         "date": "2026-06-08",
@@ -74921,6 +75051,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "54074b3a-43b5-4e2e-951d-31633594eb55",
         "date": "2026-04-24",
@@ -75021,6 +75153,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "d7743a3a-4523-4bb4-b895-095766f00dfc",
         "date": "2026-06-03",
@@ -78785,6 +78919,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "9fc8914f-897c-4d6a-96b0-3e9a2c3baa76",
         "date": "2026-06-05",
@@ -79118,6 +79254,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "2b6d7f98-6877-4412-ad8c-dd1d24f0864b",
         "date": "2026-06-09",
@@ -79352,13 +79490,57 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
-        "report_id": "a6e3eb3c-aeae-4414-8b68-ee365ec293e2",
-        "date": "2026-06-02",
-        "content": "## Executive Summary\n\n**No new updates are being reported this week, as milestone and feature updates are provided on a bi-weekly cadence aligned with the ADO sprint schedule and SteerCo. meeting.**\n\nDiamond Lane has established its initial operating model and made tangible progress toward pilot readiness, but the program remains amber while key execution gaps are closed. Materia remains on track for initial policy-driven enablement by June 30, relying on the existing deployment circuit breaker for rollback. For Cocounsel Legal, major architectural and QA process constraints make MFE enablement a poor near-term pilot candidate, so focus is shifting to llmproxy as the better path to demonstrate value by the end of July. Initial assessment of Cocounsel Next has not surfaced major technical barriers and points to a timely opportunity to align Diamond Lane expectations with the team’s planned blue/green deployment evolution. In parallel, product expansion prioritization will continue through assessment of business-critical products with significant security vulnerability findings, while also targeting newer services where stronger deployment patterns can be shaped earlier.\n\n## Path to Green\n\nTo reach green, the immediate priorities are to close DORA and observability gaps, kick off Cocounsel Legal llmproxy enablement work, finalize Materia deployment rules and trigger automation, and align with Cocounsel Next Engineering on a Diamond Lane enablement target achievable within Q3. Completing these items for the initial pilots will put Diamond Lane in a stronger position to support repeatable, lower-friction production releases.\n\n## Milestones\n\n-   Complete Diamond Lane CI criteria definition and formalization by 2026-06-30.\n    \n-   Finalize Diamond Lane participation contracts, change scorecard v1, and pipeline‑driven change automation for pilot products by 2026-06-30.\n    \n-   Complete automated rollback and resilience crawl/walk/run patterns for pilot products by 2026-06-30.\n    \n-   Establish the phased Diamond Lane KPI framework (including initial DORA‑based metrics) and feedback loops by 2026-12-31.\n    \n-   Complete expansion and enablement assets and crawl‑stage application onboarding to Diamond Lane, and transition to steady‑state operations by 2026-12-31."
+        "report_id": "69b74da9-65eb-4dd6-8ce2-5cb418818858",
+        "date": "2026-06-10",
+        "content": "## Executive Summary\n\nDiamond Lane is making measurable progress on initial Materia enablement, narrowing critical improvement gaps for CoCounsel Legal, and improving expansion capabilities:\n\n-   Materia is on track for June 30 and remains the clearest first proof point.\n    \n-   CoCounsel Next is a strategically important second candidate because early engagement can strengthen foundational engineering practices before tactical patterns harden.\n    \n-   CoCounsel Legal is still progressing, but full 2026 enablement feasibility is being reestablished based on necessary early-stage testing improvements.\n    \n-   The new assessment framework is improving focus, surfacing significant engineering-owned gaps early and keeping near-term Diamond Lane effort on viable paths.\n    \n-   Broader discovery is expanding the candidate pipeline and improving visibility into viable onboarding targets, but additional products still need confirmed commitments and realistic implementation timelines.\n    \n\n Status remains Amber, while Materia is on track, the 3+ product objective is not yet secured and still depends on additional candidates converting from assessment into active engagements product engineering teams committed to close critical readiness gaps on credible timelines.\n\n## Path to Green\n\nThe path to green is to convert Diamond Lane from a successful pilot into a repeatable onboarding model that enables at least three products.\n\n-   Confirm CoCounsel Legal is not a viable enablement target for Q2 2026\n    \n-   Confirm CoCounsel Next engineering commitment to meet enablement within Q3 2026\n    \n-   Formalize list of additional viable enablement priorities beyond CoCounsel for 2026 to meet business velocity objectives and OKR measurement\n    \n\n## Milestones\n\n-   Complete Diamond Lane CI criteria definition and formalization by 30 Jun 2026.\n    \n-   Complete Milestones 3–4 (Diamond Lane contracts and change scorecard v1), Milestone 6 (pipeline‑driven change automation), Milestone 7 (automated rollback and resilience – crawl), Milestone 10 (automated rollback and resilience – walk/run), and Milestone 12 (2026 DevOps acceleration roadmap creation) by 30 Jun 2026.\n    \n-   Complete mitigation activities supporting KPI integrity and pilot learnings for CoCounsel and Materia, aligned to risk mitigation due dates on 30 Jun 2026 and 31 Jul 2026.\n    \n-   Begin application onboarding to Diamond Lane crawl‑stage adoption on 01 Jul 2026 and continue KPI framework, feedback loops, and maturity progression through 31 Dec 2026.\n    \n-   Complete broader expansion and enablement (participation readiness and adoption support), application onboarding, and KPI framework maturity to close the program by 31 Dec 2026."
       },
-      "days_since_report": 8,
+      "days_since_report": 0,
       "risks": [
+        {
+          "id": "d102cc7b-10f7-47d9-91be-750cea2c2763",
+          "friendly_id": "proj-047/risk-0006",
+          "project_id": "b2b372c8-e61f-475a-90cf-34fdaa5ab1cd",
+          "program_id": null,
+          "title": "Cocounsel Legal DORA metric accuracy and trustworthiness (PORT extraction query and Cumulus logging) ",
+          "description": "Port utilizes an extraction query to fetch Cumulus deployment logs in the Datadog Software Delivery account for DORA metric reporting. The extraction query does not pick up on \"deployment-engine\" and \"simple_static_content_deployer\" service types. (owners: Cumulus Dev + PORT Team)",
+          "impact_description": "Missing DORA metric reporting in PORT for MFEs.",
+          "raised_by": {
+            "name": "Abrahamson, Maddi (TR Technology)",
+            "email": "Maddi.Abrahamson@thomsonreuters.com",
+            "employee_id": "6030380"
+          },
+          "risk_owner": {
+            "name": "Cumulus",
+            "email": null,
+            "employee_id": null
+          },
+          "mitigation_plan_owner": {
+            "name": "Abrahamson, Maddi (TR Technology)",
+            "email": "Maddi.Abrahamson@thomsonreuters.com",
+            "employee_id": "6030380"
+          },
+          "impact": "2 - Minor",
+          "priority": "4 - Low",
+          "probability": "2 - Minor",
+          "mitigation": "Cumulus update to log \"simple_static_content_deployer\" service appropriately; Cocounsel Legal update cumulus version, update PORT extraction query to fetch \"deployment-engine\" and \"simple_static_content_deployer\" service types; Long term - adjust cumulus deployment logging to reduce conditions required in PORT extraction query.",
+          "mitigation_due_date": "2026-06-30",
+          "target_closure_date": "2026-06-30",
+          "status": "In Progress",
+          "date_raised": "2026-05-27",
+          "date_resolved": null,
+          "milestone_ids": [],
+          "milestones": [],
+          "last_updated": "2026-05-27",
+          "source_type": null,
+          "source_id": null,
+          "source_name": null,
+          "created_at": "2026-05-27T12:04:36.182096-05:00",
+          "updated_at": "2026-06-10T11:56:21.368703-05:00",
+          "source_file_name": null
+        },
         {
           "id": "903ab331-5930-4a71-b9ca-30394e7c4081",
           "friendly_id": "proj-047/risk-0001",
@@ -79525,48 +79707,6 @@
           "source_name": null,
           "created_at": "2026-05-27T11:57:11.269087-05:00",
           "updated_at": "2026-05-27T11:57:11.269093-05:00",
-          "source_file_name": null
-        },
-        {
-          "id": "d102cc7b-10f7-47d9-91be-750cea2c2763",
-          "friendly_id": "proj-047/risk-0006",
-          "project_id": "b2b372c8-e61f-475a-90cf-34fdaa5ab1cd",
-          "program_id": null,
-          "title": "Cocounsel Legal DORA metric accuracy and trustworthiness (PORT extraction query and Cumulus logging) ",
-          "description": "Port utilizes an extraction query to fetch Cumulus deployment logs in the Datadog Software Delivery account for DORA metric reporting. The extraction query does not pick up on \"deployment-engine\" and \"simple_static_content_deployer\" service types. (owners: Cumulus Dev + PORT Team)",
-          "impact_description": "Missing DORA metric reporting in PORT for MFEs.",
-          "raised_by": {
-            "name": "Abrahamson, Maddi (TR Technology)",
-            "email": "Maddi.Abrahamson@thomsonreuters.com",
-            "employee_id": "6030380"
-          },
-          "risk_owner": {
-            "name": "Cumulus",
-            "email": null,
-            "employee_id": null
-          },
-          "mitigation_plan_owner": {
-            "name": "Abrahamson, Maddi (TR Technology)",
-            "email": "Maddi.Abrahamson@thomsonreuters.com",
-            "employee_id": "6030380"
-          },
-          "impact": "2 - Minor",
-          "priority": "4 - Low",
-          "probability": "2 - Minor",
-          "mitigation": "Cumulus update to log \"simple_static_content_deployer\" service appropriately; Cocounsel Legal update cumulus version, update PORT extraction query to fetch \"deployment-engine\" and \"simple_static_content_deployer\" service types; Long term - adjust cumulus deployment logging to reduce conditions required in PORT extraction query.",
-          "mitigation_due_date": "2026-06-05",
-          "target_closure_date": "2026-06-05",
-          "status": "In Progress",
-          "date_raised": "2026-05-27",
-          "date_resolved": null,
-          "milestone_ids": [],
-          "milestones": [],
-          "last_updated": "2026-05-27",
-          "source_type": null,
-          "source_id": null,
-          "source_name": null,
-          "created_at": "2026-05-27T12:04:36.182096-05:00",
-          "updated_at": "2026-05-27T12:04:36.182100-05:00",
           "source_file_name": null
         },
         {
@@ -80163,6 +80303,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "607632ba-863b-4493-bcf3-54f3c8b4e5e6",
         "date": "2026-06-09",
@@ -81674,6 +81816,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "6446eb16-942c-40d2-ad9d-e2678d7741d0",
         "date": "2026-06-10",
@@ -90328,6 +90472,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "cb211566-9cdc-4b86-ba33-4bf0adab67be",
         "date": "2026-06-08",
@@ -90701,6 +90847,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "979167a5-e59e-4422-a606-f8429f7da486",
         "date": "2026-06-01",
@@ -91849,6 +91997,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "130b1d24-f9c2-42ee-8409-d6ffa6614163",
         "date": "2026-06-08",
@@ -96346,6 +96496,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "48154c05-cc78-46c1-a23e-3ddaa40f27b2",
         "date": "2026-06-04",
@@ -96504,6 +96656,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": -1,
+      "child_red_count": -1,
+      "child_amber_count": -1,
       "latest_report": {
         "report_id": "824ee607-2f19-4da8-b880-6dc2a2b8f58a",
         "date": "2026-06-10",
@@ -96831,6 +96985,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": 0,
+      "child_red_count": 0,
+      "child_amber_count": 0,
       "latest_report": {
         "report_id": "bc71cddf-7587-449c-8a57-c5efd94d8cb5",
         "date": "2026-06-10",
@@ -98908,6 +99064,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": 0,
+      "child_red_count": 0,
+      "child_amber_count": 0,
       "latest_report": {
         "report_id": "2999c795-ce34-4964-81e6-bc6ce00a1374",
         "date": "2026-06-10",
@@ -100902,7 +101060,7 @@
       "uuid": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
       "type": "program",
       "name": "Legacy Product Migration",
-      "rag_status": "Green",
+      "rag_status": "Red",
       "status_history": [],
       "status": "",
       "manager": "An, Stephanie (TR Technology)",
@@ -100917,6 +101075,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": 0,
+      "child_red_count": 0,
+      "child_amber_count": 0,
       "latest_report": {
         "report_id": "e10099f8-e648-4e3d-a0b7-9bb6e666a945",
         "date": "2026-06-05",
@@ -100924,6 +101084,48 @@
       },
       "days_since_report": 5,
       "risks": [
+        {
+          "id": "1dc4dadf-a732-4e6e-b449-bddb62eb23f7",
+          "friendly_id": "prog-042/risk-0001",
+          "project_id": null,
+          "program_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
+          "title": "Shared SAP / EPM / integration dependencies across projects may not be delivered on time",
+          "description": "All three projects in the Legacy Product Migration program rely on shared SAP and EPM capabilities and integrations: Special Offers requires material master creation, TR level codes (L4/L5), and full data availability in EPM; Legal Tracker depends on ZPEND work in SAP and product/price checks in EPM; LatAm requires GSI/ECM alignment and integration. Delays or defects in these shared platform/integration components pose a program‑level risk.",
+          "impact_description": "If SAP/EPM integration work (e.g., ZPEND, material master setup, product & price checks, data flows) is not delivered on time or with adequate quality, multiple projects may be unable to complete testing, data migration, or go‑live. This could force staggered or delayed go‑lives, increase technical debt (temporary workarounds), and jeopardize the program’s objective to standardize processes and decommission legacy platforms during 2026.",
+          "raised_by": {
+            "name": "Program team synthesis from Special Offers and Legal Tracker dependency logs",
+            "email": null,
+            "employee_id": null
+          },
+          "risk_owner": {
+            "name": "Mishra, Linki (TR Technology) – Program Sponsor",
+            "email": null,
+            "employee_id": null
+          },
+          "mitigation_plan_owner": {
+            "name": "Dash, Snigdha (SAP integrations) and Lavely, Nick (EPM product/price) in coordination with relevant SAP/Data teams and the program manager",
+            "email": null,
+            "employee_id": null
+          },
+          "impact": "4 - Significant",
+          "priority": "12 - Moderate",
+          "probability": "3 - Moderate",
+          "mitigation": "Create a consolidated integration roadmap for SAP/EPM and related systems that explicitly sequences ZPEND, material master creation, TR level code setup, and product/price checks to support all program projects. Establish cross‑project integration design reviews, shared test environments, and aligned SIT/UAT schedules. Track these dependencies at the program governance level and escalate conflicts or slippage to the sponsor and Steer Co for resolution.",
+          "mitigation_due_date": null,
+          "target_closure_date": null,
+          "status": "Open",
+          "date_raised": "2026-06-10",
+          "date_resolved": null,
+          "milestone_ids": [],
+          "milestones": [],
+          "last_updated": null,
+          "source_type": "program",
+          "source_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
+          "source_name": "prog-042",
+          "created_at": "2026-06-10T12:08:37.398968-05:00",
+          "updated_at": "2026-06-10T12:08:37.398973-05:00",
+          "source_file_name": null
+        },
         {
           "id": "78fa01c3-c12c-44ce-bc42-4fbe8d87a25d",
           "friendly_id": "proj-191/risk-0001",
@@ -101095,6 +101297,174 @@
           "created_at": "2026-06-04T03:50:30.853178-05:00",
           "updated_at": "2026-06-04T03:51:41.529093-05:00",
           "source_file_name": "SO Order Migration LT Preread June 2 2026.docx"
+        },
+        {
+          "id": "004bd4e8-1bd9-4c3e-a7f8-890b20cbe0b3",
+          "friendly_id": "prog-042/risk-0004",
+          "project_id": null,
+          "program_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
+          "title": "Inconsistent end‑to‑end user experience across products and regions after migration",
+          "description": "The program aims to standardize processes and improve user experience by moving LATAM and Legal Tracker from legacy systems (S2E, SFDC) to enterprise platforms (GSI, ECM, EPM). However, Legal Tracker’s end‑to‑end user experience is currently unknown, and LatAm is considering partial/Top‑of‑Funnel migration options while service and back‑office processes may remain on S2E. Special Offers is moving to OC/SAP/Conga. This creates a program‑level risk of inconsistent end‑to‑end user experiences across regions and products.",
+          "impact_description": "If end‑to‑end user journeys are not designed coherently across GSI, ECM, EPM, SAP/OC, and remaining legacy systems, users may face fragmented processes, duplicate data entry, and inconsistent workflows between regions/products. This undermines the program’s objectives to standardize processes, improve data integrity, and enhance user experience, and may lead to reduced adoption, increased training/support needs, and slower decommissioning of legacy systems.",
+          "raised_by": {
+            "name": "Council, Marissa (TR Commercial Excellence) – Legal Tracker; extended to the broader program by the program manager",
+            "email": null,
+            "employee_id": null
+          },
+          "risk_owner": {
+            "name": "Mishra, Linki (TR Technology) – Program Sponsor",
+            "email": null,
+            "employee_id": null
+          },
+          "mitigation_plan_owner": {
+            "name": "Council, Marissa (TR Commercial Excellence) and Olson, Celeste (TR Technology) for business process alignment, working under program governance",
+            "email": null,
+            "employee_id": null
+          },
+          "impact": "4 - Significant",
+          "priority": "12 - Moderate",
+          "probability": "3 - Moderate",
+          "mitigation": "Define program‑level end‑to‑end process maps covering sales, service, renewals, and back‑office flows across LatAm, Legal Tracker, and Special Offers. Use these to align architecture and design decisions (e.g., which steps stay on S2E, which move to GSI/OC/ECM/EPM). Establish UX/customer‑journey review checkpoints in the program milestones (e.g., during \"Program Scope & Design Finalized\" and \"Build, Data Migration & Testing Complete\") and require business sign‑off on cross‑product/region journeys before go‑live.",
+          "mitigation_due_date": null,
+          "target_closure_date": null,
+          "status": "Open",
+          "date_raised": "2026-06-10",
+          "date_resolved": null,
+          "milestone_ids": [],
+          "milestones": [],
+          "last_updated": "2026-06-10",
+          "source_type": "program",
+          "source_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
+          "source_name": "prog-042",
+          "created_at": "2026-06-10T12:12:25.938832-05:00",
+          "updated_at": "2026-06-10T12:13:58.108920-05:00",
+          "source_file_name": null
+        },
+        {
+          "id": "3a21383a-d6ba-4eec-b5e3-8636a0a15a6e",
+          "friendly_id": "prog-042/risk-0005",
+          "project_id": null,
+          "program_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
+          "title": "Program‑level cost pressure from potential dual system usage and licensing",
+          "description": "LatAm Top of Funnel has identified a risk of dual licensing exposure if quoting, renewals, or service remain in S2E while sales moves to GSI, with leadership indicating no appetite for additional licensing costs. Similar patterns (parallel usage of legacy SFDC and new platforms) may occur in Legal Tracker and Special Offers during transition periods, creating a broader program‑level risk around cost and operating model (dual systems).",
+          "impact_description": "If multiple workstreams require users to operate in both legacy and new systems for extended periods, the organization may incur unexpected licensing and support costs, as well as operational inefficiencies. This could reduce the financial benefits of decommissioning legacy systems, strain budgets, and prompt leadership to challenge the scope or timeline of the program.",
+          "raised_by": {
+            "name": "LatAm project team – generalized to program by the program manager",
+            "email": null,
+            "employee_id": null
+          },
+          "risk_owner": {
+            "name": "Mishra, Linki (TR Technology) – Program Sponsor",
+            "email": null,
+            "employee_id": null
+          },
+          "mitigation_plan_owner": {
+            "name": "Umair, Mir (TR Technology) in coordination with Commercial Excellence and Finance",
+            "email": null,
+            "employee_id": null
+          },
+          "impact": "4 - Significant",
+          "priority": "12 - Moderate",
+          "probability": "3 - Moderate",
+          "mitigation": "At the program level, define and agree transition windows for dual‑system operation and associated license plans, ensuring they are time‑boxed and budgeted. Explore options to reallocate or repurpose existing licenses rather than adding net new ones. Align migration sequencing (e.g., coordinating Legal Tracker decom, LatAm migration, and Special Offers go‑live) to minimize overlapping dual‑system periods. Present the consolidated cost/benefit profile to Steer Co for approval.",
+          "mitigation_due_date": null,
+          "target_closure_date": null,
+          "status": "Open",
+          "date_raised": "2026-06-10",
+          "date_resolved": null,
+          "milestone_ids": [],
+          "milestones": [],
+          "last_updated": "2026-06-10",
+          "source_type": "program",
+          "source_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
+          "source_name": "prog-042",
+          "created_at": "2026-06-10T12:12:25.945915-05:00",
+          "updated_at": "2026-06-10T12:13:58.108920-05:00",
+          "source_file_name": null
+        },
+        {
+          "id": "5fda6be7-dfaa-4510-b264-fb9d8bd99b39",
+          "friendly_id": "prog-042/risk-0003",
+          "project_id": null,
+          "program_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
+          "title": "Enterprise data readiness and quality for multi‑project migrations",
+          "description": "Multiple projects in the Legacy Product Migration program depend on enterprise data being ready and of sufficient quality for migration: LATAM data readiness has not been validated in ~3 years; Legal Tracker relies on EDL to complete migration of all in‑scope data from legacy SFDC; Special Offers – Migration to OC depends on sample and full data availability in EPM and SAP. These dependencies create a program‑level risk that data may not be ready or may be incomplete/inaccurate when needed.",
+          "impact_description": "If enterprise data readiness (across LATAM, Legal Tracker, and Special Offers) is not achieved in time, projects may face rework, extended testing cycles, partial migrations, or production defects. This could delay program‑level milestones for \"Build, Data Migration & Testing Complete\" and \"Go‑Live & Stabilization Complete,\" cause inconsistent reporting and user experience across regions, and undermine the objective to improve data integrity and decommission legacy systems.",
+          "raised_by": {
+            "name": "Program team synthesis of LatAm, Legal Tracker, and Special Offers dependencies and issues",
+            "email": null,
+            "employee_id": null
+          },
+          "risk_owner": {
+            "name": "An, Stephanie (TR Technology) – Program Manager, Legacy Product Migration",
+            "email": null,
+            "employee_id": null
+          },
+          "mitigation_plan_owner": {
+            "name": "Polusani, Sridhar Rao (TR Technology) for LATAM data; Alagar, Mala (TR Technology) and EDL team for Legal Tracker; DW / SAP / EPM leads for Special Offers – coordinated under the program manager",
+            "email": null,
+            "employee_id": null
+          },
+          "impact": "4 - Significant",
+          "priority": "12 - Moderate",
+          "probability": "3 - Moderate",
+          "mitigation": "Establish a consolidated program‑level data readiness plan covering LATAM, Legal Tracker, and Special Offers. Include: (1) formal data quality assessments and remediation plans for LATAM; (2) committed timelines from the EDL team for Legal Tracker data archive/migration; (3) clear ownership and timelines for sample and full data loads into EPM/SAP for Special Offers; and (4) stage gates in program milestones so builds and cutovers do not proceed without meeting defined data readiness criteria.",
+          "mitigation_due_date": null,
+          "target_closure_date": null,
+          "status": "Open",
+          "date_raised": "2026-06-10",
+          "date_resolved": null,
+          "milestone_ids": [],
+          "milestones": [],
+          "last_updated": "2026-06-10",
+          "source_type": "program",
+          "source_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
+          "source_name": "prog-042",
+          "created_at": "2026-06-10T12:12:25.929269-05:00",
+          "updated_at": "2026-06-10T12:13:58.108920-05:00",
+          "source_file_name": null
+        },
+        {
+          "id": "de3d0f13-13bf-44d8-9981-f854d0bf38f4",
+          "friendly_id": "prog-042/risk-0002",
+          "project_id": null,
+          "program_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
+          "title": "Program‑level scheduling and resource conflicts across overlapping 2026 milestones",
+          "description": "Key milestones for LatAm Top of Funnel, Legal Tracker Migration, and Special Offers – Migration to OC overlap in mid‑ to late‑2026 (build, data migration, SIT/UAT, and go‑lives). Many of these rely on the same enterprise platform teams (GSI, SAP, ECM, EPM, data/EDL). Without coordinated planning, the same specialists may be needed at the same time by multiple projects, creating a program‑level schedule and resource conflict.",
+          "impact_description": "If overlapping milestones are not coordinated, shared teams (e.g., SAP, GSI, ECM/D&A, EPM, DW/EDL) may be over‑allocated, leading to delays in build, testing, and go‑live activities across one or more projects. This can cause slippage of the program milestones \"Build, Data Migration & Testing Complete\" and \"Go‑Live & Stabilization Complete,\" increase overtime/burnout, and reduce quality due to rushed work and insufficient testing.",
+          "raised_by": {
+            "name": "Program Manager – based on project milestone timelines",
+            "email": null,
+            "employee_id": null
+          },
+          "risk_owner": {
+            "name": "An, Stephanie (TR Technology) – Program Manager, Legacy Product Migration",
+            "email": null,
+            "employee_id": null
+          },
+          "mitigation_plan_owner": {
+            "name": "An, Stephanie (TR Technology) in partnership with platform team leads",
+            "email": null,
+            "employee_id": null
+          },
+          "impact": "4 - Significant",
+          "priority": "12 - Moderate",
+          "probability": "3 - Moderate",
+          "mitigation": "Develop an integrated program schedule that overlays all project‑level milestones and identifies hotspots for shared resource usage. Use this to negotiate sequencing of SIT/UAT and go‑lives, adjust scope where needed, and formalize resource commitments from platform teams. Implement program‑level governance (Steer Co) reviews of upcoming milestones at least one quarter ahead to confirm capacity and adjust plans.",
+          "mitigation_due_date": null,
+          "target_closure_date": null,
+          "status": "Open",
+          "date_raised": "2026-06-10",
+          "date_resolved": null,
+          "milestone_ids": [],
+          "milestones": [],
+          "last_updated": "2026-06-10",
+          "source_type": "program",
+          "source_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
+          "source_name": "prog-042",
+          "created_at": "2026-06-10T12:08:37.408395-05:00",
+          "updated_at": "2026-06-10T12:13:58.108920-05:00",
+          "source_file_name": null
         },
         {
           "id": "6622ef5f-b506-4858-a853-a272d7ca6ab7",
@@ -101561,6 +101931,82 @@
           "source_name": "proj-094",
           "created_at": "2026-04-27T13:13:48.826229-05:00",
           "updated_at": "2026-06-05T09:11:16.018286-05:00",
+          "source_file_name": null
+        },
+        {
+          "id": "d460a274-3a05-4c5b-9a89-cf28e5a40904",
+          "friendly_id": "prog-042/asmp-0001",
+          "project_id": null,
+          "program_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
+          "title": "Enterprise platforms (GSI, ECM, EPM, SAP) will support concurrent migrations for LatAm, Legal Tracker, and Special Offers in 2026",
+          "description": "Planning assumes that the shared enterprise platforms (GSI, ECM, EPM, SAP and related integrations) will have sufficient technical readiness and capacity to support concurrent or closely sequenced migrations for LatAm Top of Funnel, Legal Tracker, and Special Offers within the 2026 program timeline, without requiring major platform re‑architecture or extended outages.",
+          "owner": {
+            "name": "An, Stephanie (TR Technology) – Program Manager, Legacy Product Migration",
+            "email": null,
+            "employee_id": null
+          },
+          "rationale_basis": "Program objectives explicitly require moving LATAM and Legal Tracker off legacy systems to GSI/ECM/EPM by the end of 2026, and current enterprise roadmaps position these platforms as the strategic destination for commercial workflows.",
+          "validity_explanation": "GSI, ECM, EPM, and SAP are established enterprise platforms with existing integrations and a strategic mandate to support commercial workflows. However, the program is pushing multiple significant migrations into a single year, and documented constraints (e.g., ECM capacity, dependency on SAP/EPM integrations) reduce confidence that all required changes can be delivered and stabilized without contention.",
+          "impact_if_fails": null,
+          "likelihood_holds_true": "Medium",
+          "mitigation_contingency": "If platform readiness proves insufficient, re‑sequence project timelines to stagger major releases, reduce initial scope (e.g., limiting migration to Top‑of‑Funnel or specific regions), or secure additional platform investment and resources. Update program milestones and Steer Co approvals to reflect revised sequencing and scope.",
+          "validation_method": "Ongoing architecture reviews, platform capacity assessments, and integration design approvals across all three projects, consolidated into a program‑level architecture and environment readiness plan.",
+          "validation_date": null,
+          "validation_owner": {
+            "name": "Program Architecture Lead (to be assigned by CIO – Commercial & Corporate Engineering)",
+            "email": null,
+            "employee_id": null
+          },
+          "confidence_level": "Medium",
+          "assumption_type": "Technical",
+          "priority": "High",
+          "status": "Open",
+          "date_raised": "2026-06-10",
+          "date_resolved": null,
+          "last_updated": "2026-06-10",
+          "source_type": "program",
+          "source_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
+          "source_name": "prog-042",
+          "created_at": "2026-06-10T12:09:42.178459-05:00",
+          "updated_at": "2026-06-10T12:14:22.895332-05:00",
+          "source_file_name": null
+        },
+        {
+          "id": "e315d285-7c66-464e-95f8-9467b054be9e",
+          "friendly_id": "prog-042/asmp-0002",
+          "project_id": null,
+          "program_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
+          "title": "Key prerequisites for LatAm and Legal Tracker migrations can be completed in parallel within 2026",
+          "description": "Program planning assumes that critical prerequisites such as territory alignment to GSI, ECM hierarchy and segmentation readiness, custom field translations, LATAM data readiness assessments, and Legal Tracker data archive/migration via EDL can be executed in parallel and completed in time to support 2026 build, migration, and go‑live milestones.",
+          "owner": {
+            "name": "An, Stephanie (TR Technology) – Program Manager, Legacy Product Migration",
+            "email": null,
+            "employee_id": null
+          },
+          "rationale_basis": "The program’s end‑to‑end timeline (2026‑01‑01 to 2026‑12‑31) and defined milestones (e.g., \"Build, Data Migration & Testing Complete\" and \"Go‑Live & Stabilization Complete\") assume that shared prerequisites will not become sequential blockers and that multiple workstreams can progress concurrently.",
+          "validity_explanation": "Each prerequisite is explicitly logged as a dependency in one or more project plans and is therefore visible for governance and monitoring. However, competing demands on ECM/D&A and EDL teams, along with other enterprise programs, introduce uncertainty about completing all prerequisites in parallel within the desired timeframe.",
+          "impact_if_fails": null,
+          "likelihood_holds_true": "Medium",
+          "mitigation_contingency": "If validation shows that prerequisites cannot be completed in parallel, re‑prioritize and sequence them based on program value (e.g., prioritize Legal Tracker decom or specific LATAM markets), adjust project scopes, and update the integrated program schedule. Escalate conflicts to the Steer Co for decisions on funding or scope trade‑offs.",
+          "validation_method": "Program‑level dependency tracking and readiness checkpoints (e.g., data readiness reviews, territory alignment sign‑off, ECM hierarchy load confirmation, EDL migration completion) prior to starting major build and migration phases.",
+          "validation_date": null,
+          "validation_owner": {
+            "name": "An, Stephanie (TR Technology) in coordination with dependency owners (Paulo Busch, John Sundt, EDL/ECM leads)",
+            "email": null,
+            "employee_id": null
+          },
+          "confidence_level": "Medium",
+          "assumption_type": "Schedule",
+          "priority": "High",
+          "status": "Open",
+          "date_raised": "2026-06-10",
+          "date_resolved": null,
+          "last_updated": "2026-06-10",
+          "source_type": "program",
+          "source_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
+          "source_name": "prog-042",
+          "created_at": "2026-06-10T12:09:42.187030-05:00",
+          "updated_at": "2026-06-10T12:14:22.895332-05:00",
           "source_file_name": null
         }
       ],
@@ -102078,6 +102524,161 @@
           "created_at": "2026-06-01T05:29:18.126158-05:00",
           "updated_at": "2026-06-01T05:29:18.126163-05:00",
           "source_file_name": "SO_Migration_Project_Dashboard (1).xlsx"
+        },
+        {
+          "id": "83855b04-e70a-4d35-b1a3-c61a4853aa78",
+          "friendly_id": "prog-042/dep-0001",
+          "project_id": null,
+          "program_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
+          "title": "Delivery of shared SAP and EPM integrations to support all program projects",
+          "description": "All three projects in the Legacy Product Migration program (Special Offers – Migration to OC, Legal Tracker Migration, and LatAm Top of Funnel Migration) depend on common SAP and EPM capabilities and integrations. These include ZPEND work in SAP, material master creation, TR level code setup (L4/L5), product and price checks in EPM, and reliable data flows between SAP, EPM, and downstream systems. Timely delivery of these shared integration components is required to enable build, data migration, SIT/UAT, and go-live across the program.",
+          "owner": {
+            "name": "Dash, Snigdha and Lavely, Nick in coordination with SAP/EPM platform leads",
+            "email": null,
+            "employee_id": null
+          },
+          "dependency_type": "Technical",
+          "dependent_on": "SAP and EPM platform and integration teams (including ZPEND, material master, TR level code, and product/price check owners)",
+          "is_critical": true,
+          "consumer": "All projects in the Legacy Product Migration program (Special Offers – Migration to OC, Legal Tracker Migration, LatAm Top of Funnel Migration)",
+          "impact_if_delayed": "Delays or defects in SAP/EPM integrations would prevent one or more projects from completing testing, data migration, or go-live as planned, forcing staggered or deferred releases and jeopardizing the program objective to standardize processes and decommission legacy platforms within 2026.",
+          "mitigation": "Create a consolidated integration roadmap for SAP/EPM that sequences ZPEND, material master creation, TR level code setup, and product/price checks across all projects. Establish cross-project integration design reviews, shared test environments, and aligned SIT/UAT schedules, and track this dependency at program governance level for escalation as needed.",
+          "priority": "High",
+          "target_date": null,
+          "status": "Open",
+          "date_raised": "2026-06-10",
+          "date_resolved": null,
+          "last_updated": null,
+          "source_type": "program",
+          "source_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
+          "source_name": "prog-042",
+          "created_at": "2026-06-10T12:15:32.443204-05:00",
+          "updated_at": "2026-06-10T12:15:32.443208-05:00",
+          "source_file_name": null
+        },
+        {
+          "id": "d9550941-a159-4c8b-aac9-d34669872fa8",
+          "friendly_id": "prog-042/dep-0002",
+          "project_id": null,
+          "program_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
+          "title": "Shared capacity of enterprise platform teams across overlapping 2026 milestones",
+          "description": "Program milestones for LatAm Top of Funnel Migration, Legal Tracker Migration, and Special Offers – Migration to OC overlap in mid- to late-2026. All three workstreams require support from the same enterprise platform teams (GSI, SAP, ECM, EPM, DW/EDL). The program depends on these platform teams having sufficient capacity and an agreed allocation model to support concurrent build, data migration, SIT/UAT, and go-live activities.",
+          "owner": {
+            "name": "An, Stephanie (TR Technology) – Program Manager",
+            "email": null,
+            "employee_id": null
+          },
+          "dependency_type": "Operational",
+          "dependent_on": "GSI, SAP, ECM, EPM, DW/EDL and related enterprise platform teams providing capacity according to an integrated schedule",
+          "is_critical": true,
+          "consumer": "All projects within the Legacy Product Migration program and the program-level milestones (Build, Data Migration & Testing Complete; Go-Live & Stabilization Complete)",
+          "impact_if_delayed": "If platform team capacity is not confirmed and coordinated, one or more projects may be delayed due to resource conflicts, causing slippage of program-level milestones, increased overtime and burnout, and reduced quality due to compressed testing windows.",
+          "mitigation": "Develop and maintain an integrated program schedule overlaying all project milestones and shared resource needs. Use this to negotiate sequencing of SIT/UAT and go-lives, formalize resource commitments from platform teams, and review upcoming milestones at program Steer Co at least a quarter in advance to adjust plans as needed.",
+          "priority": "Medium",
+          "target_date": null,
+          "status": "Open",
+          "date_raised": "2026-06-10",
+          "date_resolved": null,
+          "last_updated": null,
+          "source_type": "program",
+          "source_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
+          "source_name": "prog-042",
+          "created_at": "2026-06-10T12:15:32.453665-05:00",
+          "updated_at": "2026-06-10T12:15:32.453670-05:00",
+          "source_file_name": null
+        },
+        {
+          "id": "715ffbda-fb57-4a4d-8bf8-66f552b2d2b3",
+          "friendly_id": "prog-042/dep-0003",
+          "project_id": null,
+          "program_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
+          "title": "Enterprise data readiness and quality across LatAm, Legal Tracker, and Special Offers migrations",
+          "description": "The program depends on enterprise data being ready and of sufficient quality to support migrations for LatAm Top of Funnel, Legal Tracker, and Special Offers – Migration to OC. This includes LATAM data quality and readiness (not comprehensively validated in ~3 years), EDL completion of Legal Tracker data archive/migration from legacy SFDC, and availability of sample and full data loads into EPM/SAP for Special Offers.",
+          "owner": {
+            "name": "Polusani, Sridhar Rao; Alagar, Mala; and DW/SAP/EPM leads under the Legacy Product Migration program manager",
+            "email": null,
+            "employee_id": null
+          },
+          "dependency_type": "Technical",
+          "dependent_on": "EDL team for Legal Tracker data archive/migration; DW/SAP/EPM and MDM/Data teams for Special Offers data; LATAM data owners and ECM/D&A teams for LATAM data readiness",
+          "is_critical": true,
+          "consumer": "All migrations within the Legacy Product Migration program and the program-level milestones for build, data migration, testing, and go-live",
+          "impact_if_delayed": "If the required enterprise data is not ready, complete, or accurate when needed, projects may face rework, extended testing cycles, partial migrations, or production defects, delaying program-level milestones and undermining objectives for improved data integrity and retirement of legacy systems.",
+          "mitigation": "Establish a consolidated program-level data readiness plan covering LATAM, Legal Tracker, and Special Offers, including formal data quality assessments and remediation plans, committed timelines from the EDL team for Legal Tracker data migration, and ownership and timelines for sample and full data loads into EPM/SAP for Special Offers. Introduce stage gates so builds and cutovers cannot proceed without meeting defined data readiness criteria.",
+          "priority": "High",
+          "target_date": null,
+          "status": "Open",
+          "date_raised": "2026-06-10",
+          "date_resolved": null,
+          "last_updated": null,
+          "source_type": "program",
+          "source_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
+          "source_name": "prog-042",
+          "created_at": "2026-06-10T12:15:32.462350-05:00",
+          "updated_at": "2026-06-10T12:15:32.462354-05:00",
+          "source_file_name": null
+        },
+        {
+          "id": "6a8a9d74-d419-452e-a848-506f3cb816ca",
+          "friendly_id": "prog-042/dep-0004",
+          "project_id": null,
+          "program_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
+          "title": "Enterprise platform readiness and capacity to support concurrent migrations",
+          "description": "Program planning assumes that GSI, ECM, EPM, SAP, and related integrations are ready and have sufficient capacity to support concurrent or closely sequenced migrations for LatAm Top of Funnel, Legal Tracker, and Special Offers during 2026, without requiring major re-architecture or extended outages.",
+          "owner": {
+            "name": "An, Stephanie (TR Technology) – Program Manager, with Program Architecture Lead (to be assigned)",
+            "email": null,
+            "employee_id": null
+          },
+          "dependency_type": "Technical",
+          "dependent_on": "GSI, ECM, EPM, SAP platform owner teams and enterprise architecture governing commercial platforms",
+          "is_critical": true,
+          "consumer": "Legacy Product Migration program as a whole and all in-scope projects sharing these platforms",
+          "impact_if_delayed": "If enterprise platforms cannot support the planned concurrent migrations, the program may be forced to re-sequence projects, reduce scope, or accept extended dual-system operation, putting 2026 program objectives and benefits at risk.",
+          "mitigation": "Validate platform capacity and readiness through ongoing architecture reviews, capacity assessments, and integration design approvals across all three projects. If constraints are identified, re-sequence project timelines, reduce initial scope, or secure additional platform investment and resources, updating program milestones and Steer Co approvals accordingly.",
+          "priority": "High",
+          "target_date": null,
+          "status": "Open",
+          "date_raised": "2026-06-10",
+          "date_resolved": null,
+          "last_updated": null,
+          "source_type": "program",
+          "source_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
+          "source_name": "prog-042",
+          "created_at": "2026-06-10T12:15:32.469206-05:00",
+          "updated_at": "2026-06-10T12:15:32.469210-05:00",
+          "source_file_name": null
+        },
+        {
+          "id": "1ba48f8b-f163-445f-921e-0ce3b5e01a96",
+          "friendly_id": "prog-042/dep-0005",
+          "project_id": null,
+          "program_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
+          "title": "Completion of cross-project prerequisites for LatAm and Legal Tracker migrations",
+          "description": "The program relies on several prerequisites being completed in parallel to support 2026 build, migration, and go-live milestones for both LatAm Top of Funnel and Legal Tracker. These prerequisites include territory alignment to GSI, ECM hierarchy and segmentation readiness, custom field translations (Spanish and Portuguese), LATAM data readiness assessments, and Legal Tracker data archive/migration via EDL.",
+          "owner": {
+            "name": "An, Stephanie (TR Technology) – Program Manager, coordinating dependency owners",
+            "email": null,
+            "employee_id": null
+          },
+          "dependency_type": "Project",
+          "dependent_on": "Paulo Busch and Commercial Excellence for territory alignment; John Sundt and ECM/D&A teams for hierarchy and segmentation; Derrick Zappa for translations; EDL team for Legal Tracker data archive/migration; LATAM data owners for data readiness",
+          "is_critical": true,
+          "consumer": "LatAm Top of Funnel Migration and Legal Tracker Migration projects and their contribution to program-level milestones",
+          "impact_if_delayed": "If any of these prerequisites cannot be completed in parallel and on time, build and migration activities for LatAm and Legal Tracker will be delayed or re-scoped, impacting the overall Legacy Product Migration timeline and potentially forcing reprioritization of markets or capabilities.",
+          "mitigation": "Track these prerequisites as program-level dependencies with explicit readiness checkpoints (data readiness reviews, territory alignment sign-off, ECM hierarchy load confirmation, EDL migration completion) before major build and migration phases. If parallel completion is not feasible, re-prioritize and sequence based on program value and escalate trade-offs to the Steer Co.",
+          "priority": "High",
+          "target_date": null,
+          "status": "Open",
+          "date_raised": "2026-06-10",
+          "date_resolved": null,
+          "last_updated": null,
+          "source_type": "program",
+          "source_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
+          "source_name": "prog-042",
+          "created_at": "2026-06-10T12:15:32.475525-05:00",
+          "updated_at": "2026-06-10T12:15:32.475530-05:00",
+          "source_file_name": null
         }
       ],
       "decisions": [
@@ -102224,7 +102825,7 @@
           "project_id": null,
           "program_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
           "name": "Program Scope & Design Finalized",
-          "description": "Agreement on in-scope products, regions (incl. LatAm), migration approach, and target operating model across Legal Tracker and supporting workstreams.",
+          "description": "Agreement on in-scope products, regions (including LatAm), migration approach, and target operating model across Legal Tracker and supporting workstreams.",
           "status": "In Progress",
           "rag_status": "Green",
           "metrics": "Scope approved by Steer Co\nKey dependencies identified and logged\nTarget architecture signed off",
@@ -102232,8 +102833,8 @@
           "planned_end_date": "2026-05-31",
           "le_start_date": "2026-05-01",
           "le_end_date": "2026-05-31",
-          "actual_start_date": "",
-          "actual_end_date": "",
+          "actual_start_date": null,
+          "actual_end_date": null,
           "start_variance": 0,
           "end_variance": 0,
           "variance_statement": null,
@@ -103916,6 +104517,42 @@
           "created_at": "2026-04-30T09:02:56.878610-05:00"
         },
         {
+          "id": "a7ee08e5-a3bf-4987-a04c-816ed717bc5a",
+          "friendly_id": "prog-042/stake-0001",
+          "project_id": null,
+          "program_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
+          "name": {
+            "name": "Mishra, Linki (TR Technology)",
+            "email": null,
+            "employee_id": null
+          },
+          "role": "Program Sponsor",
+          "interest": "Executive sponsor for the Legacy Product Migration program with accountability for overall outcomes and strategic alignment.",
+          "influence": "High",
+          "source_type": "program",
+          "source_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
+          "source_name": "prog-042",
+          "created_at": "2026-06-10T12:10:59.305279-05:00"
+        },
+        {
+          "id": "a67528f4-b6af-4fd1-ae29-344c3253f7c8",
+          "friendly_id": "prog-042/stake-0002",
+          "project_id": null,
+          "program_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
+          "name": {
+            "name": "An, Stephanie (TR Technology)",
+            "email": null,
+            "employee_id": null
+          },
+          "role": "Program Manager",
+          "interest": "Responsible for day-to-day management and coordination of all projects within the Legacy Product Migration program.",
+          "influence": "High",
+          "source_type": "program",
+          "source_id": "f9b54b4f-0d2b-40e5-8592-bde9c15435df",
+          "source_name": "prog-042",
+          "created_at": "2026-06-10T12:10:59.315124-05:00"
+        },
+        {
           "id": "85045ef9-e91b-4cda-a666-d44505ff6196",
           "friendly_id": "proj-191/stake-0001",
           "project_id": "8313cd9f-f9b5-4a6a-9d7b-eb0a3d577e3f",
@@ -104298,6 +104935,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": 0,
+      "child_red_count": 0,
+      "child_amber_count": 0,
       "latest_report": {
         "report_id": "fc970239-6075-4019-a931-30d28466007e",
         "date": "2026-06-08",
@@ -108538,6 +109177,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": 0,
+      "child_red_count": 0,
+      "child_amber_count": 0,
       "latest_report": {
         "report_id": "19ecc4ef-8d25-4bce-840a-37dbdfe47fcc",
         "date": "2026-06-08",
@@ -108831,6 +109472,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": 0,
+      "child_red_count": 0,
+      "child_amber_count": 0,
       "latest_report": null,
       "days_since_report": 999,
       "risks": [],
@@ -108863,6 +109506,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": 0,
+      "child_red_count": 0,
+      "child_amber_count": 0,
       "latest_report": null,
       "days_since_report": 999,
       "risks": [],
@@ -108914,6 +109559,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": 0,
+      "child_red_count": 0,
+      "child_amber_count": 0,
       "latest_report": null,
       "days_since_report": 999,
       "risks": [],
@@ -108965,6 +109612,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": 0,
+      "child_red_count": 0,
+      "child_amber_count": 0,
       "latest_report": {
         "report_id": "02dd7787-1b73-4b6f-a015-da9947f4e755",
         "date": "2026-06-02",
@@ -111851,6 +112500,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": 0,
+      "child_red_count": 0,
+      "child_amber_count": 0,
       "latest_report": {
         "report_id": "250d1ea5-9f91-4588-94ae-5c9a02690b43",
         "date": "2026-05-15",
@@ -112044,6 +112695,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": 0,
+      "child_red_count": 0,
+      "child_amber_count": 0,
       "latest_report": {
         "report_id": "af2896c0-18d8-4649-bf9b-f079e7cc2af2",
         "date": "2026-06-05",
@@ -118019,6 +118672,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": 0,
+      "child_red_count": 0,
+      "child_amber_count": 0,
       "latest_report": {
         "report_id": "e5a381fb-171f-4c46-917a-1c7836bf1cc7",
         "date": "2026-06-10",
@@ -119516,6 +120171,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": 0,
+      "child_red_count": 0,
+      "child_amber_count": 0,
       "latest_report": {
         "report_id": "ebf597da-93b8-4964-b0eb-647ee6a961fa",
         "date": "2026-06-05",
@@ -123131,6 +123788,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": 0,
+      "child_red_count": 0,
+      "child_amber_count": 0,
       "latest_report": {
         "report_id": "3a5ad21c-9377-4ce4-a748-2e551e6b9d9e",
         "date": "2026-06-10",
@@ -139620,6 +140279,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": 0,
+      "child_red_count": 0,
+      "child_amber_count": 0,
       "latest_report": {
         "report_id": "73f5ced3-c5d2-43d3-abba-28be166fa4f8",
         "date": "2026-06-05",
@@ -139627,6 +140288,48 @@
       },
       "days_since_report": 5,
       "risks": [
+        {
+          "id": "d102cc7b-10f7-47d9-91be-750cea2c2763",
+          "friendly_id": "proj-047/risk-0006",
+          "project_id": "b2b372c8-e61f-475a-90cf-34fdaa5ab1cd",
+          "program_id": null,
+          "title": "Cocounsel Legal DORA metric accuracy and trustworthiness (PORT extraction query and Cumulus logging) ",
+          "description": "Port utilizes an extraction query to fetch Cumulus deployment logs in the Datadog Software Delivery account for DORA metric reporting. The extraction query does not pick up on \"deployment-engine\" and \"simple_static_content_deployer\" service types. (owners: Cumulus Dev + PORT Team)",
+          "impact_description": "Missing DORA metric reporting in PORT for MFEs.",
+          "raised_by": {
+            "name": "Abrahamson, Maddi (TR Technology)",
+            "email": "Maddi.Abrahamson@thomsonreuters.com",
+            "employee_id": "6030380"
+          },
+          "risk_owner": {
+            "name": "Cumulus",
+            "email": null,
+            "employee_id": null
+          },
+          "mitigation_plan_owner": {
+            "name": "Abrahamson, Maddi (TR Technology)",
+            "email": "Maddi.Abrahamson@thomsonreuters.com",
+            "employee_id": "6030380"
+          },
+          "impact": "2 - Minor",
+          "priority": "4 - Low",
+          "probability": "2 - Minor",
+          "mitigation": "Cumulus update to log \"simple_static_content_deployer\" service appropriately; Cocounsel Legal update cumulus version, update PORT extraction query to fetch \"deployment-engine\" and \"simple_static_content_deployer\" service types; Long term - adjust cumulus deployment logging to reduce conditions required in PORT extraction query.",
+          "mitigation_due_date": "2026-06-30",
+          "target_closure_date": "2026-06-30",
+          "status": "In Progress",
+          "date_raised": "2026-05-27",
+          "date_resolved": null,
+          "milestone_ids": [],
+          "milestones": [],
+          "last_updated": "2026-05-27",
+          "source_type": "project",
+          "source_id": "b2b372c8-e61f-475a-90cf-34fdaa5ab1cd",
+          "source_name": "proj-047",
+          "created_at": "2026-05-27T12:04:36.182096-05:00",
+          "updated_at": "2026-06-10T11:56:21.368703-05:00",
+          "source_file_name": null
+        },
         {
           "id": "2c44a78f-f96d-4850-a0fa-7495a5bf702c",
           "friendly_id": "proj-064/risk-0003",
@@ -141995,48 +142698,6 @@
           "created_at": "2026-05-14T22:30:11.833067-05:00",
           "updated_at": "2026-05-17T11:39:10.204562-05:00",
           "source_file_name": "AIOps_Event Mgmt Regular Sync (8).docx"
-        },
-        {
-          "id": "d102cc7b-10f7-47d9-91be-750cea2c2763",
-          "friendly_id": "proj-047/risk-0006",
-          "project_id": "b2b372c8-e61f-475a-90cf-34fdaa5ab1cd",
-          "program_id": null,
-          "title": "Cocounsel Legal DORA metric accuracy and trustworthiness (PORT extraction query and Cumulus logging) ",
-          "description": "Port utilizes an extraction query to fetch Cumulus deployment logs in the Datadog Software Delivery account for DORA metric reporting. The extraction query does not pick up on \"deployment-engine\" and \"simple_static_content_deployer\" service types. (owners: Cumulus Dev + PORT Team)",
-          "impact_description": "Missing DORA metric reporting in PORT for MFEs.",
-          "raised_by": {
-            "name": "Abrahamson, Maddi (TR Technology)",
-            "email": "Maddi.Abrahamson@thomsonreuters.com",
-            "employee_id": "6030380"
-          },
-          "risk_owner": {
-            "name": "Cumulus",
-            "email": null,
-            "employee_id": null
-          },
-          "mitigation_plan_owner": {
-            "name": "Abrahamson, Maddi (TR Technology)",
-            "email": "Maddi.Abrahamson@thomsonreuters.com",
-            "employee_id": "6030380"
-          },
-          "impact": "2 - Minor",
-          "priority": "4 - Low",
-          "probability": "2 - Minor",
-          "mitigation": "Cumulus update to log \"simple_static_content_deployer\" service appropriately; Cocounsel Legal update cumulus version, update PORT extraction query to fetch \"deployment-engine\" and \"simple_static_content_deployer\" service types; Long term - adjust cumulus deployment logging to reduce conditions required in PORT extraction query.",
-          "mitigation_due_date": "2026-06-05",
-          "target_closure_date": "2026-06-05",
-          "status": "In Progress",
-          "date_raised": "2026-05-27",
-          "date_resolved": null,
-          "milestone_ids": [],
-          "milestones": [],
-          "last_updated": "2026-05-27",
-          "source_type": "project",
-          "source_id": "b2b372c8-e61f-475a-90cf-34fdaa5ab1cd",
-          "source_name": "proj-047",
-          "created_at": "2026-05-27T12:04:36.182096-05:00",
-          "updated_at": "2026-05-27T12:04:36.182100-05:00",
-          "source_file_name": null
         },
         {
           "id": "2e0854c3-ee84-49bc-82b8-3bbf5a3dbdf3",
@@ -159392,6 +160053,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": 0,
+      "child_red_count": 0,
+      "child_amber_count": 0,
       "latest_report": {
         "report_id": "f252e081-ecc9-474a-8ae1-79171d12ab67",
         "date": "2026-06-05",
@@ -162522,6 +163185,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": 0,
+      "child_red_count": 0,
+      "child_amber_count": 0,
       "latest_report": {
         "report_id": "9abd1828-68ac-476a-b1d3-bff496435d31",
         "date": "2026-06-05",
@@ -165584,6 +166249,8 @@
       "program_id": "",
       "program_name": "",
       "child_red_amber_count": 0,
+      "child_red_count": 0,
+      "child_amber_count": 0,
       "latest_report": {
         "report_id": "dbc27c76-dbdc-498b-8c09-07db58156581",
         "date": "2026-04-24",
