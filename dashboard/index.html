@@ -399,7 +399,8 @@ function scoreRecord(r){
   const R9 = !!(r.okr && r.okr.trim());
   // R10: Service Maturity field is populated
   const R10 = !!(r.service_maturity && r.service_maturity.trim());
-  // R11: Programs only — RAG must not be Green if any child project is Red/Amber.
+  // R11: Programs only — RAG must not be Green if any child project contains Red or Amber
+  // anywhere in its RAG string (catches Green->Amber, Red->Green, Amber->Green, etc.).
   // Projects are N/A (child_red_amber_count === -1) → always pass.
   // Non-Green programs also pass (problem already surfaced in their own RAG).
   // A Green program fails if one or more linked child projects are Red/Amber.
@@ -652,7 +653,7 @@ function getRuleDetail(r,i){
       const parts = [];
       if (red   > 0) parts.push(`${red} project${red>1?'s are':' is'} in Red`);
       if (amber > 0) parts.push(`${amber} project${amber>1?'s are':' is'} in Amber`);
-      return parts.join(' and ');
+      return parts.join(' and ') + ' (includes compound RAGs e.g. Green\u2192Amber, Red\u2192Green)';
     })(),
   ];
   return details[i]||'';
