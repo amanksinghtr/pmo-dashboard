@@ -389,8 +389,9 @@ function scoreRecord(r){
   const R4 = r.issues_total===0 || r.issues_no_owner===0;
   // R5: all open issues have a resolution plan
   const R5 = r.issues_total===0 || r.issues_no_plan===0;
-  // R6: has milestones
-  const R6 = r.miles_total > 0;
+  // R6: has milestones — use milestones_all_count (all statuses) when available,
+  // fall back to miles_total for baked records that predate this field.
+  const R6 = ((r.milestones_all_count != null ? r.milestones_all_count : r.miles_total) || 0) > 0;
   // R7: no overdue milestones
   const R7 = r.miles_overdue===0;
   // R8: no open actions missing a due date
@@ -593,7 +594,7 @@ function showDetail(id){
     `Risks: <strong>${r.risks_total}</strong> &nbsp;·&nbsp; `+
     `Actions: <strong>${r.actions_total}</strong> &nbsp;·&nbsp; `+
     `Issues: <strong>${r.issues_total}</strong> &nbsp;·&nbsp; `+
-    `Milestones: <strong>${r.miles_total}</strong>`;
+    `Milestones: <strong>${r.milestones_all_count || r.miles_total}</strong>`;
   document.getElementById('modal-rules').innerHTML=RULES.map((rule,i)=>{
     // R11 is N/A for projects — render a neutral "not applicable" tile
     if (i === 10 && r.type !== 'program') {
@@ -640,7 +641,7 @@ function getRuleDetail(r,i){
     r.days_since_report>=999?'No status report filed':`Last report was ${r.days_since_report} days ago`,
     r.issues_no_owner>0?`${r.issues_no_owner} issue(s) missing an owner`:'',
     r.issues_no_plan>0?`${r.issues_no_plan} issue(s) missing a resolution plan`:'',
-    r.miles_total===0?'No milestones defined':'',
+    r.miles_total===0&&(r.milestones_all_count||0)===0?'No milestones defined':'',
     r.miles_overdue>0?`${r.miles_overdue} milestone(s) past their LE date`:'',
     r.actions_no_date>0?`${r.actions_no_date} action(s) missing a due date`:'',
     !r.okr||!r.okr.trim()?'OKR field is not populated':'',
@@ -922,6 +923,9 @@ function transformV8(data) {
       issues_total: 0, issues_no_res: 0, issues_no_owner: 0,
       issues_no_date: 0, issues_no_plan: 0,
       miles_total: 0, miles_overdue: 0,
+      // milestones_all_count: total milestones before In Progress filter (used by R6)
+      // Falls back to miles_total for baked records that predate this field.
+      milestones_all_count: typeof e.milestones_all_count === 'number' ? e.milestones_all_count : (typeof e.miles_total === 'number' ? e.miles_total : (e.milestones||[]).length),
       // R11: carry through from extractor (programs only; -1 = N/A for projects)
       child_red_amber_count: (typeof e.child_red_amber_count === 'number') ? e.child_red_amber_count : (e.type === 'program' ? 0 : -1),
       child_red_count:       (typeof e.child_red_count   === 'number') ? e.child_red_count   : (e.type === 'program' ? 0 : -1),
