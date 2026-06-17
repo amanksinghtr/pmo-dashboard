@@ -419,7 +419,27 @@ const RULES = [
   {id:"R11",label:"Program RAG consistent with child projects"},
 ];
 
-function scoreRecord(r){\n  // R1: risks_no_owner === 0\n  const R1 = r.risks_total===0 || r.risks_no_owner===0;\n  // R2: risks_no_mit === 0\n  const R2 = r.risks_total===0 || r.risks_no_mit===0;\n  // R3: status report updated within last 7 days\n  const R3 = r.days_since_report <= 7;\n  // R4: all open issues have an owner\n  const R4 = r.issues_total===0 || r.issues_no_owner===0;\n  // R5: all open issues have a resolution plan\n  const R5 = r.issues_total===0 || r.issues_no_plan===0;\n  // R6: has milestones\n  const R6 = ((r.milestones_all_count != null ? r.milestones_all_count : r.miles_total) || 0) > 0;\n  // R7: no overdue milestones\n  const R7 = r.miles_overdue===0;\n  // R8: no open actions missing a due date\n  const R8 = r.actions_total===0 || r.actions_no_date===0;\n  // R9: OKR field is populated\n  const R9 = !!(r.okr && r.okr.trim());\n  // R10: Service Maturity field is populated\n  const R10 = !!(r.service_maturity && r.service_maturity.trim());\n  // R11: Programs only — fails if program RAG is Green but any child is Red/Amber.\n  // For projects: R11 is N/A — excluded from both numerator and denominator.\n  const isProgram = r.type === 'program';\n  const R11 = !isProgram ? null  // null = N/A, excluded from scoring entirely\n    : !(r.rag || '').toLowerCase().startsWith('green')           // program not green → pass\n    || (typeof r.child_red_amber_count === 'number' && r.child_red_amber_count === 0); // all children green → pass\n\n  // Build passes array — only include R11 for programs\n  const passes = isProgram\n    ? [R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11]\n    : [R1,R2,R3,R4,R5,R6,R7,R8,R9,R10];\n  // Full passes array (11 items) for modal display — null = N/A tile\n  const allPasses = [R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11];\n  const applicable = isProgram ? 11 : 10;\n  const pct = Math.round(passes.filter(Boolean).length/applicable*100);\n  return {passes: allPasses, pct};\n}
+function scoreRecord(r){
+  const R1 = r.risks_total===0 || r.risks_no_owner===0;
+  const R2 = r.risks_total===0 || r.risks_no_mit===0;
+  const R3 = r.days_since_report <= 7;
+  const R4 = r.issues_total===0 || r.issues_no_owner===0;
+  const R5 = r.issues_total===0 || r.issues_no_plan===0;
+  const R6 = ((r.milestones_all_count != null ? r.milestones_all_count : r.miles_total) || 0) > 0;
+  const R7 = r.miles_overdue===0;
+  const R8 = r.actions_total===0 || r.actions_no_date===0;
+  const R9 = !!(r.okr && r.okr.trim());
+  const R10 = !!(r.service_maturity && r.service_maturity.trim());
+  const isProgram = r.type === 'program';
+  const R11 = !isProgram ? null
+    : !(r.rag || '').toLowerCase().startsWith('green')
+    || (typeof r.child_red_amber_count === 'number' && r.child_red_amber_count === 0);
+  const passes = isProgram ? [R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11] : [R1,R2,R3,R4,R5,R6,R7,R8,R9,R10];
+  const allPasses = [R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11];
+  const applicable = isProgram ? 11 : 10;
+  const pct = Math.round(passes.filter(Boolean).length/applicable*100);
+  return {passes: allPasses, pct};
+}
 
 function scoreClass(pct){return pct>=80?'green':pct>=50?'amber':'red'}
 function ragClass(rag){return rag==='Red'?'rag-red':rag==='Amber'?'rag-amber':'rag-green'}
@@ -783,10 +803,10 @@ function autoFetch() {
       // Fetch failed — fall back to baked-in snapshot
       console.warn('pmo_data.json fetch failed (' + err.message + ') — using baked snapshot');
       init();
-      banner.style.background  = '#fef3cd';
-      banner.style.borderColor = '#d4792a';
-      status.style.color       = '#92400e';
-      status.textContent       = '⚠ Showing baked snapshot from 29 May 2026 — R3 compliance may be inaccurate. Upload fresh pmo_data.json to GitHub to see live data.';
+      banner.style.background  = '#f5f5f0';
+      banner.style.borderColor = '#d4c9b8';
+      status.style.color       = '#6b7280';
+      status.textContent       = '📋 Baked snapshot · ' + RECORDS.length + ' records';
       if (btn) btn.style.display = 'inline-block';
     });
 }
