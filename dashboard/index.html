@@ -263,7 +263,7 @@ footer{text-align:center;padding:20px;color:#9ca3af;font-size:10px;font-family:'
             <th>Name</th>
             <th>PM / Owner</th>
             <th>Score</th>
-            <th>R1</th><th>R2</th><th>R3</th><th>R4</th><th>R5</th><th>R6</th><th>R7</th><th>R8</th><th>R9</th><th>R10</th><th title="Programs only: RAG must not be Green if any child project is Red/Amber">R11</th>
+            <th>R1</th><th>R2</th><th>R3</th><th>R4</th><th>R5</th><th>R6</th><th>R7</th><th>R8</th><th>R9</th><th>R10</th><th title="Programs only: RAG must not be Green if any child project is Red/Amber">R11</th><th title="Charter document must be present for all projects and programs">R12</th>
           </tr>
         </thead>
         <tbody id="tbody-all"></tbody>
@@ -282,7 +282,7 @@ footer{text-align:center;padding:20px;color:#9ca3af;font-size:10px;font-family:'
             <th>Name</th>
             <th>PM / Owner</th>
             <th>Score</th>
-            <th>R1</th><th>R2</th><th>R3</th><th>R4</th><th>R5</th><th>R6</th><th>R7</th><th>R8</th><th>R9</th><th>R10</th><th title="Programs only: RAG must not be Green if any child project is Red/Amber">R11</th>
+            <th>R1</th><th>R2</th><th>R3</th><th>R4</th><th>R5</th><th>R6</th><th>R7</th><th>R8</th><th>R9</th><th>R10</th><th title="Programs only: RAG must not be Green if any child project is Red/Amber">R11</th><th title="Charter document must be present for all projects and programs">R12</th>
           </tr>
         </thead>
         <tbody id="tbody-nc"></tbody>
@@ -342,6 +342,7 @@ footer{text-align:center;padding:20px;color:#9ca3af;font-size:10px;font-family:'
     <div class="legend-item"><span class="legend-num">R9</span><div><span class="legend-label">OKR populated</span><span class="legend-desc">Project or program OKR field must be populated</span></div></div>
     <div class="legend-item"><span class="legend-num">R10</span><div><span class="legend-label">Service Maturity populated</span><span class="legend-desc">Project or program Service Maturity field must be populated</span></div></div>
     <div class="legend-item"><span class="legend-num">R11</span><div><span class="legend-label">Program RAG consistent with children</span><span class="legend-desc">Programs only: RAG must not be Green if any child project is Red or Amber</span></div></div>
+    <div class="legend-item"><span class="legend-num">R12</span><div><span class="legend-label">Charter document present</span><span class="legend-desc">Standalone projects and programs: charter must be populated. Parent programs: both program charter AND all linked project charters must be present</span></div></div>
   </div>
   <div class="legend-scoring">
     <span class="legend-scoring-label">Scoring thresholds:</span>
@@ -417,6 +418,7 @@ const RULES = [
   {id:"R9",label:"OKR populated"},
   {id:"R10",label:"Service Maturity populated"},
   {id:"R11",label:"Program RAG consistent with child projects"},
+  {id:"R12",label:"Charter document present"},
 ];
 
 function scoreRecord(r){
@@ -431,14 +433,28 @@ function scoreRecord(r){
   const R9 = !!(r.okr && r.okr.trim());
   const R10 = !!(r.service_maturity && r.service_maturity.trim());
   const isProgram = r.type === 'program';
+  // R11: N/A (null) for projects; evaluated for programs only
   const R11 = !isProgram ? null
     : !(r.rag || '').toLowerCase().startsWith('green')
     || (typeof r.child_red_amber_count === 'number' && r.child_red_amber_count === 0);
-  const passes = isProgram ? [R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11] : [R1,R2,R3,R4,R5,R6,R7,R8,R9,R10];
-  const allPasses = [R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11];
-  const applicable = isProgram ? 11 : 10;
-  const pct = Math.round(passes.filter(Boolean).length/applicable*100);
-  return {passes: allPasses, pct};
+  // R12: null = "not yet assessed" (baked snapshot pre-extraction) → excluded from scoring
+  // true = charter present (pass), false = charter absent (fail)
+  const R12 = (r.has_charter === null || r.has_charter === undefined) ? null : r.has_charter === true;
+  const passes = [R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R12];
+  // Applicable: exclude R11 for projects (null), exclude R12 if not-yet-assessed (null)
+  const applicable = passes.filter((_,i) => {
+    if (i === 10 && !isProgram) return false; // R11 N/A for projects
+    if (i === 11 && R12 === null) return false; // R12 not yet assessed
+    return true;
+  }).length;
+  // Score only the applicable rules (excluding nulls)
+  const scored = passes.filter((p,i) => {
+    if (i === 10 && !isProgram) return false;
+    if (i === 11 && R12 === null) return false;
+    return true;
+  });
+  const pct = applicable === 0 ? 0 : Math.round(scored.filter(Boolean).length / applicable * 100);
+  return {passes, pct};
 }
 
 function scoreClass(pct){return pct>=80?'green':pct>=50?'amber':'red'}
@@ -497,7 +513,7 @@ function init(){
   populatePillarDropdown();
 
   document.getElementById('footer-stamp').textContent=
-    `Snapshot generated 29 May 2026 · ${RECORDS.length} records · 11 compliance rules · Critical tier only`;
+    `Snapshot generated 29 May 2026 · ${RECORDS.length} records · 12 compliance rules · Critical tier only`;
 }
 
 // ── FILTER & SEARCH ──────────────────────────────────────────────────────────
@@ -531,17 +547,18 @@ function populatePillarDropdown(){
 // ── RENDER TABLE ─────────────────────────────────────────────────────────────
 function renderTbody(tbodyId, records){
   const tb=document.getElementById(tbodyId);
-  if(!records.length){tb.innerHTML=`<tr><td colspan="16"><div class="empty"><div class="empty-icon">✓</div>No records match current filters</div></td></tr>`;return;}
+  if(!records.length){tb.innerHTML=`<tr><td colspan="17"><div class="empty"><div class="empty-icon">✓</div>No records match current filters</div></td></tr>`;return;}
   tb.innerHTML=records.map((r,i)=>{
     const {passes,pct}=scoreRecord(r);
     const sc=scoreClass(pct);
     const type=r.type==='program'?`<span class="type-badge tb-prog">Program</span>`:`<span class="type-badge tb-proj">Project</span>`;
     const bar=`<div class="score-wrap"><div class="score-bar"><div class="score-fill fill-${sc}" style="width:${pct}%"></div></div><span class="score-pct pct-${sc}">${pct}%</span></div>`;
-    // R11 is N/A for projects — show a neutral dash instead of pass/fail
+    const isProgram = r.type === 'program';
     const ruleCells = passes.map((p,pi) => {
-      if (pi === 10 && p === null) {
-        return `<td title="R11: Programs only (N/A for projects)" style="color:#d4c9b8;font-size:12px">–</td>`;
-      }
+      // R11 (index 10): N/A for projects
+      if (pi === 10 && !isProgram) return `<td title="R11: Programs only (N/A for projects)" style="color:#d4c9b8;font-size:12px">–</td>`;
+      // R12 (index 11): null = not yet assessed
+      if (pi === 11 && p === null) return `<td title="R12: Not yet assessed — run extractor v17+" style="color:#d4c9b8;font-size:12px">?</td>`;
       return `<td title="${RULES[pi].label}">${p?`<span style="color:#123015;font-size:13px">✓</span>`:`<span style="color:#D64000;font-size:13px">✗</span>`}</td>`;
     }).join('');
     return `<tr onclick="showDetail('${r.id}')">
@@ -566,16 +583,19 @@ function renderViolations(){
   const body=document.getElementById('violations-body');
   let html='';
   RULES.forEach((rule,ri)=>{
-    // R11 only applies to programs — filter accordingly
+    // R11 applies to programs only; R12 excludes not-yet-assessed (null)
     const candidates = ri === 10
       ? RECORDS.filter(r => r.type === 'program')
-      : RECORDS;
+      : ri === 11
+        ? RECORDS.filter(r => r.has_charter !== null && r.has_charter !== undefined)
+        : RECORDS;
     const failing=candidates.filter(r=>scoreRecord(r).passes[ri]===false);
     if(!failing.length){
-      html+=`<div class="viol-group"><div class="viol-group-hd">${rule.id} · ${rule.label} <span style="color:#123015;margin-left:8px">✓ All compliant${ri===10?' (programs only)':''}</span></div></div>`;
+      const note = ri===10 ? ' (programs only)' : ri===11 ? ' (assessed records only)' : '';
+      html+=`<div class="viol-group"><div class="viol-group-hd">${rule.id} · ${rule.label} <span style="color:#123015;margin-left:8px">✓ All compliant${note}</span></div></div>`;
       return;
     }
-    html+=`<div class="viol-group"><div class="viol-group-hd">${rule.id} · ${rule.label}${ri===10?' <span style="font-size:9px;color:#6b7280">(programs only)</span>':''} <span style="color:#D64000;margin-left:8px">${failing.length} failing</span></div>`;
+    html+=`<div class="viol-group"><div class="viol-group-hd">${rule.id} · ${rule.label}${ri===10?' <span style="font-size:9px;color:#6b7280">(programs only)</span>':''}${ri===11?' <span style="font-size:9px;color:#6b7280">(assessed records)</span>':''} <span style="color:#D64000;margin-left:8px">${failing.length} failing</span></div>`;
     html+=failing.map((r,i)=>{
       const type=r.type==='program'?`<span class="type-badge tb-prog" style="font-size:9px">Prog</span>`:`<span class="type-badge tb-proj" style="font-size:9px">Proj</span>`;
       const badges=[];
@@ -588,6 +608,16 @@ function renderViolations(){
       if(r.miles_overdue>0)badges.push(`<span class="viol-badge vb-mile">${r.miles_overdue} overdue milestones</span>`);
       if(ri===10 && typeof r.child_red_amber_count==='number' && r.child_red_amber_count>0)
         badges.push(`<span class="viol-badge vb-issue">${r.child_red_amber_count} child project(s) are Red/Amber</span>`);
+      // R12 (index 11): separate badges for program charter vs project charters
+      if(ri===11){
+        if(r.program_charter_missing)
+          badges.push(`<span class="viol-badge vb-issue">Program charter missing</span>`);
+        const nMissing = (r.charter_missing_projects||[]).length;
+        if(nMissing > 0)
+          badges.push(`<span class="viol-badge vb-action">${nMissing} project charter${nMissing>1?'s':''} missing</span>`);
+        if(!r.program_charter_missing && nMissing===0 && r.type==='project')
+          badges.push(`<span class="viol-badge vb-issue">Charter document not populated</span>`);
+      }
       return `<div class="viol-row"><span class="viol-num">${i+1}</span><div><div style="display:flex;align-items:center;gap:6px">${type}<span class="viol-name">${r.name}</span></div><div class="viol-pm">${r.pm}</div><div class="viol-badges">${badges.join('')}</div></div></div>`;
     }).join('');
     html+='</div>';
@@ -635,6 +665,7 @@ function showDetail(id){
     `Issues: <strong>${r.issues_total}</strong> &nbsp;·&nbsp; `+
     `Milestones: <strong>${r.milestones_all_count || r.miles_total}</strong>`;
   document.getElementById('modal-rules').innerHTML=RULES.map((rule,i)=>{
+    // R11 (index 10): N/A for projects
     if (i === 10 && passes[i] === null) {
       return `<div class="modal-rule" style="background:#f5f5f0;border-color:#e5e1d8;opacity:0.6">
         <div class="modal-rule-icon" style="color:#9ca3af">–</div>
@@ -644,11 +675,34 @@ function showDetail(id){
         </div>
       </div>`;
     }
+    // R12 (index 11): null = not yet assessed
+    if (i === 11 && passes[i] === null) {
+      return `<div class="modal-rule" style="background:#f5f5f0;border-color:#e5e1d8;opacity:0.6">
+        <div class="modal-rule-icon" style="color:#9ca3af">?</div>
+        <div>
+          <div class="modal-rule-label" style="color:#9ca3af"><span class="modal-rule-id">${rule.id}</span>${rule.label}</div>
+          <div class="modal-rule-desc">Not yet assessed — run extractor v17+ to populate charter data</div>
+        </div>
+      </div>`;
+    }
+    // R12 fail: build detailed charter breakdown inside the rule card
+    let extraDetail = '';
+    if (i === 11 && passes[i] === false) {
+      const lines = [];
+      if (r.program_charter_missing) lines.push(`<div style="margin-top:5px;color:#D64000;font-size:10px">✗ Program charter document is missing</div>`);
+      const missing = r.charter_missing_projects || [];
+      if (missing.length > 0) {
+        lines.push(`<div style="margin-top:5px;font-size:10px;color:#6b7280;font-weight:600">Projects missing charter (${missing.length}):</div>`);
+        missing.forEach(p => lines.push(`<div style="font-size:10px;color:#D64000;padding-left:8px">✗ ${p.name}</div>`));
+      }
+      extraDetail = lines.join('');
+    }
     return `<div class="modal-rule ${passes[i]?'pass':'fail'}">
       <div class="modal-rule-icon">${passes[i]?'✓':'✗'}</div>
-      <div>
+      <div style="flex:1">
         <div class="modal-rule-label"><span class="modal-rule-id">${rule.id}</span>${rule.label}</div>
-        ${!passes[i]?`<div class="modal-rule-desc">${getRuleDetail(r,i)}</div>`:''}
+        ${!passes[i]&&i!==11?`<div class="modal-rule-desc">${getRuleDetail(r,i)}</div>`:''}
+        ${i===11&&!passes[i]?`<div class="modal-rule-desc">${getRuleDetail(r,i)}${extraDetail}</div>`:''}
       </div>
     </div>`;
   }).join('');
@@ -693,6 +747,20 @@ function getRuleDetail(r,i){
       if (red   > 0) parts.push(`${red} project${red>1?'s are':' is'} in Red`);
       if (amber > 0) parts.push(`${amber} project${amber>1?'s are':' is'} in Amber`);
       return parts.join(' and ') + ' (includes compound RAGs e.g. Green\u2192Amber, Red\u2192Green)';
+    })(),
+    // R12: top-level summary sentence (detail list rendered separately in modal)
+    (function(){
+      const progMissing = r.program_charter_missing;
+      const missing     = r.charter_missing_projects || [];
+      const nMissing    = missing.length;
+      if (r.type === 'project') {
+        return 'Charter document (project_charter_document) is not populated';
+      }
+      // Program — build summary sentence based on which combination failed
+      const parts = [];
+      if (progMissing)  parts.push('Program charter document is missing');
+      if (nMissing > 0) parts.push(`${nMissing} linked project${nMissing>1?'s are':' is'} missing a charter`);
+      return parts.join('; ') || 'Charter document is not populated';
     })(),
   ];
   return details[i]||'';
@@ -755,7 +823,7 @@ function applyData(data, sourceName) {
       const d = new Date(genDate + 'T12:00:00');
       const formatted = d.toLocaleDateString('en-GB',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
       document.getElementById('footer-stamp').textContent =
-        'Snapshot generated 29 May 2026 · ' + RECORDS.length + ' records · 11 compliance rules · Critical tier only';
+        'Snapshot generated 29 May 2026 · ' + RECORDS.length + ' records · 12 compliance rules · Critical tier only';
     }
 
     // Update banner — green success state
@@ -972,6 +1040,10 @@ function transformV8(data) {
       child_red_amber_count: (typeof e.child_red_amber_count === 'number') ? e.child_red_amber_count : (e.type === 'program' ? 0 : -1),
       child_red_count:       (typeof e.child_red_count   === 'number') ? e.child_red_count   : (e.type === 'program' ? 0 : -1),
       child_amber_count:     (typeof e.child_amber_count === 'number') ? e.child_amber_count : (e.type === 'program' ? 0 : -1),
+      // R12: null = not yet assessed (pre-v17 extraction); true/false from extractor
+      has_charter:              (e.has_charter === null || e.has_charter === undefined) ? null : e.has_charter === true,
+      program_charter_missing:  e.program_charter_missing  === true,
+      charter_missing_projects: Array.isArray(e.charter_missing_projects) ? e.charter_missing_projects : [],
     };
 
     // Only score items that belong to this entity (friendly_id prefix filter)
